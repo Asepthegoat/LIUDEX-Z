@@ -1,0 +1,14 @@
+{
+  "show-fps":false,
+  "show-ping":false,
+  "tp-method":"tp",
+  "tracking-color":"255,255,255",
+  "direct-script":false,
+  "set-customchar":false,
+  "set-char":"",
+  "keybind":{"F","T","R"},
+  "auto-environtmetal":false,
+  "environment":{
+                  "sky":""
+  },
+}
