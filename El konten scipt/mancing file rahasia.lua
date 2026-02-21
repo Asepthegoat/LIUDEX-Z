@@ -120,7 +120,22 @@ firesignal(Event.OnClientEvent,
 )
 
 end
-
+local function NF()
+local TextChatService = game:GetService("TextChatService")
+local Event = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_net@0.2.0"].net["RE/FishCaught"]
+local function sendm(vars)
+local msg = `<b><font size=\"18\">[Server]:</font></b> CecepHermanos obtained a <b><font color=\"rgb(24, 255, 152)\">Ijazah Asli J███ W█████ ({vars}kg)</font></b> with a 1 in infNVD chance!`
+local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
+channel:DisplaySystemMessage(msg)
+end
+for i,v in ipairs (getconnections(Event.OnClientEvent)) do
+local hf
+hf = hookfunction(v.Function,function(self,args)
+sendm(args.Weight)
+return hf(self,args)
+end)
+end
+end
 task.spawn(fucntion()
     m()
 end)
@@ -133,7 +148,9 @@ end)
 task.spawn(fucntion()
     b()
 end)
-
+task.spawn(function()
+NF()
+end)
 
 
 playCutscene()
