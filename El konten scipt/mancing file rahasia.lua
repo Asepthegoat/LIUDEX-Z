@@ -121,8 +121,19 @@ firesignal(Event.OnClientEvent,
 
 end
 
-m()
-R()
-C()
-b()
+task.spawn(fucntion()
+    m()
+end)
+task.spawn(fucntion()
+    R()
+end)
+task.spawn(fucntion()
+    C()
+end)
+task.spawn(fucntion()
+    b()
+end)
+
+
+
 playCutscene()
