@@ -5,8 +5,7 @@ local UserInputService = game:GetService("UserInputService")
 local player = Players.LocalPlayer
 -- Variables0
 -- RemoteEvent
-local REReplicateCutscene = ReplicatedStorage.Packages._Index["sleitnick_net@0.2.0"].net["RE/ReplicateCutscene"]
-
+local REReplicateCutscene = getgenv().Cutscene
 -- Fungsi trigger cutscene
 local function cs(position)
 task.wait(3.2)
@@ -16,8 +15,12 @@ task.wait(3.2)
         position,          -- posisi offset
         getgenv().fish,       -- identifier
         {
-            Weight = 13503.5
-        }
+        Shiny = true,
+        VariantId = "Gold",
+        VariantSeed = 1771743445,
+        Weight = 1.42
+        },
+        nil
     )
 task.wait(1.8)
  firesignal(REReplicateCutscene.OnClientEvent,
@@ -26,8 +29,12 @@ task.wait(1.8)
         position,          -- posisi offset
         getgenv().fish,       -- identifier
         {
-            Weight = 13503.5
-        }
+        Shiny = true,
+        VariantId = "Gold",
+        VariantSeed = 1771743445,
+        Weight = 1.42
+        },
+        nil
     )
 end
 local Event = getgenv().Request
