@@ -10,7 +10,7 @@ local REReplicateCutscene = ReplicatedStorage.Packages._Index["sleitnick_net@0.2
 
 -- Fungsi trigger cutscene
 local function cs(position)
-task.wait(3)
+task.wait(3.2)
     firesignal(REReplicateCutscene.OnClientEvent,
         "Skeleton Narwhal",          -- rarity / tier
         player,            -- target: LocalPlayer
@@ -54,7 +54,7 @@ local function b()
 local Event = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_net@0.2.0"].net["RE/ObtainedNewFishNotification"]
 for _, Connection in getconnections(Event.OnClientEvent) do
     local old; old = hookfunction(Connection.Function, function(...)
-        task.wait(6)
+        task.wait(6.3)
         return old(...)
     end)
 end
