@@ -19,6 +19,30 @@ function getchar()
   return getgenv().gameNewVar.player.Character
 end
 
+function run_on_func(func,run)
+  local oldfunc
+  oldfunc = hookfunction(func,newcclosure(function(self,...)
+  task.spawn(function()
+    run()
+  end)
+  return oldfunc(self,...)  
+  end))
+end
+
+function run_on_method(methodname,run,selv)
+  local oldmethod
+  local h = selv or game
+  oldmethod = hookmetamethod(h,"__namecall",newcclosure(function(self,...)
+    local method = getnamecallmethod()
+    if method == methodname then
+      task.spawn(function()
+        run()
+      end)
+    end
+    return oldmethod(self,...)
+  end))
+end
+
 function loadhttpscript(sc)
    loadstring(game:HttpGet(sc))()
 end
@@ -81,7 +105,7 @@ end
 function ex:HttpScript(script)
   loadstring(game:HttpGet(script))()
 end
-
+77
 liudex = {}
 liudex.__index = liudex
 
@@ -97,7 +121,7 @@ end
 function liudex:GetName()
 	print(self.Name)
 end
-function liudex:Rspwn()
+function liudex:Respawn()
 	getgenv().LDXZSet.player.Character.Humanoid.Health = 0
 end
 function liudex:GetProperty()
