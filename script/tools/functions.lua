@@ -19,29 +19,36 @@ function getchar()
   return getgenv().gameNewVar.player.Character
 end
 
-function run_on_func(func,run)
-  local oldfunc
-  oldfunc = hookfunction(func,newcclosure(function(self,...)
-  task.spawn(function()
-    run()
-  end)
-  return oldfunc(self,...)  
-  end))
+function run_on_func(func, run)
+    local oldfunc
+    oldfunc = hookfunction(func, function(self,...)
+    local args = {...}
+        task.spawn(function()
+            run(self,args)
+        end)
+        return oldfunc(self, ...)
+    end)
 end
 
-function run_on_method(methodname,run,selv)
-  local oldmethod
-  local h = selv or game
-  oldmethod = hookmetamethod(h,"__namecall",newcclosure(function(self,...)
-    local method = getnamecallmethod()
-    if method == methodname then
-      task.spawn(function()
-        run()
-      end)
-    end
-    return oldmethod(self,...)
-  end))
+function run_on_method(methodname, run, selv)
+    local oldmethod
+    local h = selv or game
+    oldmethod = hookmetamethod(h, "__namecall", function(self, ...)
+        local method = getnamecallmethod()
+        local args = {...}
+        if method == methodname then
+            task.spawn(function()
+                run(self,args)
+            end)
+        end
+        return oldmethod(self, ...)
+    end)
 end
+-- functionnya harus di definisiin dlu gk bisa langsung
+run_on_func(warn, print)
+run_on_method("GetService",print) 
+warn("halo dunia")
+print(game:GetService("Players").LocalPlayer.Name)
 
 function loadhttpscript(sc)
    loadstring(game:HttpGet(sc))()
