@@ -50,6 +50,12 @@ run_on_method("GetService",print)
 warn("halo dunia")
 print(game:GetService("Players").LocalPlayer.Name)
 
+function insertrbxmx(file)
+local objects = game:GetObjects(getcustomasset(file))
+local model = objects[1]
+return model
+end
+
 function loadhttpscript(sc)
    loadstring(game:HttpGet(sc))()
 end
