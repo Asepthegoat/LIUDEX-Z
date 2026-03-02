@@ -44,17 +44,20 @@ function run_on_method(methodname, run, selv)
         return oldmethod(self, ...)
     end)
 end
--- functionnya harus di definisiin dlu gk bisa langsung
-run_on_func(warn, print)
-run_on_method("GetService",print) 
-warn("halo dunia")
-print(game:GetService("Players").LocalPlayer.Name)
+
+function insertasset(assetid)
+local objects = game:GetObjects(assetid)
+local model = objects[1]
+return model
+end
 
 function insertrbxmx(file)
 local objects = game:GetObjects(getcustomasset(file))
 local model = objects[1]
 return model
 end
+
+getrbxmx = insertrbxmx
 
 function loadhttpscript(sc)
    loadstring(game:HttpGet(sc))()
