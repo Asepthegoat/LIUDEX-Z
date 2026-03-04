@@ -155,6 +155,18 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
             Button2 = button2 or nil,
 })
 end
+
+function liudex:RequestNgrok(uri)
+    local response = request({
+    Url = uri,
+    Method = "GET",
+    Headers = {
+        ["ngrok-skip-browser-warning"] = "true"
+    }
+    })
+    return response.Body
+end
+
 LDXSignal = {}
 LDXSignal.__index = LDXSignal
 
