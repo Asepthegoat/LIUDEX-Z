@@ -44,6 +44,7 @@ insertasset(assetid)
 ```
 
 this will return the object from assetid
+
 ---
 ### Example
 ```lua
@@ -56,6 +57,7 @@ uid(boolean)
 ```
 
 this function used to create uid and return it to your variable 
+
 ---
 ### Example
 ```lua
