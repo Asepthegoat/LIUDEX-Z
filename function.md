@@ -68,12 +68,15 @@ print(b) --- output xxxx-xxxxxxx-xxxxxx-xxxxx
 ```
 
 ## loadhttpscript(script)
+
 ```lua
-loadhttpscript(link:string)```
+loadhttpscript(link:string)
+```
 
 this function will do loadstring on your script from the url
 
 ---
 ### Example
 ```lua
-loadhttpscript("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/loadscript.lua") --the script will runing now its similar to loadstring(game:HttpGet(URL))()```
+loadhttpscript("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/loadscript.lua") --the script will runing now its similar to loadstring(game:HttpGet(URL))()
+```
