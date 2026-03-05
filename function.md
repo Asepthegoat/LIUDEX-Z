@@ -66,3 +66,12 @@ local b = uid()
 print(a) -- output xxxxxxxxxxxxxxxxxxxxx
 print(b) --- output xxxx-xxxxxxx-xxxxxx-xxxxx
 ```
+
+## loadhttpscript(script)
+```loadhttpscript(link:string)```
+
+this function will do loadstring on your script from the url
+
+---
+### Example
+```loadhttpscript("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/loadscript.lua") --the script will runing now its similar to loadstring(game:HttpGet(URL))()```
