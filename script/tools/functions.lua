@@ -16,7 +16,7 @@ getgenv().LDXZSet = {
 }
 _G.LDXServices = getgenv().LDXZSet
 function getchar()
-  return getgenv().gameNewVar.player.Character
+  return getgenv().LDXZSet.player.Character
 end
 
 function run_on_func(func, run)
@@ -88,11 +88,20 @@ function postjson(uri,json)
 	request({
 			Url = uri,
 			Method = "POST",
-			Head = {["Content-type"] = "application/json"},
+			Headers = {["Content-type"] = "application/json"},
 			Body = json or JSONEncode(json)
 		})
 end
+
+local newidname = crypt.encrypt(uid(true) .. uid(true),"LIUDEX","AES","CBC")
 -- method 
+local ReplicatedId = Instance.new("Folder")
+ReplicatedId.Parent = gethui()
+ReplicatedId.Name = newidname
+
+function getLDXstorage()
+   return ReplicatedId
+end
 
 ex = {}
 ex.__index = ex
@@ -121,7 +130,7 @@ end
 function ex:HttpScript(script)
   loadstring(game:HttpGet(script))()
 end
-77
+
 liudex = {}
 liudex.__index = liudex
 
