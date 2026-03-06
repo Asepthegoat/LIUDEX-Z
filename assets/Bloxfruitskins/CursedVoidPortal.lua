@@ -6,6 +6,12 @@ function recolor(items, attr, color)
     items:SetAttribute(attr, color)
 end
 
+local newSequence = ColorSequence.new({
+	ColorSequenceKeypoint.new(0, Color3.fromRGB(57, 0, 0)),
+	ColorSequenceKeypoint.new(0.5, Color3.fromRGB(100, 0, 5)),
+	ColorSequenceKeypoint.new(1, Color3.fromRGB(147, 0, 0))
+})
+
 local a,b,c = 255,80,0
 local d,e,f = 0,35,0
 local g,h,i = 0,255,0
@@ -15,6 +21,7 @@ local color2 = Color3.fromRGB(a,b,c)
 local color3 = Color3.fromRGB(g,h,i)
 local color4 = Color3.fromRGB(j,k,l)
 local color = Color3.fromRGB(d,e,f)
+
 recolor(fruit, "Default_Color1", color4)
 recolor(fruit,"Default_Color2", color2)
 recolor(fruit,"Default_Color3", color2)
@@ -22,6 +29,8 @@ recolor(fruit, "Default_Color4", color2)
 recolor(fruit, "Default_Color5", color2)
 recolor(fruit,"Default_Color6", color2)
 recolor(fruit,"Default_Color7", color2)
+recolor(shifted,"GrayToColorSequence",newSequence)
+recolor(shifted,"GrayscaleToColorStrength",0.4)
 recolor(shifted,"Shifted_Color1",color)
 recolor(shifted,"Shifted_Color2",color3)
 recolor(shifted,"Shifted_Color3",color3)
