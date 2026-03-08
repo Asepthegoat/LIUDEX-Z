@@ -94,18 +94,14 @@ function postjson(uri,json)
 end
 if not getgenv().LDXREPOSITORYSTORAGE then
 	local newidname = crypt.encrypt(uid(true) .. uid(true),"LIUDEX","AES","CBC")
-
 	local ReplicatedIdSet = Instance.new("Folder")
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
-	getgenv().LDXREPOSITORYSTORAGE = true
-	getgenv().LIUDEXStorageService = ReplicatedIdSet
-else
-	local replicatedId = getgenv().LDXREPOSITORYSTORAGE
+	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
 end
 
 function getLDXstorage()
-   return getgenv().LIUDEXStorageService
+   return getgenv().LDXREPOSITORYSTORAGE
 end
 
 -- method 
@@ -124,6 +120,13 @@ function ex:Respawn()
 	getgenv().LDXZSet.player.Character.Humanoid.Health = 0
 end
 
+function ex:ForceClose()
+	game:ShutDown()
+end
+
+function ex:FC()
+	game:ShutDown()
+end
 function ex:TriggerEvent(event,data)
 	if event == "proximity" then
 		fireproximityprompt(data)
@@ -143,7 +146,7 @@ liudex.__index = liudex
 function liudex.new(name,prop)
 	local self = setmetatable({}, liudex)
 	self.Name = name
-  self.Property = prop
+  	self.Property = prop
 	return self
 end
 function liudex:SetProperty(prop)
