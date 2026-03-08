@@ -1,4 +1,4 @@
--- VARIABLE
+
 
 local LGui = getgenv().LDXGuiConfig
 
@@ -289,6 +289,5 @@ function createMain(pos,scaleX,scaleY,tabNames,dragable,name,descript)
 	if dragable then
 		makeDraggable(baseframe)
 	end
+	return ScreenGui
 end
-
--- TEST
