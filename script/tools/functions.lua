@@ -106,7 +106,7 @@ else
 end
 
 function getLDXstorage()
-   return ReplicatedId
+   return replicatedId
 end
 
 -- method 
