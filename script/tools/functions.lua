@@ -99,13 +99,13 @@ if not getgenv().LDXREPOSITORYSTORAGE then
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
 	getgenv().LDXREPOSITORYSTORAGE = true
-	getgenv().LIUDEXService.Storage = ReplicatedIdSet
+	getgenv().LIUDEXStorageService = ReplicatedIdSet
 else
 	local replicatedId = getgenv().LDXREPOSITORYSTORAGE
 end
 
 function getLDXstorage()
-   return getgenv().LIUDEXService.Storage
+   return getgenv().LIUDEXStorageService
 end
 
 -- method 
