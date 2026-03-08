@@ -92,17 +92,24 @@ function postjson(uri,json)
 			Body = json or JSONEncode(json)
 		})
 end
+local replicatedId
+if not getgenv().LDXREPOSITORYSTORAGE then
+	local newidname = crypt.encrypt(uid(true) .. uid(true),"LIUDEX","AES","CBC")
 
-local newidname = crypt.encrypt(uid(true) .. uid(true),"LIUDEX","AES","CBC")
--- method 
-local ReplicatedId = Instance.new("Folder")
-ReplicatedId.Parent = gethui()
-ReplicatedId.Name = newidname
+	local ReplicatedIdSet = Instance.new("Folder")
+	ReplicatedIdSet.Parent = gethui()
+	ReplicatedIdSet.Name = newidname
+	replicatedId = ReplicatedIdSet
+	getgenv().LDXREPOSITORYSTORAGE = true
+else
+	local replicatedId = getgenv().LDXREPOSITORYSTORAGE
+end
 
 function getLDXstorage()
    return ReplicatedId
 end
 
+-- method 
 ex = {}
 ex.__index = ex
 function ex.new()
