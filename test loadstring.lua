@@ -10,5 +10,5 @@ print("Bad")
 end
 task.wait()
 if getgenv().loadstringloop < 20 then
-loadstring(game:HttpGet())()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/test%20loadstring.lua"))()
 end
