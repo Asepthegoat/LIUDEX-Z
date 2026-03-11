@@ -163,14 +163,6 @@ request({
 
 end
 end
-local oldNamecall
-oldNamecall = hookmetamethod(game:GetService("TeleportService"), "__namecall", newcclosure(function(self, ...)
-    local method = getnamecallmethod()
-        if method == "Teleport" or method == "TeleportToPlaceInstance" then
-            Disconect("Teleported", "Server shutdown atau script teleport")
-        end
-    return oldNamecall(self, ...)
-end))
 local connection
 connection = CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(function(child)
     task.wait(0.05)
@@ -180,7 +172,7 @@ connection = CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(funct
         local text = errorMessage.Text:lower()
         if string.find(text, "kicked") then
             Disconect("Kicked", errorMessage.Text)
-        elseif string.find(text, "lost") or string.find(text, "check your internet")  then
+        elseif string.find(text, "lost") or string.find(text, "disconnected")  then
             Disconect("Lost Connection", errorMessage.Text)
         elseif string.find(text, "shut down") then
             Disconect("Shutdown", errorMessage.Text)
@@ -191,3 +183,12 @@ connection = CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(funct
         connection:Disconnect()
     end
 end)
+
+local oldNamecall
+oldNamecall = hookmetamethod(game:GetService("TeleportService"), "__namecall", newcclosure(function(self, ...)
+    local method = getnamecallmethod()
+        if method == "Teleport" or method == "TeleportToPlaceInstance" then
+            Disconect("Teleported", "Server shutdown atau script teleport")
+        end
+    return oldNamecall(self, ...)
+end))
