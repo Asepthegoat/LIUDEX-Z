@@ -606,10 +606,6 @@ local KeyBindButton = gui("TextButton","KeyBind",buttonBackground,"Keybind",left
 KeyBindButton.Size = UDim2.new(1,0,0,40)
 KeyBindButton.Position = UDim2.new(0,0,0,170)
 SetIcon(KeyBindButton,getcustomasset("LIUDEX Z/Asset/icon3.png"))
-local ConfigTabs = gui("TextButton","Config",buttonBackground,"Config",leftPanel,10,frameTransparency)	
-ConfigTabs.Size = UDim2.new(1,0,0,40)
-ConfigTabs.Position = UDim2.new(0,0,0,170)
-SetIcon(ConfigTabs,getcustomasset("LIUDEX Z/Asset/icon3.png"))
 
 leftLayout = createLayout(leftPanel,UDim.new(0,5))
 leftPadding = createPadding(leftPanel,UDim.new(0,5),UDim.new(0,5),UDim.new(0,5),UDim.new(0,5))
