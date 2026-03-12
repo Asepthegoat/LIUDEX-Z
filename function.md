@@ -43,12 +43,27 @@ run_on_method("HttpGet",foo())
 insertasset(assetid)
 ```
 
-this will return the object from assetid
+this will return the object as an instance from assetid
 
 ---
 ### Example
 ```lua
 local model = insertasset("rbxassetid://1234567890")
+model.Parent = workspace
+```
+
+## inserrbxmx()
+```lua
+inserrbxmx(file:path)
+```
+
+this will return the object as an instance from your rbxmx file
+
+---
+### Example
+```lua
+local model = insertasset("owo.rbxmx")
+model.Parent = workspace
 ```
 
 ## uid
