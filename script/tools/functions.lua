@@ -19,6 +19,10 @@ function getchar()
   return getgenv().LDXZSet.player.Character
 end
 
+function getplayer()
+  return getgenv().LDXZSet.player
+end
+
 function run_on_func(func, run)
     local oldfunc
     oldfunc = hookfunction(func, function(self,...)
