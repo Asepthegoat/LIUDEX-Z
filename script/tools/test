@@ -606,6 +606,10 @@ local KeyBindButton = gui("TextButton","KeyBind",buttonBackground,"Keybind",left
 KeyBindButton.Size = UDim2.new(1,0,0,40)
 KeyBindButton.Position = UDim2.new(0,0,0,170)
 SetIcon(KeyBindButton,getcustomasset("LIUDEX Z/Asset/icon3.png"))
+local ConfigTabs = gui("TextButton","Config",buttonBackground,"Config",leftPanel,10,frameTransparency)	
+ConfigTabs.Size = UDim2.new(1,0,0,40)
+ConfigTabs.Position = UDim2.new(0,0,0,170)
+SetIcon(ConfigTabs,getcustomasset("LIUDEX Z/Asset/icon3.png"))
 
 leftLayout = createLayout(leftPanel,UDim.new(0,5))
 leftPadding = createPadding(leftPanel,UDim.new(0,5),UDim.new(0,5),UDim.new(0,5),UDim.new(0,5))
@@ -1609,8 +1613,8 @@ Config.CanvasSize = UDim2.new(0, 0, 0, 1000)
 Config.ScrollBarThickness = 8
 Config.Position = UDim2.new(0,0,0,0)
 Config.Visible = false
-local ConfigLayout = createLayout(KeyBind,UDim.new(0,10))
-local ConfigPadding = createPadding(KeyBind,UDim.new(0,10),UDim.new(0,10),UDim.new(0,10),UDim.new(0,18))
+local ConfigLayout = createLayout(Config,UDim.new(0,10))
+local ConfigPadding = createPadding(Config,UDim.new(0,10),UDim.new(0,10),UDim.new(0,10),UDim.new(0,18))
 local configTabl = {
 	WebHook = "",
 	Avatar = "",
@@ -1635,19 +1639,31 @@ WebHookText.TextXAlignment = Enum.TextXAlignment.Left
 local SaveSky = gui("Frame","SaveSky",buttonBackground,"SaveSky",Config,10,frameTransparency)
 SaveSky.Size = UDim2.new(1,0,0,40)
 
-local SaveSkyInput = gui("TextBox","FCinput",buttonBackground,"Key Code..",WebHook,10,0.1)
+local SaveSkyInput = gui("TextBox","FCinput",buttonBackground,"Key Code..",SaveSky,10,0.1)
 SaveSkyInput.Size = UDim2.new(0.3,0,0,35)
 SaveSkyInput.Position = UDim2.new(0.6,0,0,2.5)
 SaveSkyInput.TextColor3 = textColor
 SaveSkyInput.Text = ""
 
-local SaveSkyText = gui("TextLabel","Save Sky Text",mainBackground,"Save Sky",WebHook,10,1)
+local SaveSkyText = gui("TextLabel","Save Sky Text",mainBackground,"Save Sky",SaveSky,10,1)
 SaveSkyText.Size = UDim2.new(0.5,0,0,40)
 SaveSkyText.Position = UDim2.new(0.02,0,0,0)
 SaveSkyText.TextSize = 100
 SaveSkyText.TextXAlignment = Enum.TextXAlignment.Left
 
+local SaveConfigName = gui("TextBox","Config Name",buttonBackgroun,"Config Name",Config,10,frameTransparency)
+SaveConfigName.Size = UDim2.new(1,0,0,35)
+SaveConfigName.PlaceholderColor3 = Color3.new(1,1,1)
 
+local SaveConfig = gui("TextButton","Save Button",buttonBackgroun,"Save Config",Config,10,frameTransparency)
+SaveConfig.Size = UDim2.new(1,0,0,35)
+SaveConfig.MouseButton1Click:Connect(function()
+	local configData = {
+		WebHook = WebHookInput.Text,
+		Sky = ""
+	}
+	writefile(SaveConfigName.Text,configData)
+end)
 ---------------------------------------------------------------------------------------------------------
 --KeyCode
 ----------------------------------------------------------------------------------------------------------------
