@@ -67,6 +67,20 @@ print(a) -- output xxxxxxxxxxxxxxxxxxxxx
 print(b) --- output xxxx-xxxxxxx-xxxxxx-xxxxx
 ```
 
+## getLDXstorage()
+
+```lua
+getLDXstorage() instace:name
+```
+
+this function used to accessing ldx storage. usefull to place an instace here
+
+---
+### Example
+```lua
+local wallet = getLDXstorage():FindFirstChild("My Wallet")
+```
+
 ## loadhttpscript(script)
 
 ```lua
