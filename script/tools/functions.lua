@@ -61,7 +61,40 @@ local model = objects[1]
 return model
 end
 
-getrbxmx = insertrbxmx
+function onspawn(func)
+	local player = getplayer()
+
+	player.CharacterAdded:Connect(function()
+		func()
+	end)
+end
+--[[function setlicensekey(key,saveto)
+	local iv = crypt.generatebytes(16) -- 16 bytes for AES
+	local data = gethwid()
+
+	local encrypted = crypt.encrypt(data, key, iv, "AES")
+	setclipboard(encrypted)
+	local decrypted = crypt.decrypt(encrypted, key, iv, "AES")
+	writefile(saveto .. "key",key)
+	writefile(saveto .. "iv",iv)
+	print(key)
+	print(decrypted == data) -- true
+end
+
+function getlicensekey(key,file)
+	local key = readfile(file .. "key")
+	local iv = readfile(file .. "iv")
+	print(crypt.decrypt(gethwid(),key,iv,"AES"))
+end]]
+
+function teleportto(to)
+	local char = getchar()
+	local hrp = char.HumanoidRootPart
+	hrp.CFrame = to.CFrame
+end
+
+_G.goto = teleportto
+_G.getrbxmx = insertrbxmx
 
 function loadhttpscript(sc)
    loadstring(game:HttpGet(sc))()
@@ -104,7 +137,7 @@ if not getgenv().LDXREPOSITORYSTORAGE then
 	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
 end
 
-function getLDXstorage()
+function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
 
