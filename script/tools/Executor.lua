@@ -1,3 +1,8 @@
+if getgenv().Fzsdaseekdnfns then
+    return
+end
+
+getgenv().Fzsdaseekdnfns = true
 local background = Color3.fromRGB(40,0,70)
 local tcolor = Color3.new(1,1,1)
 local newexe = Instance.new("ScreenGui")
