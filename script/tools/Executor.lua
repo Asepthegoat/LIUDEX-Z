@@ -137,7 +137,6 @@ close.Text = "X"
 close.BackgroundTransparency = 1
 close.Parent = top
 
-
 local min = Instance.new("TextButton")
 min.Size = UDim2.new(0,25,0,25)
 min.Position = UDim2.new(1,-52,0,0)
@@ -150,21 +149,24 @@ min.BackgroundTransparency = 1
 border(top)
 makeDragParent(top)
 local title = Instance.new("TextLabel")
-title.Text = "LIUDEX"
+title.Text = "LIUDEX EX By Lorem Ipsum Group"
 title.Size = UDim2.new(0.5,0,0.5,0)
-title.Position = UDim2.new(0.2,0,0.1,0)
+title.Position = UDim2.new(0,10,0.3,0)
 title.BackgroundTransparency = 1
+title.TextXAlignment = Enum.TextXAlignment.Left
 title.TextColor3 = Color3.new(1,1,1)
 title.Parent = top
-
+local areasd
 close.MouseButton1Click:Connect(function()
-	scriptui:Destroy()
+	newexe:Destroy()
+	input.Text = ""
+	areasd = nil
 end)
 local minim = false
 min.MouseButton1Click:Connect(function()
 	minim = not minim
 	if minim then
-		min.Text = "▶"
+		min.Text = "◀"
 		input.Size = UDim2.new(0,0,0,0)
 		scriptui.Size = UDim2.new(0.62,0,0,0)
 		run.Visible = false
@@ -181,8 +183,8 @@ run.MouseButton1Click:Connect(function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))()
 loadstring(input.Text)()
 end)
-
-uis.InputBegan:Connect(function(inputt,gp)
+ 
+areasd = uis.InputBegan:Connect(function(inputt,gp)
 	if gp then return end
 
 	if uis:IsKeyDown(Enum.KeyCode.LeftControl) and uis:IsKeyDown(Enum.KeyCode.E) and uis:IsKeyDown(Enum.KeyCode.C) then
