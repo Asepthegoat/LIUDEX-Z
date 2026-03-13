@@ -1,6 +1,5 @@
-if getgenv().Fzsdaseekdnfns then
-    return
-end
+
+local uis = game:GetService("UserInputService")
 -- fungsi drag
 local function makeDraggable(frame)
 	local dragging = false
@@ -112,10 +111,10 @@ input.ClearTextOnFocus = false
 input.ClipsDescendants = true
 input.TextTruncate = Enum.TextTruncate.None
 input.Font = Enum.Font.Code
-makeDragParent(input)
+
 local run = Instance.new("TextButton")
 run.Size = UDim2.new(1,0,0,20)
-run.Position = UDim2.new(0,0,1,-20)
+run.Position = UDim2.new(0,0,1,-0.1)
 run.TextColor3 = tcolor
 run.BackgroundColor3 = background 
 run.Text = "Execute"
@@ -123,9 +122,72 @@ run.Parent = scriptui
 corner(run)
 border(run)
 run.BackgroundTransparency = 0
+local top = Instance.new("Frame")
+top.Size = UDim2.new(1,0,0,25)
+top.Position = UDim2.new(0,0,0,-25)
+top.BackgroundColor3 = background 
+top.Parent = scriptui
+
+local close = Instance.new("TextButton")
+close.Size = UDim2.new(0,25,0,25)
+close.Position = UDim2.new(1,-26,0,0)
+close.TextColor3 = tcolor
+close.BackgroundColor3 = background 
+close.Text = "X"
+close.BackgroundTransparency = 1
+close.Parent = top
 
 
+local min = Instance.new("TextButton")
+min.Size = UDim2.new(0,25,0,25)
+min.Position = UDim2.new(1,-52,0,0)
+min.TextColor3 = tcolor
+min.BackgroundColor3 = background 
+min.Text = "▼"
+min.Parent = top
+min.BackgroundTransparency = 1
+
+border(top)
+makeDragParent(top)
+local title = Instance.new("TextLabel")
+title.Text = "LIUDEX"
+title.Size = UDim2.new(0.5,0,0.5,0)
+title.Position = UDim2.new(0.2,0,0.1,0)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1,1,1)
+title.Parent = top
+
+close.MouseButton1Click:Connect(function()
+	scriptui:Destroy()
+end)
+local minim = false
+min.MouseButton1Click:Connect(function()
+	minim = not minim
+	if minim then
+		min.Text = "▶"
+		input.Size = UDim2.new(0,0,0,0)
+		scriptui.Size = UDim2.new(0.62,0,0,0)
+		run.Visible = false
+		run.Active = false
+	else
+		min.Text = "▼"
+		input.Size = UDim2.new(1,-10,1,0)
+		scriptui.Size = UDim2.new(0.62,0,0.7,0)
+		run.Visible = true
+		run.Active = true
+	end
+end)
 run.MouseButton1Click:Connect(function()
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))()
 loadstring(input.Text)()
+end)
+
+uis.InputBegan:Connect(function(inputt,gp)
+	if gp then return end
+
+	if uis:IsKeyDown(Enum.KeyCode.LeftControl) and uis:IsKeyDown(Enum.KeyCode.E) and uis:IsKeyDown(Enum.KeyCode.C) then
+		local code = input.Text
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))()
+		loadstring(code)()
+	end
 end)
