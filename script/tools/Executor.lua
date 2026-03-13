@@ -33,6 +33,37 @@ local function makeDraggable(frame)
 	end)
 end
 
+local function makeDragParent(frame)
+	local dragging = false
+	local dragStart = nil
+	local startPos = nil
+
+	frame.InputBegan:Connect(function(input)
+		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+			dragging = true
+			dragStart = input.Position
+			startPos = frame.Parent.Position
+			input.Changed:Connect(function()
+				if input.UserInputState == Enum.UserInputState.End then
+					dragging = false
+				end
+			end)
+		end
+	end)
+
+	frame.InputChanged:Connect(function(input)
+		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+			local delta = input.Position - dragStart
+			frame.Position = UDim2.new(
+				startPos.X.Scale,
+				startPos.X.Offset + delta.X,
+				startPos.Y.Scale,
+				startPos.Y.Offset + delta.Y
+			)
+		end
+	end)
+end
+
 getgenv().Fzsdaseekdnfns = true
 local background = Color3.fromRGB(40,0,70)
 local tcolor = Color3.new(1,1,1)
@@ -80,7 +111,7 @@ input.TextWrapped = false
 input.ClearTextOnFocus = false
 input.TextTruncate = Enum.TextTruncate.None
 input.Font = Enum.Font.Code
-makeDraggable(input)
+makeDragParent(input)
 local run = Instance.new("TextButton")
 run.Size = UDim2.new(1,0,0,20)
 run.Position = UDim2.new(0,0,1,-20)
