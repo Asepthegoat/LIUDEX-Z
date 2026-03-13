@@ -158,11 +158,11 @@ function ex:Respawn()
 end
 
 function ex:ForceClose()
-	game:ShutDown()
+	game:Shutdown()
 end
 
 function ex:FC()
-	game:ShutDown()
+	game:Shutdown()
 end
 function ex:TriggerEvent(event,data)
 	if event == "proximity" then
