@@ -80,7 +80,7 @@ input.TextWrapped = false
 input.ClearTextOnFocus = false
 input.TextTruncate = Enum.TextTruncate.None
 input.Font = Enum.Font.Code
-
+makeDraggable(input)
 local run = Instance.new("TextButton")
 run.Size = UDim2.new(1,0,0,20)
 run.Position = UDim2.new(0,0,1,-20)
