@@ -64,7 +64,7 @@ local function makeDragParent(frame)
 end
 
 getgenv().Fzsdaseekdnfns = true
-local background = Color3.fromRGB(40,0,70)
+local background = Color3.fromRGB(30,0,72)
 local tcolor = Color3.new(1,1,1)
 local newexe = Instance.new("ScreenGui")
 newexe.Parent = gethui()
@@ -80,7 +80,8 @@ end
 
 local function corner(parent)
   local corner = Instance.new("UICorner")
-  corner.CornerRadius = UDim.new(0,10)
+  corner.CornerRadius = UDim.new(0,2)
+  corner.Parent = parent
 end
 local scriptui = Instance.new("Frame")
 scriptui.Size = UDim2.new(0.62,0,0.7,0)
@@ -145,7 +146,7 @@ min.BackgroundColor3 = background
 min.Text = "▼"
 min.Parent = top
 min.BackgroundTransparency = 1
-
+corner(top)
 border(top)
 makeDragParent(top)
 local title = Instance.new("TextLabel")
