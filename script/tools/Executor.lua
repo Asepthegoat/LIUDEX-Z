@@ -54,7 +54,7 @@ local function makeDragParent(frame)
 	frame.InputChanged:Connect(function(input)
 		if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 			local delta = input.Position - dragStart
-			frame.Position = UDim2.new(
+			frame.Parent.Position = UDim2.new(
 				startPos.X.Scale,
 				startPos.X.Offset + delta.X,
 				startPos.Y.Scale,
@@ -109,6 +109,7 @@ input.BackgroundTransparency = 1
 input.BackgroundColor3 = background
 input.TextWrapped = false
 input.ClearTextOnFocus = false
+input.ClipsDescendants = true
 input.TextTruncate = Enum.TextTruncate.None
 input.Font = Enum.Font.Code
 makeDragParent(input)
