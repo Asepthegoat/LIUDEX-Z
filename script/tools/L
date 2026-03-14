@@ -147,7 +147,7 @@ getgenv().LIUDEXLoaded = true
 	local borderColor = Color3.fromRGB(0, 0, 4) 
 	local mainBackground = backgroundColor
 	local player = Players.LocalPlayer
-	local char = Players.LocalPlayer.Character or Players.LocalPlayers.CharacterAdded:Wait()
+	local char = Players.LocalPlayer.Character or Players.LocalPlayer.CharacterAdded:Wait()
 	local humanoid = char:WaitForChild("Humanoid")
 	local UIS = game:GetService("UserInputService")
 	local RS = game:GetService("RunService")
@@ -606,7 +606,10 @@ local KeyBindButton = gui("TextButton","KeyBind",buttonBackground,"Keybind",left
 KeyBindButton.Size = UDim2.new(1,0,0,40)
 KeyBindButton.Position = UDim2.new(0,0,0,170)
 SetIcon(KeyBindButton,getcustomasset("LIUDEX Z/Asset/icon3.png"))
-
+local ConfigTabs = gui("TextButton","Config",buttonBackground,"Config",leftPanel,10,frameTransparency)	
+ConfigTabs.Size = UDim2.new(1,0,0,40)
+ConfigTabs.Position = UDim2.new(0,0,0,170)
+SetIcon(ConfigTabs,getcustomasset("LIUDEX Z/Asset/icon4.png"))
 leftLayout = createLayout(leftPanel,UDim.new(0,5))
 leftPadding = createPadding(leftPanel,UDim.new(0,5),UDim.new(0,5),UDim.new(0,5),UDim.new(0,5))
 -- border
@@ -1649,7 +1652,15 @@ SaveSkyText.TextXAlignment = Enum.TextXAlignment.Left
 
 local SaveConfigName = gui("TextBox","Config Name",buttonBackground,"Config Name",Config,10,frameTransparency)
 SaveConfigName.Size = UDim2.new(1,0,0,35)
+SaveConfigName.Text = ""
 SaveConfigName.PlaceholderColor3 = Color3.new(1,1,1)
+
+local SaveConfigAccept = gui("TextButton","Save Config",buttonBackground,"Save Config",Config,10,frameTransparency)
+SaveConfigAccept.Size = UDim2.new(1,0,0,35)
+SaveConfigAccept.MouseButton1Click:Connect(function()
+	local data = `<WebHook>{WebHookInput.Text}</WebHook> \n <SkyData>{SaveSkyInput.Text}</SkyData>`
+	writefile("LIUDEX Z/Data/" .. tostring(SaveConfigName.Text) .. ".LDX",data)
+end)
 ---------------------------------------------------------------------------------------------------------
 --KeyCode
 ----------------------------------------------------------------------------------------------------------------
@@ -1775,6 +1786,9 @@ SettingsButton.MouseButton1Click:Connect(function()
 end)
 KeyBindButton.MouseButton1Click:Connect(function()
 	show(KeyBind)
+end)
+ConfigTabs.MouseButton1Click:Connect(function()
+	show(Config)
 end)
 local toggle = false -- mulai dari OFF
 
