@@ -93,15 +93,67 @@ function teleportto(to)
 	hrp.CFrame = to.CFrame
 end
 
-_G.goto = teleportto
-_G.getrbxmx = insertrbxmx
+goto = teleportto
+getrbxmx = insertrbxmx
 
-function loadhttpscript(sc)
+function dohttpscript(sc)
    loadstring(game:HttpGet(sc))()
 end
 
 function getpath(var)
   return var:GetFullName()
+end
+
+function filterstring(text, patterns)
+	local result = text
+	
+	for i,v in ipairs(patterns) do
+		result = string.gsub(result, v, "")
+	end
+	
+	return result
+end
+
+function stringfy(data,type)
+	local result
+	local cf = data
+	if type == "CFrame" then
+		result = string.format("CFrame.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "Vector3" then
+		result = string.format("Vector3.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "Color3" then
+		result = string.format("Vector3.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "table" then
+		local t = {}
+		for k,v in pairs(data) do
+			t[#t+1] = "["..k.."]="..tostring(v)
+		end
+		result = "{"..table.concat(t,",").."}"
+	else
+		result = tostring(data)
+	end
+	return result
+end
+
+function serialize(data,type)
+	local result
+	local cf = data
+	if type == "CFrame" then
+		result = string.format("CFrame.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "Vector3" then
+		result = string.format("Vector3.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "Color3" then
+		result = string.format("Vector3.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
+	elseif type == "table" then
+		local t = {}
+		for k,v in pairs(data) do
+			t[#t+1] = "["..k.."]="..tostring(v)
+		end
+		result = "{"..table.concat(t,",").."}"
+	else
+		result = tostring(data)
+	end
+	return result
 end
 
 function uid(bol)
@@ -241,6 +293,8 @@ end
 function LDXSignal:OnRecive(callback)
 	table.insert(self._connections, callback)
 end
+getgenv().ex = ex
+getgenv().liudex = liudex
 
 return {
 	ex = ex,
