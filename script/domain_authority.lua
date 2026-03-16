@@ -1,5 +1,5 @@
 -- basic ws
-local uri = "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
+local uri = readfile("LDXWebSocket.ldx") or getgenv().signalWs or "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
 local que_teleport = que_on_teleport or queonteleport
 local ws = WebSocket.connect(uri)
 local Players = game:GetService("Players")
@@ -9,7 +9,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/
 ws.OnClose:Connect(function()
 	print("Closed")
 end)
-
+writefile("LDXWebShocked.ldx",tostring(uri))
 ws:Send("/join " .. player.Name)
 player.Chatted:Connect(function(msg)
 	if string.find(msg,"/bring") then
