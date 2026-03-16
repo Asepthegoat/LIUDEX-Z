@@ -1,5 +1,5 @@
 -- basic ws
-local uri = getgenv().WebSocket or "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
+local uri = "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
 local que_teleport = que_on_teleport or queonteleport
 local ws = WebSocket.connect(uri)
 local Players = game:GetService("Players")
