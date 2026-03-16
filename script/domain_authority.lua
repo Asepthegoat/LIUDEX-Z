@@ -1,5 +1,6 @@
 -- basic ws
-local uri = readfile("LDXWebSocket.ldx") or getgenv().signalWs or "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
+getgenv().signalWs = "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
+local uri = getgenv().signalWs or readfile("LDXWebSocket.ldx") or  "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev/local_server.js"
 local que_teleport = que_on_teleport or queonteleport
 local ws = WebSocket.connect(uri)
 local Players = game:GetService("Players")
@@ -9,15 +10,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/
 ws.OnClose:Connect(function()
 	print("Closed")
 end)
-writefile("LDXWebShocked.ldx",tostring(uri))
+writefile("LDXWebSocket.ldx",tostring(uri))
 ws:Send("/join " .. player.Name)
-player.Chatted:Connect(function(msg)
-	if string.find(msg,"/bring") then
-		ws:Send(msg .. " " .. player.Name)
-	else
-		ws:Send(msg)
-	end
-end)
 
 function depsignalargs(signal)
 	local args = string.split(signal," ")
@@ -61,7 +55,6 @@ function findPlayer(partialName) -- Asep skill isue
     return nil
 end
 
-
 -- fungsi bring
 function bring(targetPlayer, cordinateCFrame)
 	if targetPlayer == player or targetPlayer == "@all" then
@@ -78,7 +71,21 @@ function bring(targetPlayer, cordinateCFrame)
 		end
 	end
 end
-
+function gameTpPlace(plc)
+	Teleport:Teleport(plc,player)
+end
+player.Chatted:Connect(function(msg)
+	local args = string.split(msg," ")
+	if string.find(msg,"/bring") then
+		ws:Send(msg .. " " .. player.Name)
+	elseif string.find(msg,"/game") and args[2] and not args[3] then
+		ws:Send(msg .. " " .. game.PlaceId)
+	elseif string.find(msg,"/game") and not args[2] and not args[3] then
+		ws:Send(msg .. " " .. player.Name .. " " .. game.PlaceId)
+	else
+		ws:Send(msg)
+	end
+end)
 -- handler message
 ws.OnMessage:Connect(function(message)
 	print("Received:", message)
@@ -89,24 +96,22 @@ ws.OnMessage:Connect(function(message)
 		print(signal[1],signal[2],signal[3])
 		local name = player.Name
 		if signal[1] == "/bring" then
-			local target = findPlayer(signal[2])
-			bring(target,signal[3])
-		elseif signal[1] == "/speed" then
-			if signal[2] == player.Name then
+			if signal[2] == "@all" then
+				bring(player,signal[3])
+			else
 				local target = findPlayer(signal[2])
-				target.Character.Humanoid.WalkSpeed = signal[3]
+				bring(target,signal[3])
+			end
+		elseif signal[1] == "/speed" then
+			local target = findPlayer(signal[2])
+			if target and target.Character and target.Character:FindFirstChild("Humanoid") then
+				target.Character.Humanoid.WalkSpeed = tonumber(signal[3])
 			end
 		elseif signal[1] == "/game" then
-			if signal[2] == "@all" then
+			if signal[2] == "@all" and signal[3] ~= nil then
 				Teleport:Teleport(signal[3],player)
-			elseif signal[2] == player.Name then
+			elseif findPlayer(signal[2]) == player and signal[3] ~= nil then
 				Teleport:Teleport(signal[3],player)
-			elseif not signal[3] and signal[2] == player.Name then
-				Teleport:Teleport(game.PlaceId,player)
-			elseif not signal[3] and signal[2] == "@all" then
-				Teleport:Teleport(game.PlaceId,player)
-			else
-				return
 			end
 		elseif signal[1] == "/closeall" or signal[1] == "/shutdown" or signal[1] == "/leaveall" then
 			game:Shutdown()
@@ -119,8 +124,10 @@ ws.OnMessage:Connect(function(message)
 				loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/user-data.lua"))()
 			end
 		elseif signal[1] == "/kick" then
-			local target = findPlayer(signal[2])
-			target:Kick(signal[3]) --kick Asepjuragan_fruit "lu tolol bot bgt yapit"
+			if signal[2] == player.Name then -- biar gk muncul err
+				local target = findPlayer(signal[2])
+				target:Kick(signal[3]) --kick Asepjuragan_fruit "lu tolol bot bgt yapit"
+			end
 		elseif signal[1] == "/code" then
 			local target = findPlayer(signal[2])
 			loadstring(signal[2],signal[3])()
