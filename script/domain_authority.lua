@@ -154,4 +154,4 @@ local text = 'print("test") loadstring("abc")() require(123)'
 local filtered = filterstring(text, testtable)
 ]]
 local cfString = string.format("Vector3.new(%f,%f,%f)", cf.X, cf.Y, cf.Z)
-que_teleport(loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/domain_authority.lua"))())
+
