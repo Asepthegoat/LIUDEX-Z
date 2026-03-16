@@ -10,7 +10,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/
 ws.OnClose:Connect(function()
 	print("Closed")
 end)
-writefile("LDXWebSocket.ldx",tostring(uri))
+writefile("LDXWebShocket.ldx",tostring(uri))
 ws:Send("/join " .. player.Name)
 
 function depsignalargs(signal)
