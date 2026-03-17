@@ -36,9 +36,48 @@ local function getthumnail(id)
   print(image)
   return image
 end
-local function getuserdata(id)
-  local urls = HttpService:JSONDecode(game:HttpGet("https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. id .. "&size=150x150&format=Png&isCircular=false"))
-  return urls
+
+local function getplacedata(id)
+  local HttpService = game:GetService("HttpService")
+
+
+  local universeData = game:HttpGet("https://apis.roblox.com/universes/v1/places/".. id .."/universe")
+  local universe = HttpService:JSONDecode(universeData)
+
+  local universeId = universe.universeId
+
+  local gameData = game:HttpGet("https://games.roblox.com/v1/games?universeIds="..universeId)
+  local decoded = HttpService:JSONDecode(gameData)
+
+  return decoded
+end
+
+local function rejoin(msg)
+queue_on_teleport()
+local TeleportService = game:GetService("TeleportService")
+
+local player = game.Players.LocalPlayer
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.ResetOnSpawn = false
+
+local frame = Instance.new("ImageLabel")
+frame.Size = UDim2.new(1,0,1,0)
+frame.BackgroundTransparency = 1
+frame.Image = "rbxassetid://126569944133822"
+frame.ScaleType = Enum.ScaleType.Stretch
+frame.Parent = screenGui
+
+local text = Instance.new("TextLabel")
+text.Size = UDim2.new(1,0,1,0)
+text.BackgroundTransparency = 1
+text.TextColor3 = Color3.new(1,1,1)
+text.Text = msg or "Rejoin..."
+text.TextScaled = true
+text.Parent = frame
+
+TeleportService:SetTeleportGui(screenGui)
+TeleportService:Teleport(game.PlaceId, player)
 end
 task.wait()
 writefile("LIUDEX Z/Data/data.json",HttpService:JSONEncode(data))
@@ -67,7 +106,12 @@ local joinEmbeds = {
       },
       {
         name = "Place",
-        value = game.PlaceId,
+        value = "```" .. game.PlaceId .. "```",
+        inline = true
+      },
+      {
+        name = "Playing",
+        value = "```" .. getplacedata(game.PlaceId).data[1].name .. "```",
         inline = true
       },
       {
@@ -111,7 +155,7 @@ request({
 })
 -- disconect
 local sendDisconnect = false
-local function Disconect(cause,reason)
+local function Disconect(cause,reason) 
 if sendDisconnect == false then
 sendDisconnect = true
 local DCEmbeds = {
@@ -132,7 +176,7 @@ local DCEmbeds = {
         inline = false
       }
     },
-      ["title"] = player.Name,
+      ["title"] = player.Name .. " Disconect",
       ["author"] = {
         ["name"] = "Status"
       },
@@ -160,7 +204,8 @@ request({
     Headers = {["Content-Type"] = "application/json"},
     Body = HttpService:JSONEncode(DCEmbeds)
 })
-
+task.wait(1)
+rejoin()
 end
 end
 local connection
@@ -172,10 +217,12 @@ connection = CoreGui.RobloxPromptGui.promptOverlay.DescendantAdded:Connect(funct
         local text = errorMessage.Text:lower()
         if string.find(text, "kicked") then
             Disconect("Kicked", errorMessage.Text)
-        elseif string.find(text, "lost") or string.find(text, "disconnected")  then
-            Disconect("Lost Connection", errorMessage.Text)
         elseif string.find(text, "shut down") then
             Disconect("Shutdown", errorMessage.Text)
+        elseif string.find(text, "idle") then
+            Disconect("Idle", errorMessage.Text)
+        elseif string.find(text, "lost") or string.find(text, "disconnected")  then
+            Disconect("Lost Connection", errorMessage.Text)
         else
             Disconect("Unknown", errorMessage.Text)
         end
@@ -188,7 +235,7 @@ local oldNamecall
 oldNamecall = hookmetamethod(game:GetService("TeleportService"), "__namecall", newcclosure(function(self, ...)
     local method = getnamecallmethod()
         if method == "Teleport" or method == "TeleportToPlaceInstance" then
-            Disconect("Teleported", "Server shutdown atau script teleport")
+            Disconect("Teleported", "Server shutdown or some script teleported your account")
         end
     return oldNamecall(self, ...)
 end))
