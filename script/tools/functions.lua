@@ -284,7 +284,7 @@ function liudex:Announcement(title,message)
     --prompt data
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
     local prompterror = errorprompt.ErrorPrompt
-    local BtnText= prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton.ButtonText
+    local BtnText = prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton.ButtonText
     local okbutton = prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton
     local Message = prompterror.MessageArea.ErrorFrame.ErrorMessage
     local Title =prompterror.TitleFrame.ErrorTitle
@@ -295,14 +295,14 @@ function liudex:Announcement(title,message)
     Message.Text = message
     okbutton.ImageColor3 = newerrButtonColor
     okbutton.ButtonText.TextColor3 = olderrButtonColor
-    delayannounce = 0.25
+    delayannounce = 0.29
     okbutton.MouseButton1Click:Connect(function()
     backnormal()
     end)
 end
 
 function liudex:StopGame()
-    liudex:Announcement("LIUDEX","ldxfenv attached")
+    liudex:Announcement("LIUDEX","Removing Player")
     getplayer():Remove()
     liudex:Announcement("LIUDEX","Game Stopped")
 end
