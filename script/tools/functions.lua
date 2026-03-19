@@ -303,7 +303,6 @@ end
 
 function liudex:StopGame()
     liudex:Announcement("LIUDEX","ldxfenv attached")
-    task.wait()
     getplayer():Remove()
     liudex:Announcement("LIUDEX","Game Stopped")
 end
@@ -337,13 +336,16 @@ end
 function LDXSignal:OnRecive(callback)
 	table.insert(self._connections, callback)
 end
+
+getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
+local ldxfenv = {"uid","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript"}
+for g,j in ipairs(ldxfenv) do
+    getgenv()[j] = getfenv()[j]
+end
+
 task.wait()
 if not getgenv().ldxAttachedNotify then
     liudex:Announcement("LIUDEX","ldxfenv attached")
 end
-return {
-	ex = ex,
-    liudex = liudex
-}
