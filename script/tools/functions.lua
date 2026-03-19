@@ -1,3 +1,4 @@
+getgenv().ldxAttachedNotify = true
 local gameVar1 = game:GetService("Players")
 local gameVar2 = gameVar1.LocalPlayer
 local gameVar3 = game:GetService("UserInputService")
@@ -99,9 +100,6 @@ function teleportto(to)
 	local hrp = char.HumanoidRootPart
 	hrp.CFrame = to.CFrame
 end
-
-goto = teleportto
-getrbxmx = insertrbxmx
 
 function dohttpscript(sc)
    loadstring(game:HttpGet(sc))()
@@ -277,12 +275,12 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
             Button2 = button2 or nil,
 })
 end
-
+local delayannounce = 0.3
 function liudex:Announcement(title,message)
 	local tp = game:GetService("TeleportService") 
     local player = game:GetService("Players").LocalPlayer 
     tp:TeleportToPlaceInstance(game.PlaceId,"4211561", player)
-    task.wait(0.28)
+    task.wait(delayannounce)
     --prompt data
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
     local prompterror = errorprompt.ErrorPrompt
@@ -297,10 +295,18 @@ function liudex:Announcement(title,message)
     Message.Text = message
     okbutton.ImageColor3 = newerrButtonColor
     okbutton.ButtonText.TextColor3 = olderrButtonColor
+    delayannounce = 0.25
     okbutton.MouseButton1Click:Connect(function()
     backnormal()
+    end)
 end
 
+function liudex:StopGame()
+    liudex:Announcement("LIUDEX","ldxfenv attached")
+    task.wait()
+    getplayer():Remove()
+    liudex:Announcement("LIUDEX","Game Stopped")
+end
 function liudex:RequestNgrok(uri)
     local response = request({
     Url = uri,
@@ -333,7 +339,10 @@ function LDXSignal:OnRecive(callback)
 end
 getgenv().ex = ex
 getgenv().liudex = liudex
-
+task.wait()
+if not getgenv().ldxAttachedNotify then
+    liudex:Announcement("LIUDEX","ldxfenv attached")
+end
 return {
 	ex = ex,
     liudex = liudex
