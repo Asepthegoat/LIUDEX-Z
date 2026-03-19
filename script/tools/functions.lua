@@ -14,7 +14,14 @@ getgenv().LDXZSet = {
   Replicated = gameVar6,
   StarterGui = gameVar7
 }
-_G.LDXServices = getgenv().LDXZSet
+local olderrPromptbackground = Color3.fromRGB(57, 59, 61)
+local olderrOverlaybackground = Color3.fromRGB(0, 0, 0)
+local olderrButtonColor = Color3.fromRGB(255, 255, 255)
+--new error data
+local newerrPromptbackground = Color3.fromRGB(40, 0, 77)
+local newerrOverlaybackground = Color3.fromRGB(25, 5, 55)
+local newerrButtonColor = Color3.fromRGB(150, 60, 255)
+
 function getchar()
   return getgenv().LDXZSet.player.Character
 end
@@ -193,6 +200,14 @@ function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
 
+function backnormal()
+    task.wait(0.2)
+    local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
+    local prompterror = errorprompt.ErrorPrompt
+    errorprompt.BackgroundColor3 = olderrOverlaybackground
+    prompterror.BackgroundColor3 = olderrPromptbackground
+    task.wait()
+end
 -- method 
 ex = {}
 ex.__index = ex
@@ -261,6 +276,29 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
             Button1 = button1 or "Close",
             Button2 = button2 or nil,
 })
+end
+
+function liudex:Announcement(title,message)
+	local tp = game:GetService("TeleportService") 
+    local player = game:GetService("Players").LocalPlayer 
+    tp:TeleportToPlaceInstance(game.PlaceId,"4211561", player)
+    task.wait(0.28)
+    --prompt data
+    local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
+    local prompterror = errorprompt.ErrorPrompt
+    local BtnText= prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton.ButtonText
+    local okbutton = prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton
+    local Message = prompterror.MessageArea.ErrorFrame.ErrorMessage
+    local Title =prompterror.TitleFrame.ErrorTitle
+    errorprompt.BackgroundColor3 = newerrOverlaybackground
+    prompterror.BackgroundColor3 = newerrPromptbackground
+    task.wait()
+    Title.Text = title
+    Message.Text = message
+    okbutton.ImageColor3 = newerrButtonColor
+    okbutton.ButtonText.TextColor3 = olderrButtonColor
+    okbutton.MouseButton1Click:Connect(function()
+    backnormal()
 end
 
 function liudex:RequestNgrok(uri)
