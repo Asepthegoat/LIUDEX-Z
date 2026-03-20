@@ -205,11 +205,10 @@ if not getgenv().LDXREPOSITORYSTORAGE then --making repository
 	local ReplicatedIdSet = Instance.new("Folder")
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
-  local sc = Instance.new("LocalScript")
-  sc.Source = ""
-  script = sc
-  script.Name = "MainEnv"
-  script.Source = "print('test')"
+  local script = Instance.new("LocalScript")
+  script.Name = "String"
+  script.Parent = ReplicatedIdSet
+  script.Source = ""
 	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
 end
 
@@ -294,6 +293,16 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
             Button2 = button2 or nil,
 })
 end
+
+function liudex:RunScript(script,line)
+  if line and line ~= "" then
+    local var = string.split(script.Source,"\n")
+    loadstring(var[line])()
+  else
+    loadstring(script.Source)()
+  end
+end
+
 local delayannounce = 0.3
 function liudex:Announcement(title,message)
 	local tp = game:GetService("TeleportService") 
@@ -310,15 +319,24 @@ function liudex:Announcement(title,message)
     errorprompt.BackgroundColor3 = newerrOverlaybackground
     prompterror.BackgroundColor3 = newerrPromptbackground
     task.wait()
-    Title.Text = title
-    Message.Text = message
     okbutton.ImageColor3 = newerrButtonColor
     okbutton.ButtonText.TextColor3 = olderrButtonColor
+    Title.Text = title or "LIUDEX Announcement"
+    Message.Text = message or ""
     delayannounce = 0.29
+    if prompterror.BackgroundColor3 == newerrPromptbackground then
+      errorprompt.BackgroundColor3 = newerrOverlaybackground
+      prompterror.BackgroundColor3 = newerrPromptbackground
+      Message.Text = message
+      okbutton.ImageColor3 = newerrButtonColor
+      okbutton.ButtonText.TextColor3 = olderrButtonColor
+    end
     okbutton.MouseButton1Click:Connect(function()
     backnormal()
     end)
 end
+
+liudex.Announce = liudex.Announcement
 
 function liudex:StopGame()
     liudex:Announcement("LIUDEX","Removing Player")
