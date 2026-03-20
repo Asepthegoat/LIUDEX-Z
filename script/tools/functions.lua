@@ -198,6 +198,18 @@ function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
 
+function generatevarchar(length)
+	local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•♪♦♥♠♣|~μΠΩ√÷×¶§£¢€¥←↑↓→°∞≠≈✓àâåæãáääßöō"
+	local result = ""
+
+	for i = 1, length do
+		local rand = math.random(1, #chars)
+		result = result .. chars:sub(rand, rand)
+	end
+
+	return result
+end
+
 function backnormal()
     task.wait(0.2)
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
@@ -340,7 +352,7 @@ end
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
-local ldxfenv = {"uid","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript"}
+local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript"}
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
