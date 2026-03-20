@@ -178,28 +178,9 @@ end
 function JSONEncode(val)
   return getgenv().LDXZSet.Http:JSONEncode(val)
 end
-function postjson(uri,json)
-	request({
-			Url = uri,
-			Method = "POST",
-			Headers = {["Content-type"] = "application/json"},
-			Body = json or JSONEncode(json)
-		})
-end
-if not getgenv().LDXREPOSITORYSTORAGE then
-	local newidname = crypt.encrypt(uid(true) .. uid(true),"LIUDEX","AES","CBC")
-	local ReplicatedIdSet = Instance.new("Folder")
-	ReplicatedIdSet.Parent = gethui()
-	ReplicatedIdSet.Name = newidname
-	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
-end
-
-function getldxstorage()
-   return getgenv().LDXREPOSITORYSTORAGE
-end
 
 function generatevarchar(length)
-	local chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•♪♦♥♠♣|~μΠΩ√÷×¶§£¢€¥←↑↓→°∞≠≈✓àâåæãáääßöō"
+	local chars = "abcdefghijklmnopqrstuvwxyz♪♦♥♠♣§£¢€¥ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•|~μΠΩ√÷×¶←↑↓→°∞≠≈✓àâåæãáääßöō"
 	local result = ""
 
 	for i = 1, length do
@@ -208,6 +189,32 @@ function generatevarchar(length)
 	end
 
 	return result
+end
+
+function postjson(uri,json)
+	request({
+			Url = uri,
+			Method = "POST",
+			Headers = {["Content-type"] = "application/json"},
+			Body = json or JSONEncode(json)
+		})
+end
+local script 
+if not getgenv().LDXREPOSITORYSTORAGE then --making repository
+	local newidname = generatevarchar(100)
+	local ReplicatedIdSet = Instance.new("Folder")
+	ReplicatedIdSet.Parent = gethui()
+	ReplicatedIdSet.Name = newidname
+  local sc = Instance.new("LocalScript")
+  sc.Source = ""
+  script = sc
+  script.Name = "MainEnv"
+  script.Source = "print('test')"
+	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
+end
+
+function getldxstorage()
+   return getgenv().LDXREPOSITORYSTORAGE
 end
 
 function backnormal()
