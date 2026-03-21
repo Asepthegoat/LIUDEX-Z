@@ -426,7 +426,7 @@ function prompt(num,callback,tbl)
     return s
 end
 
-function joinDiscord(tab)
+function joinCommunity(tab)
     prompt(1,function() setclipboard(tab.url) end,tab)
 end
 
@@ -513,7 +513,7 @@ end
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
-local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinDiscord"}
+local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity"} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
