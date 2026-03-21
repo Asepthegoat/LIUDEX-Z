@@ -294,6 +294,142 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
 })
 end
 
+local function corner(parent)
+  local corners = Instance.new("UICorner")
+  corners.CornerRadius = UDim.new(0,10)
+  corners.Parent = parent
+end
+
+local function layout(par,pad)
+    local s = Instance.new("UIListLayout")
+    s.Parent = par
+    s.SortOrder = Enum.SortOrder.LayoutOrder
+    s.FillDirection = Enum.FillDirection.Vertical
+    s.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    s.VerticalAlignment = Enum.VerticalAlignment.Top
+    s.Padding = UDim.new(0,pad)
+end
+
+local function border(name,color,thickness,parrent)
+	local border = Instance.new("UIStroke")
+	border.Parent = parrent
+	border.Name = name
+	border.Color = color
+	border.Thickness = thickness
+	return border
+end
+
+local function padding(par,top,bot,left,rig)
+    local b = Instance.new("UIPadding")
+    b.Parent = par
+    b.PaddingBottom = UDim.new(bot,0)
+    b.PaddingTop = UDim.new(top,0)
+    b.PaddingLeft = UDim.new(left,0)
+    b.PaddingRight = UDim.new(rig,0)
+end
+
+function prompt(num,callback,tbl)
+    local s = Instance.new("ScreenGui")
+    s.Parent = gethui()
+
+    if num == 1 then
+        local base = Instance.new("Frame",s)
+        base.Size = UDim2.new(0.25,0,0.64,0)
+        base.Position = UDim2.new(0.37,0,0.12,0)
+        base.BackgroundColor3 = Color3.fromRGB(15,0,45)
+        corner(base)
+        local close = Instance.new("TextButton",base)
+        close.Size = UDim2.new(0,35,0,35)
+        close.Position = UDim2.new(1,-45,0,5)
+        close.BackgroundTransparency = 1
+        close.Text = "X"
+        close.TextSize = 17
+        close.TextColor3 = Color3.new(0.5,0.5,0.5)
+        corner(close)
+
+        close.MouseButton1Click:Connect(function()
+            s:Destroy()
+        end)
+
+        -- holder untuk auto layout
+        local holder = Instance.new("Frame",base)
+        holder.Size = UDim2.new(0.9,0,0.7,0)
+        holder.Position = UDim2.new(0.05,0,0.08,0)
+        holder.BackgroundTransparency = 1
+
+        layout(holder,5)
+
+        local Imagec = Instance.new("ImageLabel",holder)
+        Imagec.Size = UDim2.new(0.55,0,0.55,0)
+        Imagec.Image = tbl.logo
+        Imagec.BackgroundTransparency = 1
+        corner(Imagec)
+
+        local holder2 = Instance.new("Frame",holder)
+        holder2.Size = UDim2.new(0.9,0,0.7,0)
+        holder2.Position = UDim2.new(0.05,0,0.08,0)
+        holder2.BackgroundTransparency = 1
+        layout(holder2,1)
+
+        local text = Instance.new("TextLabel",holder2)
+        text.Size = UDim2.new(1,0,0,30)
+        text.RichText = true
+        text.Text = "<b>Join "..tbl.title.." Community Now</b>"
+        text.TextColor3 = Color3.new(1,1,1)
+        text.TextScaled = true
+        text.BackgroundTransparency = 1
+        text.TextXAlignment = Enum.TextXAlignment.Left
+
+        local text2 = Instance.new("TextLabel",holder2)
+        text2.Size = UDim2.new(1,0,0,10)
+        text2.RichText = true
+        text2.Text = tbl.desc
+        text2.TextXAlignment = Enum.TextXAlignment.Left
+        text2.TextColor3 = Color3.new(1,1,1)
+        text2.TextScaled = true
+        text2.BackgroundTransparency = 1
+        padding(text2,0,0,0.01,0)
+
+        local space = Instance.new("TextLabel",holder2)
+        space.Size = UDim2.new(1,0,0,5)
+        space.Text = ""
+        space.BackgroundTransparency = 1
+
+        local text3 = Instance.new("TextLabel",holder2)
+        text3.Size = UDim2.new(1,0,0,12)
+        text3.RichText = true
+        text3.Text = "By " .. tbl.founder
+        text3.TextXAlignment = Enum.TextXAlignment.Left
+        text3.TextColor3 = Color3.new(0.4,0.4,0.4)
+        text3.TextScaled = true
+        text3.BackgroundTransparency = 1
+        padding(text3,0,0,0.01,0)
+        border("S",Color3.fromRGB(45,0,160),1,Imagec)
+
+        local Accept = Instance.new("TextButton",base)
+        Accept.Size = UDim2.new(0.9,0,0,40)
+        Accept.Position = UDim2.new(0.05,0,0.95,-40)
+        Accept.Text = "<b><font color='rgb(255,255,255)'>Join Community</font></b>"
+        Accept.RichText = true
+        Accept.TextSize = 9
+        Accept.BackgroundColor3 = Color3.fromRGB(68, 0, 234)
+        corner(Accept)
+        Imagec.LayoutOrder = 1
+        holder2.LayoutOrder = 2
+        Accept.MouseButton1Click:Connect(function()
+            callback()
+            task.wait()
+            liudex:Notify(tbl.title,"Link copied place it on your browser to join",tbl.logo,"Close")
+            s:Destroy()
+        end)
+    end
+    return s
+end
+
+function joinDiscord(tab)
+    prompt(1,function() setclipboard(tab.url) end,tab)
+end
+
 function liudex:RunScript(script,line)
   if line and line ~= "" then
     local var = string.split(script.Source,"\n")
@@ -377,7 +513,7 @@ end
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
-local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript"}
+local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinDiscord"}
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
