@@ -427,7 +427,7 @@ function prompt(num,callback,tbl)
     elseif num == 2 then
         local base = Instance.new("Frame",s)
         base.Size = UDim2.new(0,330,0,200)
-        base.Position = UDim2.new(0.33,0,0.22,0)
+        base.Position = UDim2.new(0.5,-160,0.5,-120)
         base.BackgroundColor3 = Color3.fromRGB(15,0,45)
         corner(base)
         layout(base,5)
