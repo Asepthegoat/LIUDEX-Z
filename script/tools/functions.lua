@@ -294,6 +294,7 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
 })
 end
 
+--prompt stuff
 local function corner(parent)
   local corners = Instance.new("UICorner")
   corners.CornerRadius = UDim.new(0,10)
@@ -330,14 +331,15 @@ end
 
 function prompt(num,callback,tbl)
     local s = Instance.new("ScreenGui")
-    s.Parent = gethui()
-
+    s.Parent = getldxstorage()
+    s.Name = "LDXPrompt"
     if num == 1 then
         local base = Instance.new("Frame",s)
-        base.Size = UDim2.new(0.25,0,0.64,0)
-        base.Position = UDim2.new(0.37,0,0.12,0)
+        base.Size = UDim2.new(0,250,0,330)
+        base.Position = UDim2.new(0.5,-125,0.5,-190)
         base.BackgroundColor3 = Color3.fromRGB(15,0,45)
         corner(base)
+
         local close = Instance.new("TextButton",base)
         close.Size = UDim2.new(0,35,0,35)
         close.Position = UDim2.new(1,-45,0,5)
@@ -361,7 +363,7 @@ function prompt(num,callback,tbl)
 
         local Imagec = Instance.new("ImageLabel",holder)
         Imagec.Size = UDim2.new(0.55,0,0.55,0)
-        Imagec.Image = tbl.logo
+        Imagec.Image = tbl.logo or "rbxassetid://126569944133822"
         Imagec.BackgroundTransparency = 1
         corner(Imagec)
 
@@ -422,12 +424,123 @@ function prompt(num,callback,tbl)
             liudex:Notify(tbl.title,"Link copied place it on your browser to join",tbl.logo,"Close")
             s:Destroy()
         end)
+    elseif num == 2 then
+        local base = Instance.new("Frame",s)
+        base.Size = UDim2.new(0,330,0,200)
+        base.Position = UDim2.new(0.33,0,0.22,0)
+        base.BackgroundColor3 = Color3.fromRGB(15,0,45)
+        corner(base)
+        layout(base,5)
+        local box = Instance.new("TextBox", parent)
+        box.Size = UDim2.new(1,0,0,30)
+
+        local controls = require(getplayer().PlayerScripts:WaitForChild("PlayerModule")):GetControls()
+        controls:Disable()
+
+        box:CaptureFocus()
+        local Overlay = Instance.new("Frame",s)
+        Overlay.Size = UDim2.new(2,0,2,0)
+        Overlay.Position = UDim2.new(-1,0,-1,0)
+        Overlay.BackgroundColor3 = Color3.fromRGB(15,0,45)
+        Overlay.BackgroundTransparency = 0.5
+        Overlay.Active = true
+        Overlay.ZIndex = -1
+
+        -- holder untuk auto layout
+        local holder = Instance.new("Frame",base)
+        holder.Size = UDim2.new(0.9,0,0.2,0)
+        holder.Position = UDim2.new(0.05,0,0.08,0)
+        holder.BackgroundTransparency = 1
+
+        local holder2 = Instance.new("Frame",base)
+        holder2.Size = UDim2.new(0.9,0,0.4,0)
+        holder2.Position = UDim2.new(0.05,0,0.08,0)
+        holder2.BackgroundTransparency = 1
+
+        local holder3 = Instance.new("Frame",base)
+        holder3.Size = UDim2.new(0.9,0,0.02,0)
+        holder3.BackgroundTransparency = 1
+
+        local close = Instance.new("TextButton",holder)
+        close.Size = UDim2.new(0,35,0,35)
+        close.Position = UDim2.new(1,-20,0,5)
+        close.BackgroundTransparency = 1
+        close.Text = "X"
+        close.TextSize = 17
+        close.TextColor3 = Color3.new(0.9,0.9,0.9)
+        corner(close)
+
+        close.MouseButton1Click:Connect(function()
+            controls:Enable()
+            s:Destroy()
+        end)
+
+        local Imagec = Instance.new("ImageLabel",holder2)
+        Imagec.Size = UDim2.new(0,55,0,55)
+        Imagec.Position = UDim2.new(0.01,0,0,0)
+        Imagec.Image = tbl.logo or "rbxassetid://126569944133822"
+        Imagec.BackgroundTransparency = 1
+        corner(Imagec)
+        border("Storke",Color3.fromRGB(45,0,160),1,Imagec)
+
+        local text = Instance.new("TextLabel",holder)
+        text.Size = UDim2.new(0.9,0,0,15)
+        text.RichText = true
+        text.Position = UDim2.new(0,0,0,14)
+        text.Text = "<b>"..tbl.title.."</b>"
+        text.TextColor3 = Color3.new(1,1,1)
+        text.TextScaled = true
+        text.BackgroundTransparency = 1
+        text.TextXAlignment = Enum.TextXAlignment.Left
+
+        local text2 = Instance.new("TextLabel",holder2)
+        text2.Size = UDim2.new(0.8,0,0,40)
+        text2.RichText = true
+        text2.Position = UDim2.new(0.2,10,0,6)
+        text2.Text = "<b>" .. tbl.desc .. "</b>"
+        text2.TextColor3 = Color3.new(1,1,1)
+        text2.TextScaled = false
+        text2.TextWrapped = true
+        text2.BackgroundTransparency = 1
+        text2.TextXAlignment = Enum.TextXAlignment.Left
+        text2.TextYAlignment = Enum.TextYAlignment.Top
+            
+        local Accept = Instance.new("TextButton",base)
+        Accept.Size = UDim2.new(0.9,0,0,34)
+        Accept.Position = UDim2.new(0.05,0,0.95,-40)
+        Accept.Text = "<b><font color='rgb(255,255,255)'>" .. tbl.button .. "</font></b>"
+        Accept.RichText = true
+        Accept.TextSize = 9
+        Accept.BackgroundColor3 = Color3.fromRGB(68, 0, 234)
+        corner(Accept)
+        Imagec.LayoutOrder = 1
+        
+        Accept.MouseButton1Click:Connect(function()
+            controls:Enable()
+            callback()
+            task.wait()
+            liudex:Notify(tbl.title,"Link copied place it on your browser to join",tbl.logo,"Close")
+            s:Destroy()
+        end)
+        local text3 = Instance.new("TextLabel",base)
+        text3.Size = UDim2.new(0.8,0,0,10)
+        text3.RichText = true
+        text3.Position = UDim2.new(0.2,10,0,6)
+        text3.Text = tbl.founder
+        text3.TextColor3 = Color3.new(1,1,1)
+        text3.TextScaled = true
+        text3.BackgroundTransparency = 1
+        text3.TextXAlignment = Enum.TextXAlignment.Center
     end
     return s
 end
 
 function joinCommunity(tab)
     prompt(1,function() setclipboard(tab.url) end,tab)
+end
+
+function getPrompt(tab)
+    prompt(2,function() setclipboard(tab.url) end,tab)
 end
 
 function liudex:RunScript(script,line)
@@ -513,7 +626,7 @@ end
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
-local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity"} --regist to genv
+local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity","getPrompt"} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
