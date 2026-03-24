@@ -622,12 +622,12 @@ function liudex:StopGame(value)
     else
       getplayer():Kick()
     end
-    liudex:Announcement("LIUDEX","Game Stopped")
     disconnect_all_signal(game:GetService("Script Context").Error) -- stop report error
     disconnect_all_signal(getplayer().Character.Humanoid.Changed) --stop send Changed signal
     disconnect_all_signal(getplayer().Character.HumanoidRootPart.Changed)
     disconnect_all_signal(getchar().Humanoid.ChildAdded) -- stop send ChildAdded sig
     disconnect_all_signal(getchar().HumanoidRootPart.ChildAdded)
+	liudex:Announcement("LIUDEX","Stopping Game!!")
     for i,v in ipairs(game.Workspace:GetDescentdants()) do
       if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
         task.spawn(function()
@@ -638,6 +638,7 @@ function liudex:StopGame(value)
         end)
       end
     end
+	liudex:Announcement("LIUDEX","Game Stopped")
 end
 
 function liudex:RequestNgrok(uri)
