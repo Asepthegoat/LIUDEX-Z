@@ -615,20 +615,28 @@ function closeremotefunction(remote)
   end
 end
 
+function disconnect_all_signal(sig)
+    for _, conn in ipairs(getconnections(sig)) do
+        conn:Disconnect()
+        conn:Disable()
+    end
+end
+
 function liudex:StopGame(value)
     liudex:Announcement("LIUDEX","Stopping Game")
     if value == "Safe" then --safe but kinda laggy if your console Active
       getplayer():Remove()
+	  liudex:Announcement("LIUDEX",Success Secure Player")
     else
       getplayer():Kick()
     end
-    disconnect_all_signal(game:GetService("Script Context").Error) -- stop report error
+    disconnect_all_signal(game:GetService("ScriptContext").Error) -- stop report error
     disconnect_all_signal(getplayer().Character.Humanoid.Changed) --stop send Changed signal
     disconnect_all_signal(getplayer().Character.HumanoidRootPart.Changed)
     disconnect_all_signal(getchar().Humanoid.ChildAdded) -- stop send ChildAdded sig
     disconnect_all_signal(getchar().HumanoidRootPart.ChildAdded)
 	liudex:Announcement("LIUDEX","Game Stopped")
-    for i,v in ipairs(game.Workspace:GetDescentdants()) do
+    for i,v in ipairs(game.Workspace:GetDescendants()) do
       if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
         task.spawn(function()
           closeremetefunction(v)
