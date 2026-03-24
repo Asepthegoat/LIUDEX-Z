@@ -625,7 +625,7 @@ function liudex:StopGame(value)
     liudex:Announcement("LIUDEX","Stopping Game")
     if value == "Safe" then --safe but kinda laggy if your console Active
       getplayer():Remove()
-	  liudex:Announcement("LIUDEX",Success Secure Player")
+	  liudex:Announcement("LIUDEX","Success Secure Player")
     else
       getplayer():Kick()
     end
