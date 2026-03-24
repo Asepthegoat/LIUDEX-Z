@@ -576,16 +576,15 @@ function liudex:Announcement(title,message)
     task.wait()
     okbutton.ImageColor3 = newerrButtonColor
     okbutton.ButtonText.TextColor3 = olderrButtonColor
-    Title.Text = title or "LIUDEX Announcement"
-    Message.Text = message or ""
     delayannounce = 0.1
     if prompterror.BackgroundColor3 == newerrPromptbackground then
       errorprompt.BackgroundColor3 = newerrOverlaybackground
       prompterror.BackgroundColor3 = newerrPromptbackground
-      Message.Text = message
       okbutton.ImageColor3 = newerrButtonColor
       okbutton.ButtonText.TextColor3 = olderrButtonColor
     end
+	Title.Text = title or "LIUDEX Announcement"
+    Message.Text = message or ""
     okbutton.MouseButton1Click:Connect(function()
     backnormal()
     end)
