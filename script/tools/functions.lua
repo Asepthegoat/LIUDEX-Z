@@ -216,7 +216,7 @@ function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
 
-function backnormal()
+local function backnormal()
     task.wait(0.2)
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
     local prompterror = errorprompt.ErrorPrompt
@@ -552,17 +552,23 @@ function liudex:RunScript(script,line)
   end
 end
 
-local delayannounce = 0.3
+local delayannounce = 0.1
 function liudex:Announcement(title,message)
 	local tp = game:GetService("TeleportService") 
-    local player = game:GetService("Players").LocalPlayer 
-    tp:TeleportToPlaceInstance(game.PlaceId,"4211561", player)
+    local player = getplayer()
+    tp:TeleportToPlaceInstance(game.PlaceId,"421151", player)
     task.wait(delayannounce)
     --prompt data
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
-    local prompterror = errorprompt.ErrorPrompt
+    repeat
+      task.wait(0.01)
+    until errorprompt:FindFirstChild("ErrorPrompt")
+    local prompterror = errorprompt:WaitForChild("ErrorPrompt")
+    repeat
+      task.wait(0.01)
+    until prompterror.MessageArea.ErrorFrame.ButtonArea:FindFirstChild("OkButton")
+    local okbutton = prompterror.MessageArea.ErrorFrame.ButtonArea:WaitForChild("OkButton")
     local BtnText = prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton.ButtonText
-    local okbutton = prompterror.MessageArea.ErrorFrame.ButtonArea.OkButton
     local Message = prompterror.MessageArea.ErrorFrame.ErrorMessage
     local Title =prompterror.TitleFrame.ErrorTitle
     errorprompt.BackgroundColor3 = newerrOverlaybackground
@@ -572,7 +578,7 @@ function liudex:Announcement(title,message)
     okbutton.ButtonText.TextColor3 = olderrButtonColor
     Title.Text = title or "LIUDEX Announcement"
     Message.Text = message or ""
-    delayannounce = 0.29
+    delayannounce = 0.1
     if prompterror.BackgroundColor3 == newerrPromptbackground then
       errorprompt.BackgroundColor3 = newerrOverlaybackground
       prompterror.BackgroundColor3 = newerrPromptbackground
@@ -587,11 +593,53 @@ end
 
 liudex.Announce = liudex.Announcement
 
-function liudex:StopGame()
-    liudex:Announcement("LIUDEX","Removing Player")
-    getplayer():Remove()
-    liudex:Announcement("LIUDEX","Game Stopped")
+function closeremoteevent(remote)
+  local rem
+  rem = hookmetamethod(remote,"__namecall",function(self,...)
+    local method = getnamecallmethod()
+    if method == "Fire" or method == "FireServer" or method == "InvokeServer" or method == "Invoke" then
+      return task.wait(9e9) --yield wait
+    else
+      return rem(self,...)
+    end
+  end)
 end
+
+function closeremotefunction(remote)
+  local event = remote
+  
+  for _, Connection in getconnections(event.OnClientEvent) do
+	  local old; old = hookfunction(Connection.Function, function(...)
+		  return task.wait(9e9)
+	  end)
+  end
+end
+
+function liudex:StopGame(value)
+    liudex:Announcement("LIUDEX","Removing Player")
+    if value == "Safe" then --safe but kinda laggy if your console Active
+      getplayer():Remove()
+    else
+      getplayer():Kick()
+    end
+    liudex:Announcement("LIUDEX","Game Stopped")
+    disconnect_all_signal(game:GetService("Script Context").Error) -- stop report error
+    disconnect_all_signal(getplayer().Character.Humanoid.Changed) --stop send Changed signal
+    disconnect_all_signal(getplayer().Character.HumanoidRootPart.Changed)
+    disconnect_all_signal(getchar().Humanoid.ChildAdded) -- stop send ChildAdded sig
+    disconnect_all_signal(getchar().HumanoidRootPart.ChildAdded)
+    for i,v in ipairs(game.Workspace:GetDescentdants()) do
+      if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
+        task.spawn(function()
+          closeremetefunction(v)
+        end)
+        task.spawn(function()
+          closeremoteevent(v)
+        end)
+      end
+    end
+end
+
 function liudex:RequestNgrok(uri)
     local response = request({
     Url = uri,
@@ -626,7 +674,8 @@ end
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
-local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity","getPrompt"} --regist to genv
+getgenv().ldx = liudex
+local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity","getPrompt","closeremotefunction","closeremoteevent"} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
