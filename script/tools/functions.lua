@@ -583,7 +583,8 @@ function liudex:Announcement(title,message)
       okbutton.ImageColor3 = newerrButtonColor
       okbutton.ButtonText.TextColor3 = olderrButtonColor
     end
-	Title.Text = title or "LIUDEX Announcement"
+    task.wait(0.12)
+	  Title.Text = title or "LIUDEX Announcement"
     Message.Text = message or ""
     okbutton.MouseButton1Click:Connect(function()
     backnormal()
