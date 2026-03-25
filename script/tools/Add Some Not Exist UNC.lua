@@ -5,14 +5,18 @@ end
 
 --hook function
 if not hookfunction or not getgenv().hookfunction then
-  getgenv().HOOKS = getgenv().HOOKS or {}
-  getgenv().hookfunction = function(name, newf)
-    local old = getgenv()[name]
-    getgenv().HOOKS[name] = old
-    getgenv()[name] = newf
+  getgenv().hookfunction = function(funcname, newfunc) -- function must string
+    local env = getfenv(2)
+    local old = env[funcname]
+
+    env[funcname] = function(...)
+        return newfunc(old, ...)
+    end
+
     return old
-  end
 end
+end
+
 
 if not  hookmetemethod or not getgenv().hookmetamethod then
 getgenv().hookmetamethod = function(instance,type,func)
