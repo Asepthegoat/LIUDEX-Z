@@ -231,6 +231,33 @@ function ex.new()
     local self = setmetatable({}, ex)
     return self
 end
+
+function ex:getallfunction(targetfunc,detail,waits,runf,...)
+  local tablef = {}
+  if targetfunc == "" or not targetfunc then
+    table.insert(tablef,v)
+    for i,v in pairs(getgc()) do
+      print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunc: ",debug.info(v,"f"))
+      task.wait(waits)
+    end
+  else
+    for i,v in pairs(getgc()) do
+      local deb = debug.info(v,"n")
+      local info = debug.getinfo(v)
+      if deb:match(targetfunc) then
+        table.insert(tablef,v)
+        if detail then
+          print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+        end
+        if runf then
+          v(...)
+        end
+      end
+    end
+  end
+  return tablef
+end
+
 function ex:GetPlayTime()
   t = math.floor(game.Workspace.DistributedGameTime)
   return t
