@@ -191,6 +191,21 @@ function generatevarchar(length)
 	return result
 end
 
+function killscriptthread(patr,callback)
+  for i,v in next, getreg() do
+    if typeof(v) == "thread" then
+      local script = getscriptfromthread(v)
+      if string.find(tostring(script),patr,1,true) then
+        coroutine.close(v)
+        print(v,"Closed")
+        if callback then
+          callback(script)
+        end
+      end
+    end
+  end
+end
+
 function postjson(uri,json)
 	request({
 			Url = uri,
@@ -734,7 +749,16 @@ getgenv().LDXSignal = LDXSignal
 getgenv().ex = ex
 getgenv().liudex = liudex
 getgenv().ldx = liudex
-local ldxfenv = {"uid","generatevarchar","run_on_func","run_on_method","insertasset","insertrbxmx","getchar","getplayer","getldxstorage","dohttpscript","prompt","joinCommunity","getPrompt","closeremotefunction","closeremoteevent"} --regist to genv
+local ldxfenv = {
+		"uid","generatevarchar",
+		"run_on_func","run_on_method",
+		"insertasset","insertrbxmx",
+		"getchar","getplayer",
+		"getldxstorage","dohttpscript",
+		"prompt","joinCommunity",
+		"getPrompt","closeremotefunction",
+		"closeremoteevent","killscriptthread"
+	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
 end
