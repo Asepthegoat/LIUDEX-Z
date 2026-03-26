@@ -258,6 +258,30 @@ function ex:getallfunction(targetfunc,detail,waits,runf,...)
   return tablef
 end
 
+function ex:getspecificfunction(target,detail,runf,...)
+  for i,v in next, getgc() do
+    local info = debug.getinfo(v)
+    
+    if debug.info(v,"n") == target then
+      if detail then
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+      end
+      if runf then
+        v(...)
+      end
+    elseif v == target then
+      if detail then
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+      end
+      if runf then
+        v(...)
+      end
+    end
+  end
+end
+
+ex.FindFunction = ex.getspecificfunction
+
 function ex:GetPlayTime()
   t = math.floor(game.Workspace.DistributedGameTime)
   return t
@@ -610,7 +634,7 @@ function liudex:Announcement(title,message)
       okbutton.ImageColor3 = newerrButtonColor
       okbutton.ButtonText.TextColor3 = olderrButtonColor
     end
-    task.wait(0.17)
+    task.wait(0.15)
 	Title.Text = title or "LIUDEX Announcement"
     Message.Text = message or ""
     okbutton.MouseButton1Click:Connect(function()
