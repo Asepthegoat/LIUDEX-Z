@@ -285,7 +285,6 @@ function ex:getspecificfunction(target,detail,runf,...)
         v(...)
       end
 	return v
-	break
     elseif v == target then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
@@ -294,7 +293,6 @@ function ex:getspecificfunction(target,detail,runf,...)
         v(...)
       end
 	 return v
-	 break
     end
   end
 end
