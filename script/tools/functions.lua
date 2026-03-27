@@ -76,6 +76,7 @@ function onspawn(func)
 		func()
 	end)
 end
+
 --[[function setlicensekey(key,saveto)
 	local iv = crypt.generatebytes(16) -- 16 bytes for AES
 	local data = gethwid()
@@ -191,21 +192,6 @@ function generatevarchar(length)
 	return result
 end
 
-function killscriptthread(patr,callback)
-  for i,v in next, getreg() do
-    if typeof(v) == "thread" then
-      local script = getscriptfromthread(v)
-      if string.find(tostring(script),patr,1,true) then
-        coroutine.close(v)
-        print(v,"Closed")
-        if callback then
-          callback(script)
-        end
-      end
-    end
-  end
-end
-
 function postjson(uri,json)
 	request({
 			Url = uri,
@@ -231,6 +217,17 @@ function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
 
+function findPlayer(partialName) -- Asep skill isue
+    local lowerPartial = string.lower(partialName)
+    for _, plr in ipairs(Players:GetPlayers()) do
+        -- cek apakah substring ada di nama player
+        if string.find(string.lower(plr.Name), lowerPartial, 1, true) then
+            return plr
+        end
+    end
+    return nil
+end
+
 local function backnormal()
     task.wait(0.2)
     local errorprompt = game:GetService("CoreGui").RobloxPromptGui.promptOverlay
@@ -247,7 +244,90 @@ function ex.new()
     return self
 end
 
-function ex:getallfunction(targetfunc,detail,waits,runf,...)
+function ex:GetAllTable(filter)
+  local tble = {}
+  for _, tbl in next, getgc(true) do 
+    if type(tbl) == "table" then 
+        if table.isfrozen(tbl) then setreadonly(tbl, false) end 
+           table.insert(tble,tbl)
+        end
+    end
+    return tble
+end
+
+-- thread func
+function ex:killscriptthread(patr,callback)
+  for i,v in next, getreg() do
+    if typeof(v) == "thread" then
+      local script = getscriptfromthread(v)
+      if string.find(tostring(script):lower(),patr:lower(),1,true) then
+        coroutine.close(v)
+        print(v,"Closed")
+        if callback then
+          callback(v,script)
+        end
+      end
+    end
+  end
+end
+
+function ex:getscriptthread(patr,callback)
+  for i,v in next, getreg() do
+    if typeof(v) == "thread" then
+      local script = getscriptfromthread(v)
+      if string.find(tostring(script),patr,1,true) then
+        if callback then
+          callback(v,script)
+        end
+        return script
+      end
+    end
+  end
+end
+
+function ex:getregthread(key,callback)
+  local threads = {}
+  local index = 0
+  if key then
+    for i,v in next, getreg() do
+    if typeof(v) == "thread" then
+      local script = getscriptfromthread(v)
+      if string.find(tostring(script):lower(),key:lower(),1,true) then
+        index = index + 1
+        if callback then
+          callback(i,v)
+        end
+        table.insert(threads,index,{ script, v })        
+      end
+    end
+  end
+  else
+    for i,v in next, getreg() do
+      if typeof(v) == "thread" then
+        local script = getscriptfromthread(v)
+        index = index + 1
+        if callback then
+          callback(i,v)
+        end
+        table.insert(threads,index,{ script, v })        
+      end
+    end
+  end
+  return threads
+end
+
+function ex:GetTable(filter)
+  for _, tbl in next, getgc(true) do 
+    if type(tbl) == "table" then 
+        if table.isfrozen(tbl) then setreadonly(tbl, false) end 
+            if rawget(tbl, filter) then
+              return tbl
+            end
+        end
+    end
+end
+
+function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
   local tablef = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
@@ -259,7 +339,7 @@ function ex:getallfunction(targetfunc,detail,waits,runf,...)
     for i,v in pairs(getgc()) do
       local deb = debug.info(v,"n")
       local info = debug.getinfo(v)
-      if deb:match(targetfunc) then
+      if string.match(deb:lower(),targetfunc:lower()) then
         table.insert(tablef,v)
         if detail then
           print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
@@ -272,6 +352,8 @@ function ex:getallfunction(targetfunc,detail,waits,runf,...)
   end
   return tablef
 end
+
+ex.FindFunction = ex.GetAllFunction
 
 function ex:getspecificfunction(target,detail,runf,...)
   for i,v in next, getgc() do
@@ -297,7 +379,7 @@ function ex:getspecificfunction(target,detail,runf,...)
   end
 end
 
-ex.FindFunction = ex.getspecificfunction
+ex.GetFunction = ex.getspecificfunction
 
 function ex:GetPlayTime()
   t = math.floor(game.Workspace.DistributedGameTime)
@@ -759,7 +841,9 @@ local ldxfenv = {
 		"getldxstorage","dohttpscript",
 		"prompt","joinCommunity",
 		"getPrompt","closeremotefunction",
-		"closeremoteevent","killscriptthread"
+		"closeremoteevent","findPlayer",
+    "disconnect_all_signal"
+
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
