@@ -213,6 +213,35 @@ if not getgenv().LDXREPOSITORYSTORAGE then --making repository
 	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
 end
 
+function isldxattached()
+  return true
+end
+
+function isscriptclosure(script,func)
+  if typeof(func) == "function" and typeof(script) == "Instance" then
+    local scriptsrc = script:GetFullName()
+    local fsrc = debug.info(func,"s")
+    if fsrc == tostring(scriptsrc) then
+      return true
+    else
+      return false
+    end
+  elseif typeof(func) == "function" and (script == "[C]" or script == "C") then
+    local fsrc = debug.info(func,"s")
+    if fsrc == script then
+      return "C"
+    end
+  else
+    liudex:Announcement("Warning","Something wrong went your func isn't type of function get the function first or use ex:GetFunction(func) to get the function")
+  end
+end
+
+function waituntil(condition)
+  repeat
+    task.wait()
+  until condition
+end
+
 function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
@@ -246,17 +275,29 @@ end
 
 function ex:GetAllTable(filter)
   local tble = {}
-  for _, tbl in next, getgc(true) do 
-    if type(tbl) == "table" then 
+  if not filter or filter == "" then
+    for _, tbl in next, getgc(true) do 
+      if type(tbl) == "table" then 
         if table.isfrozen(tbl) then setreadonly(tbl, false) end 
            table.insert(tble,tbl)
         end
-    end
+      end
     return tble
+  else
+    for _, tbl in next, getgc(true) do 
+        if type(tbl) == "table" then 
+            if string.match(tostring(tbl):lower(),filter:lower()) then
+            if table.isfrozen(tbl) then setreadonly(tbl, false) end
+                table.insert(tble,tbl) 
+            end
+            end
+        end
+    return tble
+  end
 end
 
 -- thread func
-function ex:killscriptthread(patr,callback)
+function ex:KillScriptThread(patr,callback)
   for i,v in next, getreg() do
     if typeof(v) == "thread" then
       local script = getscriptfromthread(v)
@@ -271,7 +312,7 @@ function ex:killscriptthread(patr,callback)
   end
 end
 
-function ex:getscriptthread(patr,callback)
+function ex:GetScriptThread(patr,callback)
   for i,v in next, getreg() do
     if typeof(v) == "thread" then
       local script = getscriptfromthread(v)
@@ -285,7 +326,7 @@ function ex:getscriptthread(patr,callback)
   end
 end
 
-function ex:getregthread(key,callback)
+function ex:GetRegThread(key,callback)
   local threads = {}
   local index = 0
   if key then
@@ -379,11 +420,32 @@ function ex:getspecificfunction(target,detail,runf,...)
   end
 end
 
+if not identifyexecutor or not identifyexecutor then
+  getgenv().identifyexecutor = function(...)
+    return "LIUDEX","Modified Executor","v 1.2"
+  end
+end
+
 ex.GetFunction = ex.getspecificfunction
 
-function ex:GetPlayTime()
-  t = math.floor(game.Workspace.DistributedGameTime)
-  return t
+function ex:GetPlayTime(format)
+  local t = math.floor(game.Workspace.DistributedGameTime)
+  if not format or format == "" then
+    return t
+  elseif format == "separate" then  
+    local tabl = {}
+    tabl["Hour"] = t/3600
+    tabl["Minutes"] = t/60
+    tabl["Second"] = t/1
+  elseif format == "clock" then
+    local tabl = {}
+    local h = math.floor(t / 3600)
+    local m = math.floor((t % 3600) / 60)
+    local s = t % 60
+    tabl["Hour"] = h
+    tabl["Minute"] = m
+    tabl["Second"] = s 
+  end
 end
 
 function ex:Respawn()
@@ -394,9 +456,7 @@ function ex:ForceClose()
 	game:Shutdown()
 end
 
-function ex:FC()
-	game:Shutdown()
-end
+ex.FC = ex.ForceClose
 function ex:TriggerEvent(event,data)
 	if event == "proximity" then
 		fireproximityprompt(data)
@@ -809,7 +869,7 @@ function liudex:RequestNgrok(uri)
     return response.Body
 end
 
-LDXSignal = {}
+local LDXSignal = {}
 LDXSignal.__index = LDXSignal
 
 function LDXSignal.new(name)
@@ -829,6 +889,154 @@ function LDXSignal:OnRecive(callback)
 	table.insert(self._connections, callback)
 end
 
+local function formatValue(val)
+	if typeof(val) == "string" or typeof(val) == "BrickColor" then
+		return "\"" .. val .. "\""
+
+	elseif typeof(val) == "number" or typeof(val) == "boolean" then
+		return tostring(val)
+
+	elseif typeof(val) == "UDim2" then
+		return "UDim2.new(" 
+			.. val.X.Scale .. "," .. val.X.Offset .. "," 
+			.. val.Y.Scale .. "," .. val.Y.Offset .. ")"
+  
+  elseif typeof(val) == "CFrame" then
+    local pos = val.Position
+    local rv = val.RightVector
+    local uv = val.UpVector
+    local lv = val.LookVector
+		return "CFrame.new(" 
+			.. pos.X .. "," .. pos.Y .. "," .. pos.Z .. "," 
+      .. rv.X .. "," .. rv.Y .. "," .. rv.Z .. ","
+      .. uv.X .. "," .. uv.Y .. "," .. uv.Z .. ","
+      .. lv.X .. "," .. lv.Y .. "," .. lv.Z .. ")"
+
+  elseif typeof(val) == "Vector3" then
+    return "Vector3.new(" .. val.X .. "," .. val.Y .. "," .. val.Z .. ")"
+	elseif typeof(val) == "Color3" then
+		return "Color3.fromRGB(" 
+			.. math.floor(val.R*255) .. "," 
+			.. math.floor(val.G*255) .. "," 
+			.. math.floor(val.B*255) .. ")"
+  elseif typeof(val) == "Rect" then
+    return "Rect.new(" .. val.Min.X .. "," .. val.Min.Y .. "," .. val.Max.X .. "," .. val.Max.Y .. ")"
+	elseif typeof(val) == "Vector2" then
+		return "Vector2.new(" .. val.X .. "," .. val.Y .. ")"
+
+	elseif typeof(val) == "EnumItem" then
+		return tostring(val)
+	end
+
+	return tostring(val)
+end
+
+local proptable = {
+"Name","Parent","Archivable","Position","Orientation",
+"Rotation","Size","AnchorPoint","CanCollide","CanTouch","CanQuery",
+"Anchored","Massless","Locked","Transparency","LocalTransparencyModifier","Reflectance",
+"Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
+"AssemblyAngularVelocity","CustomPhysicalProperties","RootPriority",
+
+"Shape","TopSurface","BottomSurface","LeftSurface","RightSurface","FrontSurface",
+"BackSurface",
+
+"MeshId","TextureId","Scale","Offset","VertexColor","MeshType",
+
+"Velocity","MaxForce","P","AngularVelocity","MaxTorque","CFrame",
+
+"Attachment0","Attachment1","Enabled","LightEmission","LightInfluence","Texture",
+"TextureLength","TextureSpeed","Transparency",
+
+"CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
+
+"Brightness","Color","Enabled","Range","Shadows","Angle",
+
+"Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
+
+"Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
+
+"BackgroundColor3","BackgroundTransparency","BorderSizePixel",
+"Position","Size","Visible","ZIndex","ClipsDescendants","LayoutOrder",
+
+"CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
+"ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
+}
+
+function GetInstaceInfo(instance,name,parent)
+  local tabl = {}
+  table.insert(tabl,'local ' .. name .. ' = Instance.new("' .. instance.ClassName .. '")')
+      for u,prop in pairs(proptable) do
+        pcall(function()
+          if prop ~= "Parent" and instance[prop] ~= nil  then
+           table.insert(tabl,name .. '.' .. prop .. " = " .. formatValue(instance[prop]))
+          elseif instance[prop] ~= nil and prop == "Parent" then
+            table.insert(tabl,name .. '.' .. prop .. " = " .. tostring(parent))
+          end
+        end)
+      end
+      if typeof(tabl) ~= "table" then
+        warn("Error table got nil value")
+      end
+      local s = table.concat(tabl,"\n",1)
+      return s
+end
+
+local function scangetinstance(obj,tab,parentname)
+	for i, child in ipairs(obj:GetChildren()) do
+    local parname = "var" .. child.Name .. i
+		local var = GetInstaceInfo(child,parname,parentname)
+		if var ~= nil then
+			table.insert(tab,var)
+		end
+		scangetinstance(child,tab,parname)
+	end
+end
+
+function GetInstaceAsScript(instance,parent)
+  local tabl = {}
+  local sl = GetInstaceInfo(instance,instance.Name,"game.CoreGui")
+  table.insert(tabl,sl)
+ 
+  scangetinstance(instance,tabl,instance)
+  local s = table.concat(tabl,"\n\n",1)
+  setclipboard(s)
+end
+
+local s = GetInstaceAsScript(game:GetService("CoreGui")["4bd1a5b7c1f849ef7141446173fe0235d5967ee5781a84864b4160333fa58bc7"]["LIUDEX Z"],"New")
+print(s)
+
+
+function checkfunction(f)
+  if f then
+    return true
+  end
+  return false
+end
+
+function callwithc(func,...)
+  newcclosure(function(...)
+    func(...)
+  end)
+end
+
+function safecall(func)
+  if not debug.setinfo then
+    liudex:Announce("LIUDEX","Your executor doesnt have debug.setinfo")
+    return
+  end
+  if typeof(func) == "function" and debug.setinfo then
+    local safeinfo = debug.getinfo(func)
+    debug.setinfo(func,safeinfo)
+  else
+    local caller = ex:GetFunction(tostring(func))
+    if func == debug.info(caller,"n") then
+      local safeinfo = debug.getinfo(func)
+      debug.setinfo(func,safeinfo)
+    end
+  end
+end
+
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
@@ -842,7 +1050,8 @@ local ldxfenv = {
 		"prompt","joinCommunity",
 		"getPrompt","closeremotefunction",
 		"closeremoteevent","findPlayer",
-    "disconnect_all_signal"
+    "disconnect_all_signal","isldxattached",
+    "isscriptclosure","waituntil","checkfunction"
 
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
@@ -850,6 +1059,42 @@ for g,j in ipairs(ldxfenv) do
 end
 
 task.wait()
+
+function ex:SpoofIndex(target,keyval,value)
+  local old
+  if not target  or target == "" then
+    old = hookmetamethod(game,"__index",function(self,key)
+    if self == target and key == keyval then
+      return value
+    end
+    return old(self,key)
+  end)
+  else
+    old = hookmetamethod(target,"__index",function(self,key)
+    if self == target and key == keyval then
+      return value
+    end
+    return old(self,key)
+  end)
+  end
+end
+
+
+function liudex:GetInfo(target)
+  local tabl = {}
+  local info = debug.getinfo(target)
+  tabl["Name"] = debug.info(target,"n") or nil
+  tabl["Source"] = debug.info(target,"s") or nil
+  tabl["Line"] = debug.info(target,"l") or nil
+  tabl["Function"] = debug.info(target,"f") or nil
+  tabl["ShortSource"] = info.short_src or nil
+  tabl["What"] = info.what or nil
+  tabl["NParams"] = info.nparams or nil
+  tabl["Nups"] = info.nups or nil
+  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
+  return tabl
+end
+
 if not getgenv().ldxAttachedNotify then
     liudex:Announcement("LIUDEX","ldxfenv attached")
 end
