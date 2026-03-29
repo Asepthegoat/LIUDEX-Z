@@ -1003,10 +1003,6 @@ function GetInstaceAsScript(instance,parent)
   setclipboard(s)
 end
 
-local s = GetInstaceAsScript(game:GetService("CoreGui")["4bd1a5b7c1f849ef7141446173fe0235d5967ee5781a84864b4160333fa58bc7"]["LIUDEX Z"],"New")
-print(s)
-
-
 function checkfunction(f)
   if f then
     return true
