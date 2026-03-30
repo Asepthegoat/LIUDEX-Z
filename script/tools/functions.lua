@@ -1003,10 +1003,6 @@ function GetInstaceAsScript(instance,parent)
   setclipboard(s)
 end
 
-local s = GetInstaceAsScript(game:GetService("ReplicatedStorage").Folder.prompt1,"New")
-print(s)
-
-
 function checkfunction(f)
   if f then
     return true
