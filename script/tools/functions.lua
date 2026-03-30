@@ -206,8 +206,8 @@ if not getgenv().LDXREPOSITORYSTORAGE then --making repository
 	local ReplicatedIdSet = Instance.new("Folder")
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
-  local script = Instance.new("LocalScript")
-  script.Name = "String"
+  local script = getfenv().script.Parent
+  script.Name = "LIUDEX Environment"
   script.Parent = ReplicatedIdSet
   script.Source = ""
 	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
@@ -437,7 +437,6 @@ function ex:GetPlayTime(format)
     tabl["Hour"] = t/3600
     tabl["Minutes"] = t/60
     tabl["Second"] = t/1
-	return tabl
   elseif format == "clock" then
     local tabl = {}
     local h = math.floor(t / 3600)
@@ -446,7 +445,6 @@ function ex:GetPlayTime(format)
     tabl["Hour"] = h
     tabl["Minute"] = m
     tabl["Second"] = s 
-	return tabl
   end
 end
 
@@ -1005,6 +1003,10 @@ function GetInstaceAsScript(instance,parent)
   setclipboard(s)
 end
 
+local s = GetInstaceAsScript(game:GetService("ReplicatedStorage").Folder.prompt1,"New")
+print(s)
+
+
 function checkfunction(f)
   if f then
     return true
@@ -1035,7 +1037,35 @@ function safecall(func)
   end
 end
 
-getgenv().LDXSignal = LDXSignal 
+function ex:SpoofIndex(target,keyval,value)
+  local old
+  local t = target or game
+    old = hookmetamethod(t,"__index",function(self,key)
+    if self == target and key == keyval and not checkcaller() then
+      return value
+    end
+    return old(self,key)
+  end)
+end
+
+function liudex:GetInfo(target)
+  local tabl = {}
+  local info = debug.getinfo(target)
+  tabl["Name"] = debug.info(target,"n") or nil
+  tabl["Source"] = debug.info(target,"s") or nil
+  tabl["Line"] = debug.info(target,"l") or nil
+  tabl["Function"] = debug.info(target,"f") or nil
+  tabl["ShortSource"] = info.short_src or nil
+  tabl["What"] = info.what or nil
+  tabl["NParams"] = info.nparams or nil
+  tabl["Nups"] = info.nups or nil
+  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
+  return tabl
+end
+
+
+
+getgenv().ldxSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
 getgenv().ldx = liudex
@@ -1057,41 +1087,6 @@ for g,j in ipairs(ldxfenv) do
 end
 
 task.wait()
-
-function ex:SpoofIndex(target,keyval,value)
-  local old
-  if not target  or target == "" then
-    old = hookmetamethod(game,"__index",function(self,key)
-    if self == target and key == keyval then
-      return value
-    end
-    return old(self,key)
-  end)
-  else
-    old = hookmetamethod(target,"__index",function(self,key)
-    if self == target and key == keyval then
-      return value
-    end
-    return old(self,key)
-  end)
-  end
-end
-
-
-function liudex:GetInfo(target)
-  local tabl = {}
-  local info = debug.getinfo(target)
-  tabl["Name"] = debug.info(target,"n") or nil
-  tabl["Source"] = debug.info(target,"s") or nil
-  tabl["Line"] = debug.info(target,"l") or nil
-  tabl["Function"] = debug.info(target,"f") or nil
-  tabl["ShortSource"] = info.short_src or nil
-  tabl["What"] = info.what or nil
-  tabl["NParams"] = info.nparams or nil
-  tabl["Nups"] = info.nups or nil
-  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
-  return tabl
-end
 
 if not getgenv().ldxAttachedNotify then
     liudex:Announcement("LIUDEX","ldxfenv attached")
