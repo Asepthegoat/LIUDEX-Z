@@ -206,7 +206,7 @@ if not getgenv().LDXREPOSITORYSTORAGE then --making repository
 	local ReplicatedIdSet = Instance.new("Folder")
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
-  local script = getfenv().script.Parent
+  local script = getfenv().script
   script.Name = "LIUDEX Environment"
   script.Parent = ReplicatedIdSet
   script.Source = ""
