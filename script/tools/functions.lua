@@ -437,6 +437,7 @@ function ex:GetPlayTime(format)
     tabl["Hour"] = t/3600
     tabl["Minutes"] = t/60
     tabl["Second"] = t/1
+	return tabl
   elseif format == "clock" then
     local tabl = {}
     local h = math.floor(t / 3600)
@@ -445,6 +446,7 @@ function ex:GetPlayTime(format)
     tabl["Hour"] = h
     tabl["Minute"] = m
     tabl["Second"] = s 
+	return tabl
   end
 end
 
