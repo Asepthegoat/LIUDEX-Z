@@ -31,6 +31,35 @@ function getplayer()
   return getgenv().LDXZSet.player
 end
 
+function waitrandom(mindelay,maxdelay)
+  local min = mindelay or 0
+  local max = maxdelay or 1
+  return task.wait(math.random(min,max))
+end
+
+function waituntil(condition,time) --use like this waituntil(function() return var end)
+    local count = 0
+    local ftime = time or 10
+    repeat
+      task.wait(0.1)
+      count = count + 0.1
+    until condition() or count >= ftime
+    return true
+end
+
+function taskcount(target) -- like task.count(67,0.1)
+  local total = target or 9e9 --dont use math.huge
+  local tabl = {}
+  local count = 0 
+  while count <= total do
+    task.wait(0.1)
+    count = count + 0.1 --this should be like count + 0.1
+  end
+  tabl["time"] = total
+  tabl["status"] = true
+  return tabl
+end
+
 function run_on_func(func, run)
     local oldfunc
     oldfunc = hookfunction(func, function(self,...)
@@ -77,37 +106,35 @@ function onspawn(func)
 	end)
 end
 
---[[function setlicensekey(key,saveto)
-	local iv = crypt.generatebytes(16) -- 16 bytes for AES
-	local data = gethwid()
-
-	local encrypted = crypt.encrypt(data, key, iv, "AES")
-	setclipboard(encrypted)
-	local decrypted = crypt.decrypt(encrypted, key, iv, "AES")
-	writefile(saveto .. "key",key)
-	writefile(saveto .. "iv",iv)
-	print(key)
-	print(decrypted == data) -- true
-end
-
-function getlicensekey(key,file)
-	local key = readfile(file .. "key")
-	local iv = readfile(file .. "iv")
-	print(crypt.decrypt(gethwid(),key,iv,"AES"))
-end]]
-
-function teleportto(to)
-	local char = getchar()
-	local hrp = char.HumanoidRootPart
-	hrp.CFrame = to.CFrame
+function gototarget(to,tween,time)
+	if tween then
+    local char = getchar()
+	  local hrp = char.HumanoidRootPart
+	  local tween = gameVar4
+    local info = TweenInfo.new(time,Enum.EasingStyle.Linear,Enum.EasingDirection.In, 1, false, 0.1)
+  else
+    local char = getchar()
+	  local hrp = char.HumanoidRootPart
+	  hrp.CFrame = to.CFrame
+  end
 end
 
 function dohttpscript(sc)
    loadstring(game:HttpGet(sc))()
 end
 
-function getpath(var)
-  return var:GetFullName()
+function getPath(obj)
+    local path = obj.Name
+    local parent = obj.Parent
+    while parent and parent ~= game do
+        path = parent.Name .. "." .. path
+        parent = parent.Parent
+    end
+    return path
+end
+
+function download(file,url)
+  writefile(file,game:HttpGet(url))
 end
 
 function filterstring(text, patterns)
@@ -181,7 +208,7 @@ function JSONEncode(val)
 end
 
 function generatevarchar(length)
-	local chars = "abcdefghijklmnopqrstuvwxyz♪♦♥♠♣§£¢€¥ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•|~μΠΩ√÷×¶←↑↓→°∞≠≈✓àâåæãáääßöō"
+	local chars = "abcdefghijklmnopqrstuvwxyz♪♦♥♠♣§£¢€¥ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•~μΠΩ√÷×¶←↑↓→°∞≠≈✓àâåæãáääßöō"
 	local result = ""
 
 	for i = 1, length do
@@ -192,6 +219,53 @@ function generatevarchar(length)
 	return result
 end
 
+--[[function createlicense(identify,database,key) --identify must be include your script name such as ldx or liudex
+  local data = identify .. "|" .. gethwid()
+  local host = database or "https://loremipsumapps/datastore/" .. identify
+  local success, response  = pcall(request({
+    Url = host,
+    Method = "POST",
+    Headers = {["Content-Type"] = "text/plain"},
+    Body = data
+  }))
+  warn("Body:",response.Body,"\nStatusCode:",response.StatusCode,"\nStatusMessage:",response.StatusMessage)
+  setclipboard(data)
+  return true
+end
+
+function checklicense(key)
+  if key then
+  local args = string.split(key,"|")
+  local host = args[1]
+  local userlicense = args[2]
+    local success, response  = pcall(request,{
+    Url = host,
+    Method = "POST",
+    Headers = {["Content-Type"] = "text/plain"},
+    Body = data
+  })
+  warn("Body:",response.Body,"\nStatusCode:",response.StatusCode,"\nStatusMessage:",response.StatusMessage)
+  if success then
+    return true
+  end
+  return false
+  end
+end]]
+
+function tablefill(total,tabl,insrt,start,waits)
+  local i = start
+  if waits then
+    while i <= total do
+      table.insert(tabl,insrt)
+      task.wait()
+    end
+  else
+    while i <= total do
+      table.insert(tabl,insrt)
+    end
+  end
+end
+
 function postjson(uri,json)
 	request({
 			Url = uri,
@@ -200,16 +274,17 @@ function postjson(uri,json)
 			Body = json or JSONEncode(json)
 		})
 end
-local script 
+local scriptenv 
 if not getgenv().LDXREPOSITORYSTORAGE then --making repository
 	local newidname = generatevarchar(100)
 	local ReplicatedIdSet = Instance.new("Folder")
 	ReplicatedIdSet.Parent = gethui()
 	ReplicatedIdSet.Name = newidname
-  local script = getfenv().script
+  local script = getfenv().script.Parent
   script.Name = "LIUDEX Environment"
   script.Parent = ReplicatedIdSet
   script.Source = ""
+  scriptenv = script
 	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
 end
 
@@ -236,12 +311,6 @@ function isscriptclosure(script,func)
   end
 end
 
-function waituntil(condition)
-  repeat
-    task.wait()
-  until condition
-end
-
 function getldxstorage()
    return getgenv().LDXREPOSITORYSTORAGE
 end
@@ -266,34 +335,11 @@ local function backnormal()
     task.wait()
 end
 -- method 
-ex = {}
+local ex = {}
 ex.__index = ex
 function ex.new()
     local self = setmetatable({}, ex)
     return self
-end
-
-function ex:GetAllTable(filter)
-  local tble = {}
-  if not filter or filter == "" then
-    for _, tbl in next, getgc(true) do 
-      if type(tbl) == "table" then 
-        if table.isfrozen(tbl) then setreadonly(tbl, false) end 
-           table.insert(tble,tbl)
-        end
-      end
-    return tble
-  else
-    for _, tbl in next, getgc(true) do 
-        if type(tbl) == "table" then 
-            if string.match(tostring(tbl):lower(),filter:lower()) then
-            if table.isfrozen(tbl) then setreadonly(tbl, false) end
-                table.insert(tble,tbl) 
-            end
-            end
-        end
-    return tble
-  end
 end
 
 -- thread func
@@ -357,6 +403,29 @@ function ex:GetRegThread(key,callback)
   return threads
 end
 
+function ex:GetAllTable(filter)
+  local tble = {}
+  if not filter or filter == "" then
+    for _, tbl in next, getgc(true) do 
+      if type(tbl) == "table" then 
+        if table.isfrozen(tbl) then setreadonly(tbl, false) end 
+           table.insert(tble,tbl)
+        end
+      end
+    return tble
+  else
+    for _, tbl in next, getgc(true) do 
+        if type(tbl) == "table" then 
+            if string.match(tostring(tbl):lower(),filter:lower()) then
+            if table.isfrozen(tbl) then setreadonly(tbl, false) end
+                table.insert(tble,tbl) 
+            end
+            end
+        end
+    return tble
+  end
+end
+
 function ex:GetTable(filter)
   for _, tbl in next, getgc(true) do 
     if type(tbl) == "table" then 
@@ -368,7 +437,7 @@ function ex:GetTable(filter)
     end
 end
 
-function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
+function ex:GetAllFunction(targetfunc,hash,detail,waits,runf,...)
   local tablef = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
@@ -396,7 +465,7 @@ end
 
 ex.FindFunction = ex.GetAllFunction
 
-function ex:getspecificfunction(target,detail,runf,...)
+function ex:getspecificfunction(target,ssrc,detail,runf,...)
   for i,v in next, getgc() do
     local info = debug.getinfo(v)
     
@@ -408,7 +477,15 @@ function ex:getspecificfunction(target,detail,runf,...)
         v(...)
       end
 	return v
-    elseif v == target then
+    elseif v == target and debug.info(v,"s"):match(ssrc) then
+      if detail then
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+      end
+      if runf then
+        v(...)
+      end
+	 return v
+   elseif v == target and (not ssrc or ssrc == "") then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -470,7 +547,7 @@ function ex:HttpScript(script)
   loadstring(game:HttpGet(script))()
 end
 
-liudex = {}
+local liudex = {}
 liudex.__index = liudex
 
 function liudex.new(name,prop)
@@ -803,7 +880,7 @@ end
 
 liudex.Announce = liudex.Announcement
 
-function closeremoteevent(remote)
+function closeremote(remote)
   local rem
   rem = hookmetamethod(remote,"__namecall",function(self,...)
     local method = getnamecallmethod()
@@ -815,7 +892,7 @@ function closeremoteevent(remote)
   end)
 end
 
-function closeremotefunction(remote)
+function closeonclientevent(remote)
   local event = remote
   
   for _, Connection in getconnections(event.OnClientEvent) do
@@ -843,10 +920,10 @@ function liudex:StopGame(value)
     for i,v in ipairs(game.Workspace:GetDescendants()) do
       if v:IsA("RemoteEvent") or v:IsA("RemoteFunction") then
         task.spawn(function()
-          closeremetefunction(v)
+          closeonclientevent(v)
         end)
         task.spawn(function()
-          closeremoteevent(v)
+          closeremote(v)
         end)
       end
     end
@@ -869,6 +946,66 @@ function liudex:RequestNgrok(uri)
     return response.Body
 end
 
+--env signal dari aai gpt and for now this still useless
+local ldxEnabled = false
+local liudexEnv = {}
+liudexEnv.__index = liudexEnv
+local lenvhook
+lenvhook = hookmetamethod(liudexEnv,"__index",newcclosure(function(...)
+  if not ldxEnabled then
+    return "You Cant Access this"
+  end
+  return lenvhook(...)
+end))
+
+function liudexEnv.new(instance)
+	local self = setmetatable({}, LDXSignal)
+	self.Name = instance
+	self._connections = {} -- tempat simpan callback
+	return self
+end
+
+function liudexEnv:Fire(...)
+	for _, conn in ipairs(self._connections) do
+		if conn.Connected then
+			conn.Callback(...)
+		end
+	end
+end
+
+function liudexEnv:Read(func,...)
+  ldxEnabled = true
+  func(...)
+  ldxEnabled = false
+end
+
+function liudexEnv:Recive(callback)
+	local connection = {
+		Callback = callback,
+		Connected = true
+	}
+
+	function connection:Disconnect()
+		self.Connected = false
+	end
+
+	table.insert(self._connections, connection)
+	return connection
+end
+
+function liudexEnv:Wait()
+	local thread = coroutine.running()
+	local connection
+
+	connection = self:Connect(function(...)
+		connection:Disconnect()
+		task.spawn(thread, ...)
+	end)
+
+	return coroutine.yield()
+end
+
+--ldxsignal
 local LDXSignal = {}
 LDXSignal.__index = LDXSignal
 
@@ -961,7 +1098,9 @@ local proptable = {
 
 "CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
 "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
-}
+} -- not all Property cuz im kinda lazy
+
+
 
 function GetInstaceInfo(instance,name,parent)
   local tabl = {}
@@ -993,7 +1132,7 @@ local function scangetinstance(obj,tab,parentname)
 	end
 end
 
-function GetInstaceAsScript(instance,parent)
+function liudex:SetInstaceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
   local sl = GetInstaceInfo(instance,instance.Name,"game.CoreGui")
   table.insert(tabl,sl)
@@ -1036,12 +1175,12 @@ end
 function ex:SpoofIndex(target,keyval,value)
   local old
   local t = target or game
-    old = hookmetamethod(t,"__index",function(self,key)
+    old = hookmetamethod(t,"__index",newcclosure(function(self,key)
     if self == target and key == keyval and not checkcaller() then
       return value
     end
     return old(self,key)
-  end)
+  end))
 end
 
 function liudex:GetInfo(target)
@@ -1061,7 +1200,7 @@ end
 
 
 
-getgenv().ldxSignal = LDXSignal 
+getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
 getgenv().ldx = liudex
@@ -1075,7 +1214,9 @@ local ldxfenv = {
 		"getPrompt","closeremotefunction",
 		"closeremoteevent","findPlayer",
     "disconnect_all_signal","isldxattached",
-    "isscriptclosure","waituntil","checkfunction"
+    "isscriptclosure","waituntil","checkfunction",
+    "dohttpscript","getPath","download",
+    "gototarget","waitrandom","tablefill","GetInstaceInfo"
 
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
