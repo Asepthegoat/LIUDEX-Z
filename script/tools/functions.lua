@@ -109,9 +109,11 @@ end
 function gototarget(to,tween,time)
 	if tween then
     local char = getchar()
-	  local hrp = char.HumanoidRootPart
-	  local tween = gameVar4
+	local hrp = char.HumanoidRootPart
+	local tweens = gameVar4
     local info = TweenInfo.new(time,Enum.EasingStyle.Linear,Enum.EasingDirection.In, 1, false, 0.1)
+	local tween = TweenService:Create(hrp, info, {CFrame = to.CFrame})
+	tween:Play()
   else
     local char = getchar()
 	  local hrp = char.HumanoidRootPart
