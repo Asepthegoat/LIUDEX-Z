@@ -441,9 +441,16 @@ function ex:GetAllFunction(targetfunc,hash,detail,waits,runf,...)
   local tablef = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
-    for i,v in pairs(getgc()) do
-      print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunc: ",debug.info(v,"f"))
-      task.wait(waits)
+    if hash then
+      for i,v in pairs(getgc()) do
+        print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunc: ",debug.info(v,"f"))
+        task.wait(waits)
+      end
+    else
+      for i,v in pairs(getgc()) do
+        print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunc: ",debug.info(v,"f"))
+        task.wait(waits)
+      end
     end
   else
     for i,v in pairs(getgc()) do
