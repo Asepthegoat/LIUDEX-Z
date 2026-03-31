@@ -487,7 +487,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
         v(...)
       end
 	return v
-    elseif v == target and debug.info(v,"s"):match(ssrc) then
+    elseif v == target and ssrc and ssrc ~="" and debug.info(v,"s"):match(ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
