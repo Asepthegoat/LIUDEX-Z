@@ -6,6 +6,7 @@ local gameVar4 = game:GetService("TweenService")
 local gameVar5 = game:GetService("HttpService") 
 local gameVar6 = game:GetService("ReplicatedStorage")
 local gameVar7 = game:GetService("StarterGui")
+local gameVar8 = game:GetService("Debris")
 getgenv().LDXZSet = {
   players = gameVar1,
   player = gameVar2,
@@ -109,12 +110,9 @@ end
 function gototarget(to,tween,time)
 	if tween then
     local char = getchar()
-	local delay = time or 1
-	local hrp = char.HumanoidRootPart
-	local tweens = gameVar4
-    local info = TweenInfo.new(time, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, delay)
-	local tweento = tweens:Create(hrp, info, {CFrame = to.CFrame})
-	tweento:Play()
+	  local hrp = char.HumanoidRootPart
+	  local tween = gameVar4
+    local info = TweenInfo.new(time,Enum.EasingStyle.Linear,Enum.EasingDirection.In, 1, false, 0.1)
   else
     local char = getchar()
 	  local hrp = char.HumanoidRootPart
@@ -210,18 +208,6 @@ function JSONEncode(val)
   return getgenv().LDXZSet.Http:JSONEncode(val)
 end
 
-function generatevarchar(length)
-	local chars = "abcdefghijklmnopqrstuvwxyz♪♦♥♠♣§£¢€¥ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•~μΠΩ√÷×¶←↑↓→°∞≠≈✓àâåæãáääßöō"
-	local result = ""
-
-	for i = 1, length do
-		local rand = math.random(1, #chars)
-		result = result .. chars:sub(rand, rand)
-	end
-
-	return result
-end
-
 --[[function createlicense(identify,database,key) --identify must be include your script name such as ldx or liudex
   local data = identify .. "|" .. gethwid()
   local host = database or "https://loremipsumapps/datastore/" .. identify
@@ -277,19 +263,72 @@ function postjson(uri,json)
 			Body = json or JSONEncode(json)
 		})
 end
-local scriptenv 
-if not getgenv().LDXREPOSITORYSTORAGE then --making repository
-	local newidname = generatevarchar(100)
-	local ReplicatedIdSet = Instance.new("Folder")
-	ReplicatedIdSet.Parent = gethui()
-	ReplicatedIdSet.Name = newidname
-  local script = getfenv().script
-  script.Name = "LIUDEX Environment"
-  script.Parent = ReplicatedIdSet
-  script.Source = ""
-  scriptenv = script
-	getgenv().LDXREPOSITORYSTORAGE = ReplicatedIdSet
+
+function generatevarchar(length)
+	local chars = "abcdefghijklmnopqrstuvwxyz♪♦♥♠♣§£¢€¥ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:,.<>/?†‡★·±\∆•~μΠΩ√÷×¶←↑↓→°∞≠≈✓àâåæãáääßöō"
+	local result = ""
+
+	for i = 1, length do
+		local rand = math.random(1, #chars)
+		result = result .. chars:sub(rand, rand)
+	end
+
+	return result
 end
+
+local function randomarray(tab)
+local s = math.random(#tab)
+return tab[s]
+end
+
+local scriptenv 
+--setup liudex
+--setup liudex
+if not getgenv().LDXDATASERVICE then
+    
+    local lnstance = randomarray({"TerrainRegion","BindableFunction","SurfaceSelection"})
+    local liudexex = Instance.new(lnstance)
+    liudexex.Name = generatevarchar(50)
+    liudexex.Parent = game
+
+    local CloudService = Instance.new("Smoke")
+    CloudService.Parent = liudexex
+    CloudService.Name = "Request"
+
+    local ReplicatedIdSet = Instance.new("SelectionBox")
+    ReplicatedIdSet.Name = "Repository"
+    ReplicatedIdSet.Parent = liudexex
+
+    local values = Instance.new("Camera")
+    values.Name = "Configuration"
+    values.Parent = liudexex
+
+    local trashbin = Instance.new("Hat")
+    trashbin.Name = "TrashBin"
+    trashbin.Parent = liudexex
+
+    -- jangan parent script ke TerrainRegion
+    local script = getfenv().script
+    script.Name = "LIUDEX Environment"
+    script.Parent = ReplicatedIdSet
+    script.Source = ""
+    scriptenv = script
+
+    getgenv().LDXDATASERVICE = {
+        Storage = ReplicatedIdSet,
+        TrashService = trashbin,
+        ConfigurationService = values
+    }
+
+    local oldIndex
+    oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
+      if not checkcaller() and self == liudexex then
+        return nil
+      end
+      return oldIndex(self, key)
+    end))
+end
+
 
 function isldxattached()
   return true
@@ -315,7 +354,7 @@ function isscriptclosure(script,func)
 end
 
 function getldxstorage()
-   return getgenv().LDXREPOSITORYSTORAGE
+   return getgenv().LDXDATASERVICE["Storage"]
 end
 
 function findPlayer(partialName) -- Asep skill isue
@@ -473,6 +512,8 @@ function ex:GetAllFunction(targetfunc,hash,detail,waits,runf,...)
   return tablef
 end
 
+
+
 ex.FindFunction = ex.GetAllFunction
 
 function ex:getspecificfunction(target,ssrc,detail,runf,...)
@@ -487,7 +528,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
         v(...)
       end
 	return v
-    elseif v == target and ssrc and ssrc ~="" and debug.info(v,"s"):match(ssrc) then
+    elseif v == target and debug.info(v,"s"):match(ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -956,6 +997,17 @@ function liudex:RequestNgrok(uri)
     return response.Body
 end
 
+function liudex:GetService(service)
+  local path = getgenv().LDXDATASERVICE
+  if service == "Repository" or service == "Storage" then
+    return path["Storage"]
+  elseif service == "TrashService" or service == "RecycleBin" then
+    return path["TrashService"]
+  elseif service == "ConfigurationService" or service == "Configuration" then
+    return path["ConfigurationService"]
+  end
+end
+
 --env signal dari aai gpt and for now this still useless
 local ldxEnabled = false
 local liudexEnv = {}
@@ -1165,21 +1217,13 @@ function callwithc(func,...)
   end)
 end
 
-function safecall(func)
-  if not debug.setinfo then
-    liudex:Announce("LIUDEX","Your executor doesnt have debug.setinfo")
-    return
+function safecall(func,reffunc) 
+  local old; old = hookfunction(debug.info, newcclosure(function(selffunc,info)
+  if selffunc == func and not checkcaller() then
+    return old(reffunc,info) --ini biar si kontol ngereturn function reference atau rial func
   end
-  if typeof(func) == "function" and debug.setinfo then
-    local safeinfo = debug.getinfo(func)
-    debug.setinfo(func,safeinfo)
-  else
-    local caller = ex:GetFunction(tostring(func))
-    if func == debug.info(caller,"n") then
-      local safeinfo = debug.getinfo(func)
-      debug.setinfo(func,safeinfo)
-    end
-  end
+  return old(selffunc,info)
+end))
 end
 
 function ex:SpoofIndex(target,keyval,value)
