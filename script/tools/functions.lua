@@ -283,13 +283,11 @@ end
 
 local scriptenv 
 --setup liudex
---setup liudex
 if not getgenv().LDXDATASERVICE then
     
     local lnstance = randomarray({"TerrainRegion","BindableFunction","SurfaceSelection"})
     local liudexex = Instance.new(lnstance)
     liudexex.Name = generatevarchar(50)
-    liudexex.Parent = game
 
     local CloudService = Instance.new("Smoke")
     CloudService.Parent = liudexex
@@ -1270,7 +1268,8 @@ local ldxfenv = {
     "disconnect_all_signal","isldxattached",
     "isscriptclosure","waituntil","checkfunction",
     "dohttpscript","getPath","download",
-    "gototarget","waitrandom","tablefill","GetInstaceInfo"
+    "gototarget","waitrandom","tablefill","GetInstaceInfo",
+	"safecall","callwithc"
 
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
