@@ -112,7 +112,7 @@ function gototarget(to,tween,time)
     local char = getchar()
 	  local hrp = char.HumanoidRootPart
 	  local tween = gameVar4
-    local info = TweenInfo.new(time,Enum.EasingStyle.Linear,Enum.EasingDirection.In, 1, false, 0.1)
+    local info = TweenInfo.new(time, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0.1)
     local tw = tween:Create(hrp, info, {CFrame = hrp.CFrame * CFrame.new(0, 10, 0)})
     tw:Play()
   else
