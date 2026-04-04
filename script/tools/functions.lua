@@ -320,13 +320,14 @@ if not getgenv().LDXDATASERVICE then
         ConfigurationService = values
     }
 
-    local oldIndex
+    pcall(function() local oldIndex
     oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
       if not checkcaller() and self == liudexex then
         return nil
       end
       return oldIndex(self, key)
     end))
+		end)
 end
 
 
