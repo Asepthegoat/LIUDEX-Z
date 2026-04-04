@@ -1013,14 +1013,14 @@ end
 local ldxEnabled = false
 local liudexEnv = {}
 liudexEnv.__index = liudexEnv
-local lenvhook
+pcall(function() local lenvhook
 lenvhook = hookmetamethod(liudexEnv,"__index",newcclosure(function(...)
   if not ldxEnabled then
     return "You Cant Access this"
   end
   return lenvhook(...)
 end))
-
+end)
 function liudexEnv.new(instance)
 	local self = setmetatable({}, LDXSignal)
 	self.Name = instance
