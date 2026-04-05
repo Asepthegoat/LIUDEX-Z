@@ -985,6 +985,8 @@ function liudex:StopGame(value)
     disconnect_all_signal(getplayer().Character.HumanoidRootPart.Changed)
     disconnect_all_signal(getchar().Humanoid.ChildAdded) -- stop send ChildAdded sig
     disconnect_all_signal(getchar().HumanoidRootPart.ChildAdded)
+	task.wait(1.5)
+	game:GetService("GuiService"):ClearError()
 end
 
 function liudex:RequestNgrok(uri)
