@@ -670,7 +670,7 @@ end
 
 function prompt(num,callback,tbl)
     local s = Instance.new("ScreenGui")
-    s.Parent = getldxstorage()
+    s.Parent = gethui()
     s.Name = "LDXPrompt"
     if num == 1 then
         local base = Instance.new("Frame",s)
