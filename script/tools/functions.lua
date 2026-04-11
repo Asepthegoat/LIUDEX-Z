@@ -319,6 +319,17 @@ if not getgenv().LDXDATASERVICE then
         TrashService = trashbin,
         ConfigurationService = values
     }
+	
+	local TrashEnabled = Instance.new("BindableEvent",values)
+    TrashEnabled.Name = "TrashBin"
+    TrashEnabled:SetAttribute("Value",false)
+    
+    local DirClass = Instance.new("BindableFunction",values)
+    DirClass.Name = "DirClass"
+    DirClass:SetAttribute("Value",lnstance.ClassName)
+    local EnableSendCountry = Instance.new("BindableEvent",values)
+    EnableSendCountry.Name = "EnableSendCountry"
+    EnableSendCountry:SetAttribute("Value",false)
 
     pcall(function() local oldIndex
     oldIndex = hookmetamethod(game, "__index", newcclosure(function(self, key)
@@ -480,29 +491,30 @@ function ex:GetTable(filter)
     end
 end
 
-function ex:GetAllFunction(targetfunc,hash,detail,waits,runf,...)
+function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
   local tablef = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
-    if hash then
-      for i,v in pairs(getgc()) do
-        print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunc: ",debug.info(v,"f"))
+    for i,v in next, getgc() do
+      local info = debug.getinfo(v)
+      if debug.info(v,"n") == "" or debug.info(v,"n") == nil then
+        print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
         task.wait(waits)
-      end
-    else
-      for i,v in pairs(getgc()) do
-        print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunc: ",debug.info(v,"f"))
-        task.wait(waits)
+      else
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
       end
     end
   else
-    for i,v in pairs(getgc()) do
+    for i,v in next, getgc() do
       local deb = debug.info(v,"n")
       local info = debug.getinfo(v)
       if string.match(deb:lower(),targetfunc:lower()) then
         table.insert(tablef,v)
         if detail then
-          print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+          if info.name ~= "" or not info.name then
+            print("Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
+          end
+          print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
         end
         if runf then
           v(...)
@@ -513,15 +525,13 @@ function ex:GetAllFunction(targetfunc,hash,detail,waits,runf,...)
   return tablef
 end
 
-
-
 ex.FindFunction = ex.GetAllFunction
 
 function ex:getspecificfunction(target,ssrc,detail,runf,...)
   for i,v in next, getgc() do
     local info = debug.getinfo(v)
     
-    if debug.info(v,"n") == target then
+    if debug.info(v,"n") == target and debug.info(v,"s"):match(ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -529,7 +539,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
         v(...)
       end
 	return v
-    elseif v == target and debug.info(v,"s"):match(ssrc) then
+    elseif debug.info(v,"n") == target and (ssrc == "" or not ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -537,14 +547,34 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
         v(...)
       end
 	 return v
-   elseif v == target and (not ssrc or ssrc == "") then
-      if detail then
-        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+    end
+  end
+end
+
+function ex:GetHashFunction(hashFunc,regorgc,detail)
+  if regorgc then
+    for i,v in next, getreg() do
+      if typeof(v) == "function" then
+        if v:match(hashFunc) then
+          if detail then
+            local info = debug.getinfo(v)
+             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+          end
+          return v
+        end
       end
-      if runf then
-        v(...)
+    end
+  else
+    for i,v in next, getgc() do
+      if typeof(v) == "function" then
+        if v:match(hashFunc) then
+          if detail then
+            local info = debug.getinfo(v)
+             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+          end
+          return v
+        end
       end
-	 return v
     end
   end
 end
@@ -1261,6 +1291,17 @@ getgenv().LDXSignal = LDXSignal
 getgenv().ex = ex
 getgenv().liudex = liudex
 getgenv().ldx = liudex
+
+getgenv().getconfig = setmetatable({}, {
+  __index = function(self,key)
+    local success, cache = pcall(function()
+      local configs = liudex:GetService("Configuration")
+      local value = configs[key]
+      return value:GetAttribute("value")
+  end)
+  end
+})
+
 local ldxfenv = {
 		"uid","generatevarchar",
 		"run_on_func","run_on_method",
@@ -1275,7 +1316,6 @@ local ldxfenv = {
     "dohttpscript","getPath","download",
     "gototarget","waitrandom","tablefill","GetInstaceInfo",
 	"safecall","callwithc"
-
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
