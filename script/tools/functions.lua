@@ -16,6 +16,21 @@ getgenv().LDXZSet = {
   Replicated = gameVar6,
   StarterGui = gameVar7
 }
+
+getgenv().import = setmetatable({}, {
+    __index = function(self, name)
+        local success, cache = pcall(function()
+            return cloneref(game:GetService(name))
+        end)
+        if success then
+            rawset(self, name, cache)
+            return cache
+        else
+            warn("Invalid Service: " .. tostring(name))
+        end
+    end
+})
+
 local olderrPromptbackground = Color3.fromRGB(57, 59, 61)
 local olderrOverlaybackground = Color3.fromRGB(0, 0, 0)
 local olderrButtonColor = Color3.fromRGB(255, 255, 255)
@@ -85,6 +100,12 @@ function run_on_method(methodname, run, selv)
         end
         return oldmethod(self, ...)
     end)
+end
+
+function setoffline() --lite version of liudex:StopGame()
+  getplayer():Kick("Wait 1 Second for Set Offline...")
+  task.wait(1)
+  import.GuiService:ClearError()
 end
 
 function insertasset(assetid)
