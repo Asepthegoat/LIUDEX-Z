@@ -1,5 +1,5 @@
 -- humanoidAnimateR15Moods.lua
-
+local script = getfenv().script.Parent = game:GetService("Players").LocalPlayer.Character
 local Character = script.Parent
 local Humanoid = Character:WaitForChild("Humanoid")
 local pose = "Standing"
