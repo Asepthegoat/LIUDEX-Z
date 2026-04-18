@@ -1,4 +1,4 @@
-local script = Instace.new("LocalScript")
+local script = Instance.new("LocalScript")
 script.Parent = getldxstorage() or gethui()
 script.Name = "Animator"
 local char = getchar()
