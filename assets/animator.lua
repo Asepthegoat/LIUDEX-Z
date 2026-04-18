@@ -48,7 +48,7 @@ humanoid.Running:Connect(function(speed)
 	
 	if speed > 8 then
 		play("run")
-	elseif speed > 0 then
+	elseif speed > 2 then
 		play("walk")
 	else
 		play("idle")
