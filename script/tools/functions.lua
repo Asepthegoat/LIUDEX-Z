@@ -1,21 +1,9 @@
-getgenv().ldxAttachedNotify = true
-local gameVar1 = game:GetService("Players")
-local gameVar2 = gameVar1.LocalPlayer
-local gameVar3 = game:GetService("UserInputService")
-local gameVar4 = game:GetService("TweenService")
-local gameVar5 = game:GetService("HttpService") 
-local gameVar6 = game:GetService("ReplicatedStorage")
-local gameVar7 = game:GetService("StarterGui")
-local gameVar8 = game:GetService("Debris")
-getgenv().LDXZSet = {
-  players = gameVar1,
-  player = gameVar2,
-  UIS = gameVar3,
-  TS = gameVar4,
-  Http = gameVar5,
-  Replicated = gameVar6,
-  StarterGui = gameVar7
-}
+--report to our community if you find an error
+--https://discord.gg/WmsssRkgd2
+if getgenv().liudex and getgenv().ex  then
+  warn("liudex env is already attached")
+  return
+end
 
 getgenv().import = setmetatable({}, {
     __index = function(self, name)
@@ -30,6 +18,25 @@ getgenv().import = setmetatable({}, {
         end
     end
 })
+
+getgenv().ldxAttachedNotify = true
+local gameVar1 = import.Players
+local gameVar2 = gameVar1.LocalPlayer
+local gameVar3 = import.UserInputService
+local gameVar4 = import.TweenService
+local gameVar5 = import.HttpService
+local gameVar6 = import.ReplicatedStorage
+local gameVar7 = import.StarterGui
+local gameVar8 = import.Debris
+getgenv().LDXZSet = {
+  players = gameVar1,
+  player = gameVar2,
+  UIS = gameVar3,
+  TS = gameVar4,
+  Http = gameVar5,
+  Replicated = gameVar6,
+  StarterGui = gameVar7
+}
 
 local olderrPromptbackground = Color3.fromRGB(57, 59, 61)
 local olderrOverlaybackground = Color3.fromRGB(0, 0, 0)
@@ -103,21 +110,115 @@ function run_on_method(methodname, run, selv)
 end
 
 function setoffline() --lite version of liudex:StopGame()
-  getplayer():Kick("Wait 1 Second for Set Offline...")
+  getplayer():Kick("Wait a Second for Set Offline...")
   task.wait(1)
   import.GuiService:ClearError()
 end
 
-function insertasset(assetid)
+function isoffline()
+if not getplayer():FindFirstChild("PlayerScripts") then
+  return true
+end
+return false
+end
+
+function clonechar() --used to move while offline
+local Players = game:GetService("Players")
+local oldChar = getchar()
+local animate = oldChar:FindFirstChild("Animate")
+
+local userId = getplayer().UserId
+local characterModel = Players:CreateHumanoidModelFromUserId(userId)
+
+characterModel.Parent = game.Workspace
+characterModel:MoveTo(getchar().HumanoidRootPart.Position)
+getplayer().Character= characterModel
+workspace.Camera.CameraSubject = characterModel.Humanoid
+local h = characterModel.Humanoid
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/assets/animator.lua"))()
+h.Died:Connect(function() clonechar() task.wait(1) h.Parent:Destroy() end)
+end
+
+function insertasset(assetid,i)
+local index = i or 1
 local objects = game:GetObjects(assetid)
-local model = objects[1]
+local model = objects[index]
 return model
 end
 
-function insertrbxmx(file)
+function insertrbxmx(file,i)
+local index = i or 1
 local objects = game:GetObjects(getcustomasset(file))
-local model = objects[1]
+local model = objects[index]
 return model
+end
+
+function insertobjrbxmx(file)
+  local index = i or 1
+  local obj = game:GetObjects(getcustomasset(file))
+  return obj
+end
+
+local oldclientid
+
+function getclientid()
+return import.RbxAnalyticsService:GetClientId()
+end
+
+if not getgenv().gethwid or gethwid then --just in case if its a new executor that has no gethwid function
+  getgenv().gethwid = getclientid 
+end
+
+function getsessionid()
+  return import.RbxAnalyticsService:GetSessionId()
+end
+
+function getdeviceid()
+  local key = 5
+  local str = import.DeviceIdService:GetDeviceId()
+    local result = ""
+
+    for l = 1, #str do
+
+        local s = string.byte(str, l)
+        local t = ((s + l) % 26) + 97
+        local r = string.char(t)
+        local i = string.char(((s + l) % 26) + 97)
+        local n = (s + key) % 10
+        local g = tostring(n) 
+
+      if (l % 2 == 1) then
+      result = result .. r:upper() .. i .. g .. l
+      else
+      result = result .. r .. i .. g .. l
+      end
+    end
+
+    return string.reverse(result)
+end
+
+function getrootpart()
+  return getchar().HumanoidRootPart
+end
+
+function gethumanoid()
+  return getchar().Humanoid
+end
+
+function setclientid(newid)
+  oldclientid =  nil
+  oldclientid = hookmetamethod(import.RbxAnalyticsService,"__namecall",newcclosure(function(...)
+    if  getnamecallmethod() == "GetClientId" then
+      return newid
+    end
+  return oldclientid(...)
+  end))
+end
+
+getgenv().newclient = function()
+  local id = uid()
+  setclientid(id)
+  return id
 end
 
 function onspawn(func)
@@ -1336,7 +1437,10 @@ local ldxfenv = {
     "isscriptclosure","waituntil","checkfunction",
     "dohttpscript","getPath","download",
     "gototarget","waitrandom","tablefill","GetInstaceInfo",
-	"safecall","callwithc"
+	  "safecall","callwithc","clonechar","setoffline",
+    "insertobjrbxmx","setclientid","gethumanoid",
+    "getrootpart","getdeviceid","getsessionid",
+    "getclientid","isoffline"
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
