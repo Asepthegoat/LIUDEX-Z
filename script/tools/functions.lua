@@ -137,6 +137,7 @@ workspace.Camera.CameraSubject = characterModel.Humanoid
 local h = characterModel.Humanoid
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/assets/animator.lua"))()
 h.Died:Connect(function() clonechar() task.wait(1) h.Parent:Destroy() end)
+return characterModel, oldChar
 end
 
 function insertasset(assetid,i)
