@@ -83,7 +83,7 @@ task.wait()
 writefile("LIUDEX Z/Data/data.json",HttpService:JSONEncode(data))
 -- join
 local joinEmbeds = {
-  ["content"] = "",
+  ["content"] = "@here",
   ["embeds"] = {
     {
       ["id"] = 358001787,
