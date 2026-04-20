@@ -96,10 +96,10 @@ this function used to accessing ldx storage. usefull to place an instace here
 local wallet = getLDXstorage():FindFirstChild("My Wallet")
 ```
 
-## loadhttpscript(script)
+## dohttpscript(url)
 
 ```lua
-loadhttpscript(link:string): void
+loadhttpscript(string): void
 ```
 
 this function will do loadstring on your script from the url
@@ -108,4 +108,99 @@ this function will do loadstring on your script from the url
 ### Example
 ```lua
 loadhttpscript("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/loadscript.lua") --the script will runing now its similar to loadstring(game:HttpGet(URL))()
+```
+## setoffline()
+```lua
+setoffline(): void
+```
+
+This will make your game offline and will separate you from server.
+
+---
+### Example
+```lua
+if not isoffline() then
+setoffline()
+end 
+clonechar() --you need me char to move because all script from player script and character script will disabled or removed
+```
+## clonechar()
+```lua
+clonechar(): instance
+```
+
+This function used to make new character that run in client side only
+
+---
+### Example
+```lua
+if not isoffline() then
+setoffline()
+end 
+clonechar() --you need me char to move because all script from player script and character script will disabled or removed
+```
+## setclientid()
+```lua
+setclientid(newid): string
+```
+
+This function used to spoof RbxAnalyticsService:GetClientId() getclientid which is usually used to ban client
+
+---
+### Example
+```lua
+local newid = setclientid(uid())
+print(newid)
+```
+## gototarget(instance,bool,int)
+```lua
+gototarget(target,tween,time): void
+```
+
+This function can be use to go to some part or mesh part or something else that has cframe
+
+---
+### Example
+```lua
+gototarget(Part, false)
+```
+## download(string,string)
+```lua
+download(filename,url): void
+```
+
+This function used to spoof RbxAnalyticsService:GetClientId() getclientid which is usually used to ban client
+
+---
+### Example
+```lua
+download("mylove.png", "https://static.wikia.nocookie.net/mutsuki-face/images/f/fd/Clorinde.png/revision/latest/scale-to-width-down/250?cb=20240825055321")
+```
+## getclientid()
+```lua
+getclientid(): string
+```
+
+Basically it's just a RbxAnalyticsService:GetClientId()
+
+---
+### Example
+```lua
+print(getclientid())
+```
+## safecall()
+```lua
+safecall(): string
+```
+
+Basically used to spoof debug.info
+
+---
+### Example
+```lua
+function foo()
+return
+end
+safecall(foo)
+print(debug.info(foo,"s")
 ```
