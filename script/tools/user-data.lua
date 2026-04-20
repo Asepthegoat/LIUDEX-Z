@@ -53,7 +53,7 @@ local function getplacedata(id)
 end
 
 local function rejoin(msg)
-queue_on_teleport()
+queue_on_teleport('loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/user-data.lua"))()')
 local TeleportService = game:GetService("TeleportService")
 
 local player = game.Players.LocalPlayer
