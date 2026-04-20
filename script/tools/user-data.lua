@@ -159,7 +159,7 @@ local function Disconect(cause,reason)
 if sendDisconnect == false then
 sendDisconnect = true
 local DCEmbeds = {
-  ["content"] = "",
+  ["content"] = "@here",
   ["embeds"] = {
     {
       ["id"] = 358001787,
