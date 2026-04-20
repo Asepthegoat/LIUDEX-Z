@@ -207,7 +207,7 @@ end
 local oldclientid
 local clientidhooked = false
 local clientnewid = nil
-function setclientid2(newid)
+function setclientid(newid)
  newclientid = newid
  if not clientidhooked then
 	oldclientid =  nil
