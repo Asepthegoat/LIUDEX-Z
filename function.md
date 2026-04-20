@@ -22,6 +22,7 @@ end
 
 run_on_func(foo,boo()) -- boo will run after foo called 
 ```
+
 ## run_on_method
 ```lua
 run_on_method(method:string, function): void
@@ -83,7 +84,6 @@ print(b) --- output xxxx-xxxxxxx-xxxxxx-xxxxx
 ```
 
 ## getldxstorage()
-
 ```lua
 getldxstorage(): instace
 ```
@@ -97,7 +97,6 @@ local wallet = getLDXstorage():FindFirstChild("My Wallet")
 ```
 
 ## dohttpscript(url)
-
 ```lua
 loadhttpscript(string): void
 ```
@@ -109,6 +108,7 @@ this function will do loadstring on your script from the url
 ```lua
 loadhttpscript("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/loadscript.lua") --the script will runing now its similar to loadstring(game:HttpGet(URL))()
 ```
+
 ## setoffline()
 ```lua
 setoffline(): void
@@ -124,6 +124,7 @@ setoffline()
 end 
 clonechar() --you need me char to move because all script from player script and character script will disabled or removed
 ```
+
 ## clonechar()
 ```lua
 clonechar(): instance
@@ -139,6 +140,7 @@ setoffline()
 end 
 clonechar() --you need me char to move because all script from player script and character script will disabled or removed
 ```
+
 ## setclientid()
 ```lua
 setclientid(newid): string
@@ -152,6 +154,7 @@ This function used to spoof RbxAnalyticsService:GetClientId() getclientid which 
 local newid = setclientid(uid())
 print(newid)
 ```
+
 ## gototarget(instance,bool,int)
 ```lua
 gototarget(target,tween,time): void
@@ -164,6 +167,7 @@ This function can be use to go to some part or mesh part or something else that 
 ```lua
 gototarget(Part, false)
 ```
+
 ## download(string,string)
 ```lua
 download(filename,url): void
@@ -176,6 +180,7 @@ This function used to spoof RbxAnalyticsService:GetClientId() getclientid which 
 ```lua
 download("mylove.png", "https://static.wikia.nocookie.net/mutsuki-face/images/f/fd/Clorinde.png/revision/latest/scale-to-width-down/250?cb=20240825055321")
 ```
+
 ## getclientid()
 ```lua
 getclientid(): string
@@ -188,6 +193,7 @@ Basically it's just a RbxAnalyticsService:GetClientId()
 ```lua
 print(getclientid())
 ```
+
 ## safecall()
 ```lua
 safecall(): string
