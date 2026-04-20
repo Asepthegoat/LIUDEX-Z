@@ -4,7 +4,7 @@
 
 ## run_on_func
 ```lua
-run_on_func(target_function, function)
+run_on_func(target_function, function): void
 ```
 
 This will run your function when the specified function is called.
@@ -24,7 +24,7 @@ run_on_func(foo,boo()) -- boo will run after foo called
 ```
 ## run_on_method
 ```lua
-run_on_method(method:string, function)
+run_on_method(method:string, function): void
 ```
 
 This will run your function when the specified method is called.
@@ -40,7 +40,7 @@ run_on_method("HttpGet",foo())
 
 ## insertasset(assetid)
 ```lua
-insertasset(assetid)
+insertasset(assetid): instance 
 ```
 
 this will return the object as an instance from assetid
@@ -54,7 +54,7 @@ model.Parent = workspace
 
 ## inserrbxmx()
 ```lua
-inserrbxmx(file:path)
+inserrbxmx(file:path): instance
 ```
 
 this will return the object as an instance from your rbxmx file
@@ -76,16 +76,16 @@ this function used to create uid and return it to your variable
 ---
 ### Example
 ```lua
-local a = uid(true)
+local a = uid(true): string
 local b = uid()
 print(a) -- output xxxxxxxxxxxxxxxxxxxxx
 print(b) --- output xxxx-xxxxxxx-xxxxxx-xxxxx
 ```
 
-## getLDXstorage()
+## getldxstorage()
 
 ```lua
-getLDXstorage() instace:name
+getldxstorage(): instace
 ```
 
 this function used to accessing ldx storage. usefull to place an instace here
@@ -99,7 +99,7 @@ local wallet = getLDXstorage():FindFirstChild("My Wallet")
 ## loadhttpscript(script)
 
 ```lua
-loadhttpscript(link:string)
+loadhttpscript(link:string): void
 ```
 
 this function will do loadstring on your script from the url
