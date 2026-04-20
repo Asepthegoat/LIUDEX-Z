@@ -18,10 +18,10 @@ col.FillColor = Color3.fromRGB(math.random(50,255),math.random(50,255),math.rand
 return simulationdata[name]
 end
 
-function simulationdata:SetChar()
-getplayer().Character = self
+function Simulation:SetChar(name)
+getplayer().Character = simulationdata[name]
 task.wait()
-workspace.Camera.CameraFocus = getchar()
+workspace.Camera.CameraFocus = gethumanoid()
 end
 
 function Simulation:GetGenesis()
