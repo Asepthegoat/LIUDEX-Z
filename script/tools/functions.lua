@@ -160,8 +160,6 @@ function insertobjrbxmx(file)
   return obj
 end
 
-local oldclientid
-
 function getclientid()
 return import.RbxAnalyticsService:GetClientId()
 end
@@ -206,14 +204,21 @@ function gethumanoid()
   return getchar().Humanoid
 end
 
-function setclientid(newid)
-  oldclientid =  nil
-  oldclientid = hookmetamethod(import.RbxAnalyticsService,"__namecall",newcclosure(function(...)
-    if  getnamecallmethod() == "GetClientId" then
-      return newid
+local oldclientid
+local clientidhooked = false
+local clientnewid = nil
+function setclientid2(newid)
+ newclientid = newid
+ if not clientidhooked then
+	oldclientid =  nil
+    oldclientid = hookmetamethod(import.RbxAnalyticsService,"__namecall",newcclosure(function(...)
+     if getnamecallmethod() == "GetClientId" then
+    	return newclientid
     end
-  return oldclientid(...)
-  end))
+    return oldclientid(...)
+    end))
+  end
+  clientidhooked = true
 end
 
 getgenv().newclient = function()
