@@ -1250,8 +1250,14 @@ function LDXSignal:OnRecive(callback)
 end
 
 local function formatValue(val)
-	if typeof(val) == "string" or typeof(val) == "BrickColor" then
+	if typeof(val) == "string" then
 		return "\"" .. val .. "\""
+
+  elseif typeof(val) == "ColorSequence" then
+   return "ColorSequence.new(" .. val .. ")"
+
+  elseif typeof(val) == "BrickColor" then
+    return 'BrickColor.new("' .. tostring(val) .. '")'
 
 	elseif typeof(val) == "number" or typeof(val) == "boolean" then
 		return tostring(val)
@@ -1261,6 +1267,9 @@ local function formatValue(val)
 			.. val.X.Scale .. "," .. val.X.Offset .. "," 
 			.. val.Y.Scale .. "," .. val.Y.Offset .. ")"
   
+  elseif typeof(val) == "UDim" then
+		return "UDim.new(" .. val.Scale .. "," .. val.Offset .. ")"
+
   elseif typeof(val) == "CFrame" then
     local pos = val.Position
     local rv = val.RightVector
@@ -1274,13 +1283,16 @@ local function formatValue(val)
 
   elseif typeof(val) == "Vector3" then
     return "Vector3.new(" .. val.X .. "," .. val.Y .. "," .. val.Z .. ")"
+
 	elseif typeof(val) == "Color3" then
 		return "Color3.fromRGB(" 
 			.. math.floor(val.R*255) .. "," 
 			.. math.floor(val.G*255) .. "," 
 			.. math.floor(val.B*255) .. ")"
+
   elseif typeof(val) == "Rect" then
     return "Rect.new(" .. val.Min.X .. "," .. val.Min.Y .. "," .. val.Max.X .. "," .. val.Max.Y .. ")"
+
 	elseif typeof(val) == "Vector2" then
 		return "Vector2.new(" .. val.X .. "," .. val.Y .. ")"
 
@@ -1292,9 +1304,9 @@ local function formatValue(val)
 end
 
 local proptable = {
-"Name","Parent","Archivable","Position","Orientation",
+"Name","Parent","Archivable","Orientation",
 "Rotation","Size","AnchorPoint","CanCollide","CanTouch","CanQuery",
-"Anchored","Massless","Locked","Transparency","LocalTransparencyModifier","Reflectance",
+"Anchored","Massless","Locked","LocalTransparencyModifier","Reflectance",
 "Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
 "AssemblyAngularVelocity","CustomPhysicalProperties","RootPriority",
 
@@ -1305,7 +1317,7 @@ local proptable = {
 
 "Velocity","MaxForce","P","AngularVelocity","MaxTorque","CFrame",
 
-"Attachment0","Attachment1","Enabled","LightEmission","LightInfluence","Texture",
+"Attachment0","Attachment1","LightEmission","LightInfluence","Texture",
 "TextureLength","TextureSpeed","Transparency",
 
 "CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
@@ -1313,11 +1325,14 @@ local proptable = {
 "Brightness","Color","Enabled","Range","Shadows","Angle",
 
 "Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
+"PlaceholderText","PlaceholderColor3","ApplyStrokeMode","CornerRadius",
+"HoldDuration","KeyboardKeyCode","ObjectText","Value","Disabled","Source","LinkedSource","RunContext",
 
 "Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
 
 "BackgroundColor3","BackgroundTransparency","BorderSizePixel",
-"Position","Size","Visible","ZIndex","ClipsDescendants","LayoutOrder",
+"Position","Visible","ZIndex","ClipsDescendants","LayoutOrder",
+"ResetOnSpawn",
 
 "CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
 "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
@@ -1327,7 +1342,7 @@ local proptable = {
 
 function GetInstaceInfo(instance,name,parent)
   local tabl = {}
-  table.insert(tabl,'local ' .. name .. ' = Instance.new("' .. instance.ClassName .. '")')
+  table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
         pcall(function()
           if prop ~= "Parent" and instance[prop] ~= nil  then
@@ -1346,7 +1361,7 @@ end
 
 local function scangetinstance(obj,tab,parentname)
 	for i, child in ipairs(obj:GetChildren()) do
-    local parname = "var" .. child.Name .. i
+    local parname = "ldxinstance['var" .. child.Name .. i .. "']"
 		local var = GetInstaceInfo(child,parname,parentname)
 		if var ~= nil then
 			table.insert(tab,var)
@@ -1357,7 +1372,8 @@ end
 
 function liudex:SetInstaceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
-  local sl = GetInstaceInfo(instance,instance.Name,"game.CoreGui")
+  local sl = GetInstaceInfo(instance,instance.Name,parent)
+  table.insert(tabl,"local ldxinstance = {}")
   table.insert(tabl,sl)
  
   scangetinstance(instance,tabl,instance)
