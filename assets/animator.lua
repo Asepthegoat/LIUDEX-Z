@@ -18,9 +18,12 @@ local anims = {
 	jump = animate.jump:WaitForChild("JumpAnim"),
 	fall = animate.fall:WaitForChild("FallAnim"),
 	climb = animate.climb:WaitForChild("ClimbAnim"),
-	swim = animate.swim:WaitForChild("Swim"),
-	swimidle = animate.swimidle:WaitForChild("SwimIdle"),
 }
+
+if animate.swim:FindFirstChild("Swim") then
+	anims["swim"] = animate.swim:WaitForChild("Swim"),
+	anims["swimidle"] = animate.swimidle:WaitForChild("SwimIdle"),
+end
 
 local tracks = {}
 for name, anim in pairs(anims) do
