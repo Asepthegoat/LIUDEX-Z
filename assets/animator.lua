@@ -20,9 +20,9 @@ local anims = {
 	climb = animate.climb:WaitForChild("ClimbAnim"),
 }
 
-if animate.swim:FindFirstChild("Swim") then
-	anims["swim"] = animate.swim:WaitForChild("Swim"),
-	anims["swimidle"] = animate.swimidle:WaitForChild("SwimIdle"),
+if animate:FindFirstChild("swim") then
+	anims["swim"] = animate.swim:WaitForChild("Swim")
+	anims["swimidle"] = animate.swimidle:WaitForChild("SwimIdle")
 end
 
 local tracks = {}
