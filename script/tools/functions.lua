@@ -122,6 +122,10 @@ end
 return false
 end
 
+function setcamfocus(Instance)
+  workspace.Camera.CameraSubject = Instance
+end
+
 function clonechar() --used to move while offline
 local Players = game:GetService("Players")
 local oldChar = getchar()
@@ -133,11 +137,24 @@ local characterModel = Players:CreateHumanoidModelFromUserId(userId)
 characterModel.Parent = game.Workspace
 characterModel:MoveTo(getchar().HumanoidRootPart.Position)
 getplayer().Character= characterModel
-workspace.Camera.CameraSubject = characterModel.Humanoid
+setcamfocus(characterModel.Humanoid)
 local h = characterModel.Humanoid
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/assets/animator.lua"))()
 h.Died:Connect(function() clonechar() task.wait(1) h.Parent:Destroy() end)
 return characterModel, oldChar
+end
+
+function setnewchar(instance)
+  getplayer().Character = instance
+  setcamfocus(instance:FindFirstChild("Humanoid") or instance)
+end
+
+function isnewclient()
+   local cid = getrawmetatable(import.RbxAnalyticsService)
+    if isfunctionhooked(cid.__namecall) or isfunctionhooked(gethwid()) then
+        return true
+    end
+    return false
 end
 
 function insertasset(assetid,i)
@@ -741,6 +758,17 @@ end
 
 function ex:ForceClose()
 	game:Shutdown()
+end
+
+function ex:DisabledGamePlayPaused()
+local COREGUI = import.CoreGui
+local networkPaused = COREGUI.RobloxGui.ChildAdded:Connect(function(obj)
+        if obj.Name == "CoreScripts/NetworkPause" then
+            obj:Destroy()
+        end
+    end)
+    COREGUI.RobloxGui["CoreScripts/NetworkPause"]:Destroy()
+    import.GuiService:SetGameplayPausedNotificationEnabled(false)
 end
 
 ex.FC = ex.ForceClose
@@ -1375,10 +1403,10 @@ function liudex:SetInstaceAsClipboard(instance,parent) --a bit buggy you need to
   local sl = GetInstaceInfo(instance,instance.Name,parent)
   table.insert(tabl,"local ldxinstance = {}")
   table.insert(tabl,sl)
- 
   scangetinstance(instance,tabl,instance)
   local s = table.concat(tabl,"\n\n",1)
   setclipboard(s)
+  liudex:Announcement("LIUDEX","Instance copied to your clipboard")
 end
 
 function checkfunction(f)
