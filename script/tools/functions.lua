@@ -151,7 +151,7 @@ end
 
 function isnewclient()
    local cid = getrawmetatable(import.RbxAnalyticsService)
-    if isfunctionhooked(cid.__namecall) or isfunctionhooked(gethwid()) then
+    if isfunctionhooked(cid.__namecall) or isfunctionhooked(gethwid) then
         return true
     end
     return false
