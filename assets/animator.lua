@@ -12,17 +12,17 @@ local animator = humanoid:WaitForChild("Animator")
 local animate = char:WaitForChild("Animate")
 
 local anims = {
-	idle = animate.idle:WaitForChild("Animation1"),
-	walk = animate.walk:WaitForChild("WalkAnim"),
-	run = animate.run:WaitForChild("RunAnim"),
-	jump = animate.jump:WaitForChild("JumpAnim"),
-	fall = animate.fall:WaitForChild("FallAnim"),
-	climb = animate.climb:WaitForChild("ClimbAnim"),
+	idle = animate.idle:FindFirstChildOfClass("Animation"),
+	walk = animate.walk:FindFirstChildOfClass("Animation"),
+	run = animate.run:FindFirstChildOfClass("Animation"),
+	jump = animate.jump:FindFirstChildOfClass("Animation"),
+	fall = animate.fall:FindFirstChildOfClass("Animation"),
+	climb = animate.climb:FindFirstChildOfClass("Animation"),
 }
 
 if animate:FindFirstChild("swim") then
-	anims["swim"] = animate.swim:WaitForChild("Swim")
-	anims["swimidle"] = animate.swimidle:WaitForChild("SwimIdle")
+	anims["swim"] = animate.swim:FindFirstChildOfClass("Animation")
+	anims["swimidle"] = animate.swimidle:FindFirstChildOfClass("Animation")
 end
 
 local tracks = {}
