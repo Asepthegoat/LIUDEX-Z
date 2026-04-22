@@ -1,0 +1,394 @@
+--This Code Generate by LDX Instance to Clipboard V 0.32
+--this is to much because it log almost every prop from instance so make sure to remove some prop. improve soon
+--join us https://discord.gg/WmsssRkgd2
+
+local ldxinstance = {}
+
+ThemeEditor = Instance.new("ScreenGui")
+ThemeEditor.Name = "ThemeEditor"
+ThemeEditor.Parent = gethui()
+ThemeEditor.Archivable = true
+ThemeEditor.Enabled = true
+ThemeEditor.ResetOnSpawn = true
+
+ldxinstance['varFrame1'] = Instance.new("Frame")
+ldxinstance['varFrame1'].Name = "Frame"
+ldxinstance['varFrame1'].Parent = ThemeEditor
+ldxinstance['varFrame1'].Size = UDim2.new(0.30000001192092896,0,0,384)
+ldxinstance['varFrame1'].BackgroundColor3 = Color3.fromRGB(11,0,31)
+ldxinstance['varFrame1'].Position = UDim2.new(0.35019204020500183,0,0.10902895778417587,0)
+ldxinstance['varFrame1'].Visible = true
+ldxinstance['varFrame1'].Active = true
+ldxinstance['varFrame1'].Draggable = true
+
+ldxinstance['varExit1'] = Instance.new("TextButton")
+ldxinstance['varExit1'].Name = "Exit"
+ldxinstance['varExit1'].Parent = ldxinstance['varFrame1']
+ldxinstance['varExit1'].Size = UDim2.new(0,39,0,37)
+ldxinstance['varExit1'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varExit1'].Transparency = 0
+ldxinstance['varExit1'].Text = "X"
+ldxinstance['varExit1'].TextColor3 = Color3.fromRGB(255,0,4)
+ldxinstance['varExit1'].TextSize = 14
+ldxinstance['varExit1'].TextScaled = true
+ldxinstance['varExit1'].TextWrapped = true
+ldxinstance['varExit1'].Font = Enum.Font.SourceSans
+ldxinstance['varExit1'].RichText = false
+ldxinstance['varExit1'].LineHeight = 1
+ldxinstance['varExit1'].BackgroundColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varExit1'].BackgroundTransparency = 1
+ldxinstance['varExit1'].BorderSizePixel = 0
+ldxinstance['varExit1'].Position = UDim2.new(0.8625382781028748,0,0.0078125,0)
+ldxinstance['varExit1'].Visible = true
+ldxinstance['varExit1'].ZIndex = 1
+ldxinstance['varExit1'].ClipsDescendants = false
+ldxinstance['varExit1'].LayoutOrder = 0
+
+ldxinstance['varExit1'].MouseButton1Click:Connect(function()
+    ThemeEditor:Destroy()
+end)
+
+ldxinstance['varTitle2'] = Instance.new("TextLabel")
+ldxinstance['varTitle2'].Name = "Title"
+ldxinstance['varTitle2'].Parent = ldxinstance['varFrame1']
+ldxinstance['varTitle2'].Archivable = true
+ldxinstance['varTitle2'].Rotation = 0
+ldxinstance['varTitle2'].Size = UDim2.new(0.5,0,0,40)
+ldxinstance['varTitle2'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varTitle2'].Transparency = 1
+ldxinstance['varTitle2'].Text = "Theme Editor"
+ldxinstance['varTitle2'].TextColor3 = Color3.fromRGB(119,0,255)
+ldxinstance['varTitle2'].TextTransparency = 0
+ldxinstance['varTitle2'].TextSize = 14
+ldxinstance['varTitle2'].TextScaled = true
+ldxinstance['varTitle2'].TextWrapped = true
+ldxinstance['varTitle2'].Font = Enum.Font.SourceSans
+ldxinstance['varTitle2'].RichText = false
+ldxinstance['varTitle2'].LineHeight = 1
+ldxinstance['varTitle2'].BackgroundColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varTitle2'].BackgroundTransparency = 1
+ldxinstance['varTitle2'].BorderSizePixel = 0
+ldxinstance['varTitle2'].Position = UDim2.new(0.25002288818359375,0,0,0)
+ldxinstance['varTitle2'].Visible = true
+ldxinstance['varTitle2'].ZIndex = 1
+ldxinstance['varTitle2'].ClipsDescendants = false
+ldxinstance['varTitle2'].LayoutOrder = 0
+
+ldxinstance['varUIStroke1'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke1'].Name = "UIStroke"
+ldxinstance['varUIStroke1'].Parent = ldxinstance['varTitle2']
+ldxinstance['varUIStroke1'].Archivable = true
+ldxinstance['varUIStroke1'].Color = Color3.fromRGB(102,20,203)
+ldxinstance['varUIStroke1'].Transparency = 0.5
+ldxinstance['varUIStroke1'].Color = Color3.fromRGB(102,20,203)
+ldxinstance['varUIStroke1'].Enabled = true
+ldxinstance['varUIStroke1'].ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+ldxinstance['varUIStroke1'].ZIndex = 1
+
+ldxinstance['varSubmit3'] = Instance.new("TextButton")
+ldxinstance['varSubmit3'].Name = "Submit"
+ldxinstance['varSubmit3'].Parent = ldxinstance['varFrame1']
+ldxinstance['varSubmit3'].Archivable = true
+ldxinstance['varSubmit3'].Rotation = 0
+ldxinstance['varSubmit3'].Size = UDim2.new(0.8999999761581421,0,0,50)
+ldxinstance['varSubmit3'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varSubmit3'].Transparency = 0
+ldxinstance['varSubmit3'].Text = "Submit"
+ldxinstance['varSubmit3'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varSubmit3'].TextTransparency = 0
+ldxinstance['varSubmit3'].TextSize = 14
+ldxinstance['varSubmit3'].TextScaled = false
+ldxinstance['varSubmit3'].TextWrapped = false
+ldxinstance['varSubmit3'].Font = Enum.Font.SourceSans
+ldxinstance['varSubmit3'].RichText = false
+ldxinstance['varSubmit3'].LineHeight = 1
+ldxinstance['varSubmit3'].BackgroundColor3 = Color3.fromRGB(55,0,138)
+ldxinstance['varSubmit3'].BackgroundTransparency = 0
+ldxinstance['varSubmit3'].BorderSizePixel = 0
+ldxinstance['varSubmit3'].Position = UDim2.new(0.049446918070316315,0,0.8098958134651184,0)
+ldxinstance['varSubmit3'].Visible = true
+ldxinstance['varSubmit3'].ZIndex = 1
+ldxinstance['varSubmit3'].ClipsDescendants = false
+ldxinstance['varSubmit3'].LayoutOrder = 0
+ldxinstance['varSubmit3'].Draggable = false
+
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Name = "UICorner"
+ldxinstance['varUICorner1'].Parent = ldxinstance['varSubmit3']
+ldxinstance['varUICorner1'].Archivable = true
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Name = "UIStroke"
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varSubmit3']
+ldxinstance['varUIStroke2'].Archivable = true
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Transparency = 0
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ldxinstance['varUIStroke2'].ZIndex = 1
+
+ldxinstance['varBackground4'] = Instance.new("TextBox")
+ldxinstance['varBackground4'].Name = "Background"
+ldxinstance['varBackground4'].Parent = ldxinstance['varFrame1']
+ldxinstance['varBackground4'].Archivable = true
+ldxinstance['varBackground4'].Rotation = 0
+ldxinstance['varBackground4'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varBackground4'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varBackground4'].Transparency = 0
+ldxinstance['varBackground4'].Text = ""
+ldxinstance['varBackground4'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varBackground4'].TextTransparency = 0
+ldxinstance['varBackground4'].TextSize = 14
+ldxinstance['varBackground4'].TextScaled = false
+ldxinstance['varBackground4'].TextWrapped = false
+ldxinstance['varBackground4'].Font = Enum.Font.SourceSans
+ldxinstance['varBackground4'].RichText = false
+ldxinstance['varBackground4'].LineHeight = 1
+ldxinstance['varBackground4'].PlaceholderText = "Background..."
+ldxinstance['varBackground4'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varBackground4'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varBackground4'].BackgroundTransparency = 0
+ldxinstance['varBackground4'].BorderSizePixel = 0
+ldxinstance['varBackground4'].Position = UDim2.new(0.03615625947713852,0,0.1302083283662796,0)
+ldxinstance['varBackground4'].Visible = true
+ldxinstance['varBackground4'].ZIndex = 1
+ldxinstance['varBackground4'].ClipsDescendants = false
+ldxinstance['varBackground4'].LayoutOrder = 0
+ldxinstance['varBackground4'].Draggable = false
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Name = "UICorner"
+ldxinstance['varUICorner1'].Parent = ldxinstance['varBackground4']
+ldxinstance['varUICorner1'].Archivable = true
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Name = "UIStroke"
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varBackground4']
+ldxinstance['varUIStroke2'].Archivable = true
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Transparency = 0
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ldxinstance['varUIStroke2'].ZIndex = 1
+
+ldxinstance['varButton5'] = Instance.new("TextBox")
+ldxinstance['varButton5'].Name = "Button"
+ldxinstance['varButton5'].Parent = ldxinstance['varFrame1']
+ldxinstance['varButton5'].Archivable = true
+ldxinstance['varButton5'].Rotation = 0
+ldxinstance['varButton5'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varButton5'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varButton5'].Transparency = 0
+ldxinstance['varButton5'].Text = ""
+ldxinstance['varButton5'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varButton5'].TextTransparency = 0
+ldxinstance['varButton5'].TextSize = 14
+ldxinstance['varButton5'].TextScaled = false
+ldxinstance['varButton5'].TextWrapped = false
+ldxinstance['varButton5'].Font = Enum.Font.SourceSans
+ldxinstance['varButton5'].RichText = false
+ldxinstance['varButton5'].LineHeight = 1
+ldxinstance['varButton5'].PlaceholderText = "Button..."
+ldxinstance['varButton5'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varButton5'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varButton5'].BackgroundTransparency = 0
+ldxinstance['varButton5'].BorderSizePixel = 0
+ldxinstance['varButton5'].Position = UDim2.new(0.5145015120506287,0,0.1302083283662796,0)
+ldxinstance['varButton5'].Visible = true
+ldxinstance['varButton5'].ZIndex = 1
+ldxinstance['varButton5'].ClipsDescendants = false
+ldxinstance['varButton5'].LayoutOrder = 0
+ldxinstance['varButton5'].Draggable = false
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Name = "UICorner"
+ldxinstance['varUICorner1'].Parent = ldxinstance['varButton5']
+ldxinstance['varUICorner1'].Archivable = true
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Name = "UIStroke"
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varButton5']
+ldxinstance['varUIStroke2'].Archivable = true
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Transparency = 0
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ldxinstance['varUIStroke2'].ZIndex = 1
+
+ldxinstance['varBackground26'] = Instance.new("TextBox")
+ldxinstance['varBackground26'].Name = "Background2"
+ldxinstance['varBackground26'].Parent = ldxinstance['varFrame1']
+ldxinstance['varBackground26'].Archivable = true
+ldxinstance['varBackground26'].Rotation = 0
+ldxinstance['varBackground26'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varBackground26'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varBackground26'].Transparency = 0
+ldxinstance['varBackground26'].Text = ""
+ldxinstance['varBackground26'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varBackground26'].TextTransparency = 0
+ldxinstance['varBackground26'].TextSize = 14
+ldxinstance['varBackground26'].TextScaled = false
+ldxinstance['varBackground26'].TextWrapped = false
+ldxinstance['varBackground26'].Font = Enum.Font.SourceSans
+ldxinstance['varBackground26'].RichText = false
+ldxinstance['varBackground26'].LineHeight = 1
+ldxinstance['varBackground26'].PlaceholderText = "Active..."
+ldxinstance['varBackground26'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varBackground26'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varBackground26'].Position = UDim2.new(0.03615632653236389,0,0.3307291567325592,0)
+ldxinstance['varBackground26'].Visible = true
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Parent = ldxinstance['varBackground26']
+ldxinstance['varUICorner1'].Archivable = true
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varBackground26']
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+ldxinstance['varPlaceholder7'] = Instance.new("TextBox")
+ldxinstance['varPlaceholder7'].Name = "Placeholder"
+ldxinstance['varPlaceholder7'].Parent = ldxinstance['varFrame1']
+ldxinstance['varPlaceholder7'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varPlaceholder7'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varPlaceholder7'].Text = ""
+ldxinstance['varPlaceholder7'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varPlaceholder7'].TextTransparency = 0
+ldxinstance['varPlaceholder7'].TextSize = 14
+ldxinstance['varPlaceholder7'].TextScaled = false
+ldxinstance['varPlaceholder7'].TextWrapped = false
+ldxinstance['varPlaceholder7'].Font = Enum.Font.SourceSans
+ldxinstance['varPlaceholder7'].LineHeight = 1
+ldxinstance['varPlaceholder7'].PlaceholderText = "Placeholder..."
+ldxinstance['varPlaceholder7'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varPlaceholder7'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varPlaceholder7'].Position = UDim2.new(0.5145015120506287,0,0.3307291567325592,0)
+ldxinstance['varPlaceholder7'].Visible = true
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Name = "UICorner"
+ldxinstance['varUICorner1'].Parent = ldxinstance['varPlaceholder7']
+ldxinstance['varUICorner1'].Archivable = true
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Name = "UIStroke"
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varPlaceholder7']
+ldxinstance['varUIStroke2'].Archivable = true
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Transparency = 0
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+ldxinstance['varUIStroke2'].ZIndex = 1
+
+ldxinstance['varWebhook8'] = Instance.new("TextBox")
+ldxinstance['varWebhook8'].Name = "Webhook"
+ldxinstance['varWebhook8'].Parent = ldxinstance['varFrame1']
+ldxinstance['varWebhook8'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varWebhook8'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varWebhook8'].Transparency = 0
+ldxinstance['varWebhook8'].Text = ""
+ldxinstance['varWebhook8'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varWebhook8'].TextSize = 14
+ldxinstance['varWebhook8'].TextScaled = false
+ldxinstance['varWebhook8'].TextWrapped = false 
+ldxinstance['varWebhook8'].Font = Enum.Font.SourceSans
+ldxinstance['varWebhook8'].RichText = false
+ldxinstance['varWebhook8'].LineHeight = 1
+ldxinstance['varWebhook8'].PlaceholderText = "Webhook..."
+ldxinstance['varWebhook8'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varWebhook8'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varWebhook8'].Position = UDim2.new(0.5145015120506287,0,0.53125,0)
+ldxinstance['varWebhook8'].Visible = true
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Parent = ldxinstance['varWebhook8']
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varWebhook8']
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+ldxinstance['varBorder9'] = Instance.new("TextBox")
+ldxinstance['varBorder9'].Name = "Border"
+ldxinstance['varBorder9'].Parent = ldxinstance['varFrame1']
+ldxinstance['varBorder9'].Archivable = true
+ldxinstance['varBorder9'].Rotation = 0
+ldxinstance['varBorder9'].Size = UDim2.new(0.44999998807907104,0,0,64)
+ldxinstance['varBorder9'].AnchorPoint = Vector2.new(0,0)
+ldxinstance['varBorder9'].Text = ""
+ldxinstance['varBorder9'].TextColor3 = Color3.fromRGB(255,255,255)
+ldxinstance['varBorder9'].TextSize = 14
+ldxinstance['varBorder9'].TextScaled = false
+ldxinstance['varBorder9'].TextWrapped = false
+ldxinstance['varBorder9'].Font = Enum.Font.SourceSans
+ldxinstance['varBorder9'].PlaceholderText = "Border..."
+ldxinstance['varBorder9'].PlaceholderColor3 = Color3.fromRGB(127,127,127)
+ldxinstance['varBorder9'].BackgroundColor3 = Color3.fromRGB(56,0,141)
+ldxinstance['varBorder9'].Position = UDim2.new(0.03615632653236389,0,0.53125,0)
+ldxinstance['varBorder9'].Visible = true
+
+
+ldxinstance['varUICorner1'] = Instance.new("UICorner")
+ldxinstance['varUICorner1'].Parent = ldxinstance['varBorder9']
+ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,10)
+
+ldxinstance['varUIStroke2'] = Instance.new("UIStroke")
+ldxinstance['varUIStroke2'].Parent = ldxinstance['varBorder9']
+ldxinstance['varUIStroke2'].Archivable = true
+ldxinstance['varUIStroke2'].Color = Color3.fromRGB(102,0,255)
+ldxinstance['varUIStroke2'].Enabled = true
+ldxinstance['varUIStroke2'].ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+
+
+ldxinstance['varJustACorner10'] = Instance.new("UICorner")
+ldxinstance['varJustACorner10'].Name = "JustACorner"
+ldxinstance['varJustACorner10'].Parent = ldxinstance['varFrame1']
+ldxinstance['varJustACorner10'].Archivable = true
+ldxinstance['varJustACorner10'].CornerRadius = UDim.new(0,8)
+
+ldxinstance['varI Love Clorinde11'] = Instance.new("LocalScript")
+ldxinstance['varI Love Clorinde11'].Name = "I Love Clorinde"
+ldxinstance['varI Love Clorinde11'].Parent = ldxinstance['varFrame1']
+
+local button = ldxinstance['varButton5']
+local background = ldxinstance['varBackground4']
+local webhook = ldxinstance['varWebhook8']
+local border = ldxinstance['varBorder9'] 
+local background2 = ldxinstance['varBackground26']
+local placeholder = ldxinstance['varPlaceholder7']
+ldxinstance['varSubmit3'].MouseButton1Click:Connect(function()
+    local buttonargs = button.Text:split(",")
+    local backgroundargs = background.Text:split(",")
+    local borderargs = border.Text:split(",")
+    local background2args = background2.Text:split(",")
+    local data = {
+        version = "1.0.2",
+        button = {buttonargs[1] or 25,buttonargs[2] or 25,buttonargs[3] or 25},
+        background = {backgroundargs[1] or 0,backgroundargs[2] or 0,backgroundargs[3] or 0},
+        backgroundlight = {background2args[1] or 10, background2args[2] or 10,background2args[3] or 10},
+        placeholder = placeholder.Text or "Lorem ipsum",
+        border = {borderargs[1] or 15,borderargs[2] or 15,borderargs[3] or 15},
+        imgColor = {255,255,255},
+        sendData = webhook.Text or ""
+    }
+    writefile("LIUDEX Z/Data/UI.json",import.HttpService:JSONEncode(data))
+    liudex:Notify("Seting Theme","Setting theme success","rbxassetid://107856348410623","Close")
+    print(data['version'],"\n",data['button'],"\n",data['background'],"\n",data['backgroundlight'],"\n",data['placeholder'],"\n",data['border'],"\n",data['sendData'],"\n")
+end)
+task.wait()
