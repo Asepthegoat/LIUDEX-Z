@@ -1474,6 +1474,38 @@ getgenv().getconfig = setmetatable({}, {
   end
 })
 
+local currentATrack
+function loadanim(id,speed,timestamp)
+    local humanoid = gethumanoid()
+    local animator = humanoid:FindFirstChildOfClass("Animator")
+    if not animator then
+        animator = Instance.new("Animator")
+        animator.Parent = humanoid
+    end
+    for _, track in pairs(animator:GetPlayingAnimationTracks()) do
+      track:Stop()
+    end
+    
+    if not id then return end
+
+    local animation = Instance.new("Animation")
+    animation.AnimationId = "rbxassetid://" .. tostring(id)
+
+    local ok, track = pcall(function()
+        return animator:LoadAnimation(animation)
+    end)
+
+    if ok and track then
+        currentATrack = track
+        if timestamp then
+          track.TimePosition = timestamp
+        end
+        track.Priority = Enum.AnimationPriority.Action
+        track:Play()
+        track:AdjustSpeed(speed or 1)
+    end
+end
+
 local ldxfenv = {
 		"uid","generatevarchar",
 		"run_on_func","run_on_method",
@@ -1490,7 +1522,7 @@ local ldxfenv = {
 	  "safecall","callwithc","clonechar","setoffline",
     "insertobjrbxmx","setclientid","gethumanoid",
     "getrootpart","getdeviceid","getsessionid",
-    "getclientid","isoffline","setnewchar","isnewclient","setcamfocus"
+    "getclientid","isoffline","loadanim"
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
