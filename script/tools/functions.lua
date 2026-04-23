@@ -1522,7 +1522,7 @@ local ldxfenv = {
 	  "safecall","callwithc","clonechar","setoffline",
     "insertobjrbxmx","setclientid","gethumanoid",
     "getrootpart","getdeviceid","getsessionid",
-    "getclientid","isoffline","loadanim"
+    "getclientid","isoffline","setnewchar","isnewclient","setcamfocus","loadanim"
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
