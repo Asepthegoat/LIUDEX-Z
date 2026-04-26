@@ -1506,6 +1506,66 @@ function loadanim(id,speed,timestamp)
     end
 end
 
+getgenv().getsmenv = function(scripts,gc,res) -- get script env from registry 
+    local ftbl = {
+        func = {},
+        thread = {},
+        connection = {},
+        tbl = {},
+        constant = {}
+    }
+    local src = ""
+    if typeof(scripts) ~= "string" then
+        src = scripts:GetFullName()
+    else
+        src = scripts
+    end
+    local tfunc = 0
+    local tthread = 0
+    local tcon = 0
+    local gr = false
+    for i,v in next,getgc(true) do
+        if typeof(v) == "function" then
+            tfunc = 1 + tfunc
+            if debug.info(v,"s") == src then
+                table.insert(ftbl.func,v)
+            end
+        end 
+
+        if typeof(v) == "thread" then
+            tthread = tthread + 1
+            if getscriptfromthread(v) == scripts then
+                table.insert(ftbl.thread,v)
+            end
+        end
+        
+        if typeof(v) == "Connection" then
+            tcon = tcon + 1
+            local f = v.Function
+            if f then
+                if debug.getinfo(f).source:match(src) then
+                    table.insert(ftbl.connection,v)
+                end
+            end
+        end
+    end
+    for i,v in next,getreg() do
+        if typeof(v) == "thread" then
+            tthread = tthread + 1
+            if getscriptfromthread(v) == scripts then
+                table.insert(ftbl.thread,v)
+            end
+        end
+    end
+    if res then
+        print("function found:", #ftbl.func, "of", tfunc, "\nthread found:", #ftbl.thread, "of", tthread, "\nconnection found:", #ftbl.connection, "of", tcon)
+    end
+    repeat
+        task.wait()
+    until gr == true
+return ftbl
+end 
+
 local ldxfenv = {
 		"uid","generatevarchar",
 		"run_on_func","run_on_method",
