@@ -1347,7 +1347,7 @@ local function formatValue(val)
 end
 
 local proptable = {
-"Name","Parent","Archivable","Orientation",
+"Name","Parent","Orientation",
 "Rotation","Size","AnchorPoint","CanCollide","CanTouch","CanQuery",
 "Anchored","Massless","Locked","LocalTransparencyModifier","Reflectance",
 "Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
@@ -1370,6 +1370,7 @@ local proptable = {
 "Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
 "PlaceholderText","PlaceholderColor3","ApplyStrokeMode","CornerRadius",
 "HoldDuration","KeyboardKeyCode","ObjectText","Value","Disabled","Source","LinkedSource","RunContext",
+"TextXAlignment","TextYAlignment"
 
 "Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
 
