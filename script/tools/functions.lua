@@ -159,6 +159,10 @@ end
 
 function insertasset(assetid,i)
 local index = i or 1
+if bool then
+	local obj = import.InsertService:LoadLocalAsset(file)
+	return obj
+end
 local objects = game:GetObjects(assetid)
 local model = objects[index]
 return model
@@ -166,13 +170,21 @@ end
 
 function insertrbxmx(file,i)
 local index = i or 1
+if bool then
+  local obj = import.InsertService:LoadLocalAsset(getcustomasset(file))
+  return obj
+end
 local objects = game:GetObjects(getcustomasset(file))
 local model = objects[index]
 return model
 end
 
-function insertobjrbxmx(file)
+function insertobjrbxmx(file,bool)
   local index = i or 1
+  if bool then
+	local obj = import.InsertService:LoadLocalAsset(getcustomasset(file))
+	return obj
+	end
   local obj = game:GetObjects(getcustomasset(file))
   return obj
 end
