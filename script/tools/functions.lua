@@ -1299,6 +1299,20 @@ local function formatValue(val)
   elseif typeof(val) == "ColorSequence" then
    return "ColorSequence.new(" .. val .. ")"
 
+  elseif typeof(val) == "NumberSequence" then
+	  local str = "NumberSequence.new({"
+	
+	  for i, v in ipairs(val.Keypoints) do
+	  	str = str .. "NumberSequenceKeypoint.new(" .. v.Time .. "," .. v.Value .. ")"
+      
+	  	if i < #val.Keypoints then
+	  		str = str .. ","
+	  	end
+	  end
+	
+	  str = str .. "})"
+	  return str
+
   elseif typeof(val) == "BrickColor" then
     return 'BrickColor.new("' .. tostring(val) .. '")'
 
@@ -1365,12 +1379,12 @@ local proptable = {
 
 "CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
 
-"Brightness","Color","Enabled","Range","Shadows","Angle",
+"Brightness","Enabled","Range","Shadows","Angle",
 
 "Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
 "PlaceholderText","PlaceholderColor3","ApplyStrokeMode","CornerRadius",
 "HoldDuration","KeyboardKeyCode","ObjectText","Value","Disabled","Source","LinkedSource","RunContext",
-"TextXAlignment","TextYAlignment"
+"TextXAlignment","TextYAlignment",
 
 "Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
 
@@ -1382,13 +1396,24 @@ local proptable = {
 "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
 } -- not all Property cuz im kinda lazy
 
-
+local propthatcannil = {
+  "Name","CanCollide","CanTouch","CanQuery","Attachment0","Attachment1",
+  "Anchored","Massless","Locked","Enabled","Transparency","Text",
+  "TextTransparency","TextSize","TextScaled","TextWrapped","RichText",
+  "Disabled","Source","LinkedSource","Draggable","ResetOnSpawn","Visible",
+  "ZIndex","ClipsDescendants","LayoutOrder","BackgroundTransparency",
+  "PlaceholderText"
+}
 
 function GetInstaceInfo(instance,name,parent)
   local tabl = {}
   table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
+        
         pcall(function()
+          if prop == propthatcannil[prop] and (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil) then 
+            continue 
+          end
           if prop ~= "Parent" and instance[prop] ~= nil  then
            table.insert(tabl,name .. '.' .. prop .. " = " .. formatValue(instance[prop]))
           elseif instance[prop] ~= nil and prop == "Parent" then
@@ -1405,7 +1430,7 @@ end
 
 local function scangetinstance(obj,tab,parentname)
 	for i, child in ipairs(obj:GetChildren()) do
-    local parname = "ldxinstance['var" .. child.Name .. i .. "']"
+    local parname = "--This Code Generate by ldx SetInstanceToClipboard\n--Thanks for using lds SetInstaceToClipboard we will improve this later\n--join ldx community at https://discord.gg/WmsssRkgd2\nldxinstance['var" .. child.Name .. i .. "']"
 		local var = GetInstaceInfo(child,parname,parentname)
 		if var ~= nil then
 			table.insert(tab,var)
