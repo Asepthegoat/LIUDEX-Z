@@ -653,6 +653,7 @@ function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
     for i,v in next, getgc() do
+	if typeof(v) ~= "function" then continue end
       local info = debug.getinfo(v)
       if debug.info(v,"n") == "" or debug.info(v,"n") == nil then
         print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
@@ -663,6 +664,7 @@ function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
     end
   else
     for i,v in next, getgc() do
+	if typeof(v) ~= "function" then continue end
       local deb = debug.info(v,"n")
       local info = debug.getinfo(v)
       if string.match(deb:lower(),targetfunc:lower()) then
@@ -686,6 +688,7 @@ ex.FindFunction = ex.GetAllFunction
 
 function ex:getspecificfunction(target,ssrc,detail,runf,...)
   for i,v in next, getgc() do
+	if typeof(v) ~= "function" then continue end
     local info = debug.getinfo(v)
     
     if debug.info(v,"n") == target and debug.info(v,"s"):match(ssrc) then
