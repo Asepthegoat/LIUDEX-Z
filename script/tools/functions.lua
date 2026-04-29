@@ -1409,7 +1409,7 @@ function GetInstaceInfo(instance,name,parent)
   local tabl = {}
   table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
-        if prop == propthatcannil[prop] and (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil) then 
+        if propthatcannil[prop] and (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil) then 
             continue 
         end
         pcall(function()
