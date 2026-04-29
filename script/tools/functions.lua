@@ -1294,7 +1294,7 @@ end
 
 local function formatValue(val)
 	if typeof(val) == "string" then
-		return "\"" .. val .. "\""
+		return "[[" .. val .. "]]"
 
   elseif typeof(val) == "ColorSequence" then
    return "ColorSequence.new(" .. val .. ")"
