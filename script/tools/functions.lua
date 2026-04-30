@@ -1340,6 +1340,9 @@ local function formatValue(val)
 
   elseif typeof(val) == "Vector3" then
     return "Vector3.new(" .. val.X .. "," .. val.Y .. "," .. val.Z .. ")"
+  
+  elseif typeof(val) == "Vector2" then
+    return "Vector3.new(" .. val.X .. "," .. val.Y .. ")"
 
 	elseif typeof(val) == "Color3" then
 		return "Color3.fromRGB(" 
@@ -1361,61 +1364,97 @@ local function formatValue(val)
 end
 
 local proptable = {
-"Name","Parent","Orientation",
-"Rotation","Size","AnchorPoint","CanCollide","CanTouch","CanQuery",
-"Anchored","Massless","Locked","LocalTransparencyModifier","Reflectance",
-"Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
-"AssemblyAngularVelocity","CustomPhysicalProperties","RootPriority",
+  "Name","Parent","Orientation",
+  "Rotation","Size","AnchorPoint","CanCollide","CanTouch","CanQuery",
+  "Anchored","Massless","Locked","LocalTransparencyModifier","Reflectance",
+  "Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
+  "AssemblyAngularVelocity","CustomPhysicalProperties","RootPriority",
 
-"Shape","TopSurface","BottomSurface","LeftSurface","RightSurface","FrontSurface",
-"BackSurface",
+  "Shape","TopSurface","BottomSurface","LeftSurface","RightSurface","FrontSurface",
+  "BackSurface",
 
-"MeshId","TextureId","Scale","Offset","VertexColor","MeshType",
+  "MeshId","TextureId","Scale","Offset","VertexColor","MeshType",
 
-"Velocity","MaxForce","P","AngularVelocity","MaxTorque","CFrame",
+  "Velocity","MaxForce","P","AngularVelocity","MaxTorque","CFrame",
 
-"Attachment0","Attachment1","LightEmission","LightInfluence","Texture",
-"TextureLength","TextureSpeed","Transparency",
+  "Attachment0","Attachment1","LightEmission","LightInfluence","Texture",
+  "TextureLength","TextureSpeed","Transparency",
 
-"CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
+  "CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
 
-"Brightness","Enabled","Range","Shadows","Angle",
+  "Brightness","Enabled","Range","Shadows","Angle",
 
-"Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
-"PlaceholderText","PlaceholderColor3","ApplyStrokeMode","CornerRadius",
-"HoldDuration","KeyboardKeyCode","ObjectText","Value","Disabled","Source","LinkedSource","RunContext",
-"TextXAlignment","TextYAlignment",
+  "Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
+  "PlaceholderText","PlaceholderColor3","ApplyStrokeMode","CornerRadius",
+  "HoldDuration","KeyboardKeyCode","ObjectText","Value","Disabled","Source","LinkedSource","RunContext",
+  "TextXAlignment","TextYAlignment",
 
-"Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
+  "Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
 
-"BackgroundColor3","BackgroundTransparency","BorderSizePixel",
-"Position","Visible","ZIndex","ClipsDescendants","LayoutOrder",
-"ResetOnSpawn",
+  "BackgroundColor3","BackgroundTransparency","BorderSizePixel",
+  "Position","Visible","ZIndex","ClipsDescendants","LayoutOrder",
+  "ResetOnSpawn",
 
-"CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
-"ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
+  "CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
+  "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
 } -- not all Property cuz im kinda lazy
 
 local propthatcannil = {
-  "Name","CanCollide","CanTouch","CanQuery","Attachment0","Attachment1",
-  "Anchored","Massless","Locked","Enabled","Transparency","Text",
-  "TextTransparency","TextSize","TextScaled","TextWrapped","RichText",
-  "Disabled","Source","LinkedSource","Draggable","ResetOnSpawn","Visible",
-  "ZIndex","ClipsDescendants","LayoutOrder","BackgroundTransparency",
-  "PlaceholderText"
+  Name = true,
+  CanCollide = true,
+  CanTouch = true,
+  CanQuery = true,
+  Attachment0 = true,
+  Attachment1 = true,
+  Anchored = true,
+  Massless = true,
+  Locked = true,
+  Enabled = true,
+  Text = true,
+  TextSize = true,
+  TextScaled = true,
+  TextWrapped = true,
+  RichText = true,
+  Disabled = true,
+  Source = true,
+  Draggable = true,
+  Position = true,
+  Size = true,
+  AnchorPoint = true,
+  LinkedSource = true,
+  ResetOnSpawn = true,
+  ZIndex = true,
+  ClipsDescendants = true,
+  LayoutOrder = true,
+  BackgroundTransparency = true,
+  PlaceholderText = true
 }
 
-function GetInstaceInfo(instance,name,parent)
+local scrptststs = {}
+local function GetInstaceInfo(instance,name,parent)
   local tabl = {}
   table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
-        if propthatcannil[prop] and (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil) then 
-            continue 
-        end
         pcall(function()
-          if prop ~= "Parent" and instance[prop] ~= nil  then
+          local isempty = (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil)
+          if prop ~= "Parent" and instance[prop] ~= nil and prop ~= "Source" then
+            if propthatcannil[prop] and isempty then
+                return
+            end
            table.insert(tabl,name .. '.' .. prop .. " = " .. formatValue(instance[prop]))
+          elseif prop == "Source" and instance[prop] and instance[prop] ~= "" then
+            if instance[prop]:find("script.Parent") then
+              local filt = instance[prop]:gsub("script.Parent",instance:GetFullName() .. ".Parent")
+              table.insert(scrptststs,"loadstring(" .. formatValue(filt) .. ")()")
+              print(filt)
+            else
+              table.insert(scrptststs,formatValue(instance[prop]))
+              print(instance[prop])
+            end
           elseif instance[prop] ~= nil and prop == "Parent" then
+            if propthatcannil[prop] and isempty then
+                return
+            end
             table.insert(tabl,name .. '.' .. prop .. " = " .. tostring(parent))
           end
         end)
@@ -1427,9 +1466,10 @@ function GetInstaceInfo(instance,name,parent)
       return s
 end
 
+
 local function scangetinstance(obj,tab,parentname)
 	for i, child in ipairs(obj:GetChildren()) do
-    local parname = "--This Code Generate by ldx SetInstanceToClipboard\n--Thanks for using lds SetInstaceToClipboard we will improve this later\n--join ldx community at https://discord.gg/WmsssRkgd2\nldxinstance['var" .. child.Name .. i .. "']"
+    local parname = "ldxinstance['var" .. child.Name .. i .. "']"
 		local var = GetInstaceInfo(child,parname,parentname)
 		if var ~= nil then
 			table.insert(tab,var)
@@ -1438,12 +1478,14 @@ local function scangetinstance(obj,tab,parentname)
 	end
 end
 
-function liudex:SetInstaceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
+function liudex:SetInstanceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
+  scrptststs = {}
   local sl = GetInstaceInfo(instance,instance.Name,parent)
-  table.insert(tabl,"local ldxinstance = {}")
+  table.insert(tabl,"--This Code Generate by ldx SetInstanceAsClipboard\n--Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture\n--join ldx community at https://discord.gg/WmsssRkgd2\nlocal ldxinstance = {}")
   table.insert(tabl,sl)
   scangetinstance(instance,tabl,instance)
+  table.insert(tabl,table.concat(scrptststs,"\n",1))
   local s = table.concat(tabl,"\n\n",1)
   setclipboard(s)
   liudex:Announcement("LIUDEX","Instance copied to your clipboard")
