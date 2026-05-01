@@ -39,7 +39,7 @@ if getgenv().RemoteSocket and getgenv().RemoteSocket.Status == true then
 end
 
 getgenv().RemoteSocket = {
-    MainUrl = "wss://xochitl-superexacting-unconcentrically.ngrok-free.dev",
+    MainUrl = "URL_Here",
     Status = false,
     ClientId = getplayer().UserId, --or make this into user id if you want to do botting system
     RemoteCom = {} --just make this one empty
