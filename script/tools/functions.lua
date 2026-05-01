@@ -1342,7 +1342,7 @@ local function formatValue(val)
     return "Vector3.new(" .. val.X .. "," .. val.Y .. "," .. val.Z .. ")"
   
   elseif typeof(val) == "Vector2" then
-    return "Vector3.new(" .. val.X .. "," .. val.Y .. ")"
+    return "Vector2.new(" .. val.X .. "," .. val.Y .. ")"
 
 	elseif typeof(val) == "Color3" then
 		return "Color3.fromRGB(" 
