@@ -648,32 +648,36 @@ function ex:GetTable(filter)
     end
 end
 
-function ex:GetAllFunction(targetfunc,detail,waits,runf,...)
+function ex:GetAllFunction(targetfunc,detail,once,runf,...)
   local tablef = {}
+  local functions = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
     for i,v in next, getgc() do
-	if typeof(v) ~= "function" then continue end
+	    if typeof(v) ~= "function" or functions[getfunctionhash(v)] then continue end
       local info = debug.getinfo(v)
       if debug.info(v,"n") == "" or debug.info(v,"n") == nil then
         print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
-        task.wait(waits)
+        functions[getfunctionhash(v)] = true
+        task.wait()
       else
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
       end
     end
   else
     for i,v in next, getgc() do
-	if typeof(v) ~= "function" then continue end
+	    if typeof(v) ~= "function" or functions[getfunctionhash(v)] then continue end
       local deb = debug.info(v,"n")
       local info = debug.getinfo(v)
       if string.match(deb:lower(),targetfunc:lower()) then
         table.insert(tablef,v)
+        functions[getfunctionhash(v)] = true
         if detail then
-          if info.name ~= "" or not info.name then
+          if info.name == "" or not info.name then
             print("Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
+          else
+            print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
           end
-          print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
         end
         if runf then
           v(...)
@@ -691,7 +695,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
 	if typeof(v) ~= "function" then continue end
     local info = debug.getinfo(v)
     
-    if debug.info(v,"n") == target and debug.info(v,"s"):match(ssrc) then
+    if debug.info(v,"n") == target and debug.info(v,"s"):find(ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -715,7 +719,7 @@ function ex:GetHashFunction(hashFunc,regorgc,detail)
   if regorgc then
     for i,v in next, getreg() do
       if typeof(v) == "function" then
-        if v:match(hashFunc) then
+        if getfunctionhash(v):match(hashFunc) then
           if detail then
             local info = debug.getinfo(v)
              print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
@@ -727,7 +731,7 @@ function ex:GetHashFunction(hashFunc,regorgc,detail)
   else
     for i,v in next, getgc() do
       if typeof(v) == "function" then
-        if v:match(hashFunc) then
+        if getfunctionhash(v):match(hashFunc) then
           if detail then
             local info = debug.getinfo(v)
              print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
@@ -1579,16 +1583,16 @@ function loadanim(id,speed,timestamp)
 
     if ok and track then
         currentATrack = track
+        track.Priority = Enum.AnimationPriority.Action
+        track:Play()
         if timestamp then
           track.TimePosition = timestamp
         end
-        track.Priority = Enum.AnimationPriority.Action
-        track:Play()
         track:AdjustSpeed(speed or 1)
     end
 end
 
-getgenv().getsmenv = function(scripts,gc,res) -- get script env from registry 
+getgenv().getsmenv = function(scripts,res) -- get script env from registry 
     local ftbl = {
         func = {},
         thread = {},
@@ -1646,7 +1650,7 @@ getgenv().getsmenv = function(scripts,gc,res) -- get script env from registry
         task.wait()
     until gr == true
 return ftbl
-end 
+end
 
 local ldxfenv = {
 		"uid","generatevarchar",
