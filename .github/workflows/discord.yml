@@ -1,0 +1,28 @@
+name: Discord Deploy Notif
+
+on:
+  deployment_status:
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    if: github.event.deployment_status.state == 'success'
+
+    steps:
+      - name: Send Discord Notification
+        run: |
+          curl -H "Content-Type: application/json" \
+          -d "{
+            \"content\": \"🚀 Deploy sukses!\",
+            \"embeds\": [{
+              \"title\": \"Deploy Info\",
+              \"color\": 5814783,
+              \"fields\": [
+                {\"name\": \"User\", \"value\": \"${{ github.actor }}\", \"inline\": true},
+                {\"name\": \"Repo\", \"value\": \"${{ github.repository }}\", \"inline\": true},
+                {\"name\": \"Branch\", \"value\": \"${{ github.ref_name }}\", \"inline\": true}
+              ]
+            }]
+          }" \
+          ${{ secrets.DISCORD_WEBHOOK }}
