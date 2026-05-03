@@ -648,17 +648,24 @@ function ex:GetTable(filter)
     end
 end
 
+local function getfunctionrefid(func)
+    if not func then return nil end
+    local f = tostring(debug.info(func, "f"))
+    return f:match("0x[%da-fA-F]+") or f:gsub("function:%s*", "")
+end
+
 function ex:GetAllFunction(targetfunc,detail,once,runf,...)
   local tablef = {}
   local functions = {}
   if targetfunc == "" or not targetfunc then
     table.insert(tablef,v)
     for i,v in next, getgc() do
-	    if typeof(v) ~= "function" or functions[getfunctionhash(v)] then continue end
+
+	    if typeof(v) ~= "function" or functions[getfunctionrefid(v)] then continue end
       local info = debug.getinfo(v)
       if debug.info(v,"n") == "" or debug.info(v,"n") == nil then
         print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
-        functions[getfunctionhash(v)] = true
+        functions[getfunctionrefid(v)] = true
         task.wait()
       else
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
@@ -666,12 +673,12 @@ function ex:GetAllFunction(targetfunc,detail,once,runf,...)
     end
   else
     for i,v in next, getgc() do
-	    if typeof(v) ~= "function" or functions[getfunctionhash(v)] then continue end
+	    if typeof(v) ~= "function" or functions[getfunctionrefid(v)] then continue end
       local deb = debug.info(v,"n")
       local info = debug.getinfo(v)
       if string.match(deb:lower(),targetfunc:lower()) then
         table.insert(tablef,v)
-        functions[getfunctionhash(v)] = true
+        functions[getfunctionrefid(v)] = true
         if detail then
           if info.name == "" or not info.name then
             print("Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
