@@ -49,7 +49,7 @@ or you can use POST method to invoke server
 ]]
 local TextChatService = import.TextChatService
 function fakeChat(target,msg)
-    local plr = import.Players[target]
+    local plr = target
     local head =plr.Character.Head
     TextChatService:DisplayBubble(head, msg)
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
@@ -212,9 +212,12 @@ local entry = Socket.new("entry",function(id,...)
     print(id,"Has Join this session")
 end)
 
-getgenv().chat = Socket.new("Chat",function(id,sender,...) 
-    local args = {...} 
+getgenv().chat = Socket.new("chat",function(id,...) 
+    local args = {...}
+    print(id)
+    local sender = Players:GetPlayerByUserId(tonumber(id))
     print(sender,table.concat(args," ",1))
+    print(table.concat(args," ",1),typeof(table.concat(args," ",1)))
     fakeChat(sender,table.concat(args," ",1))
 end)
 
