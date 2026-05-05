@@ -266,10 +266,3 @@ getgenv().ldxsetprop = Socket.new("SetProp",function(prop,value)
 end)
 
 --testing ignore this
-import.UserInputService.InputBegan:Connect(function(key,gp)
-    if gp then return end
-
-    if uis:IsKeyDown(Enum.KeyCode.F) and uis:IsKeyDown(Enum.KeyCode.LeftControl) and uis:IsKeyDown(Enum.KeyCode.LeftShift) then
-        Announcement:FireSocket("@server","Test Connect")
-    end
-end)
