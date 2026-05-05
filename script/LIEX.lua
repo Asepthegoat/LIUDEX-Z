@@ -15,39 +15,70 @@ __   ___________________________________________________________________________
 
 Beta 0.1
 ]]
+getgenv().RemoteSocket = {
+    MainUrl = "",
+    Status = false,
+    Chat = false,
+    ClientId = getplayer().UserId,
+    RemoteCom = {} --just make this one empty dont fill it dude
+}
+
+--------------------------------------------------------------------
+local rs = import.RunService
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() --LIB DON'T REMOVE THIS
 --[[
-work no nword count flow
+work flow no nword count without skid gui
 ":;:" its used for invoke server
 " | " its use for firesocket
 "InvokeServer" used only for firing server to run code on server and didnt affected to client
-or you cant use POST method to invoke server
-"FireSocket" used only for firing client to run code from server and didnt affected annything on server
-]]
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/Asset/Gui/LIEX_Control_Pannel.lua"))
+or you can use POST method to invoke server
+"FireSocket" used only for firing all client(reciver) to run code from sender and didnt affected annything on server
 
+--[DISCLAIMER]--
+
++ it is recommended to add a prefix to your remote name, for example ldxbring instead of just bring.
++ client Script reciever require to be same Script or Code to each other
++ you can only send string use serialize script to make your string looks like normal code and run it with  if you want
++ oprator
+ - @all to fire all client that connect
+ - @server to fire all client that connect and in same server(placeid and gameid) with you server
++ remote Example:
++ Socket:FireSocket(remote,target or oprator,args)
+[ Developed By Lorem Ipsum Familia Developer ]
+
+]]
 local TextChatService = import.TextChatService
 function fakeChat(target,msg)
-    local head = target.Character.Head
+    local plr = import.Players[target]
+    local head =plr.Character.Head
     TextChatService:DisplayBubble(head, msg)
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-    channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. target.Name ' :</font>' .. msg)
+    channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
 end
 
 if getgenv().RemoteSocket and getgenv().RemoteSocket.Status == true then
     return warn("Socket is already exist close it first by using:\nSocket:CloseSession()")
 end
 
-getgenv().RemoteSocket = {
-    MainUrl = "URL_Here",
-    Status = false,
-    ClientId = getplayer().UserId, --or make this into user id if you want to do botting system
-    RemoteCom = {} --just make this one empty
-}
-
 getgenv().Socket = {}
 
 local RemoteSocket = getgenv().RemoteSocket
+function Socket:SetMain(url)
+    RemoteSocket.MainUrl = url
+    if not RemoteSocket.Status then
+        RemoteSocket.Status = true
+        RemoteSocket.RemoteCom = {}
+        RemoteSocket.Invoker = {}
+        RemoteSocket.ClientId = getplayer().UserId
+    end
+end
+
+Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
+repeat
+task.wait(0.2)    
+until getgenv().RemoteSocket.MainUrl ~= ""
+
+local Players = import.Players
 local sockets = WebSocket.connect(RemoteSocket.MainUrl)
 sockets.OnClose:Connect(function()
     print("Session Clossed")
@@ -57,24 +88,36 @@ sockets.OnMessage:Connect(function(msg)
     if not RemoteSocket.Status then
         RemoteSocket.Status = true
     end
+    if msg == "|ConnectedToSocket|" then
+        return
+    end
     print("recive",msg)
     local args = string.split(msg," | ")
     local name = args[1]
     local id = args[2]
     local op = args[3]
-    local func =  RemoteSocket.RemoteCom[name].func
+    local func =  RemoteSocket.RemoteCom[name].func or RemoteSocket.RemoteCom["entry"].func
     local argue = table.concat(args,",",4)
     local argument = string.split(argue,",",1)
     local serverdata = args[3]:split(";")
     local job = serverdata[3]
     local place = serverdata[2]
     local selfop 
+    if args[1] == "invoked" then
+        func = RemoteSocket.Invoker[name].func
+        func(unpack(args))
+    end
     if op == "@all" or op == "@global" then
         func(id,unpack(argument))
     elseif import.Players[op:gsub("@","")] then
         selfop = getplayer().Parent[op:gsub("@","")]
-    elseif op == "@server" then
-        
+    elseif op:find("@server") then
+        local serverdat = op:split(";")
+        local place = serverdat[2]
+        local jobid = serverdat[3]
+        if tonumber(place) == game.PlaceId and jobid == game.JobId then
+            func(id,unpack(argument))
+        end
     end
     if selfop then
         if compareinstances(selfop, getplayer()) then
@@ -82,6 +125,13 @@ sockets.OnMessage:Connect(function(msg)
         end
     end
 end)
+
+if RemoteSocket.Chat then
+    getplayer().Chatted:Connect(function(msg)
+        local args = msg:split(" ")
+        Socket[args[1]]:FireSocket(table.concat(args," ",2))
+    end)
+end
 
 function Socket:CloseSession()
     sockets:Close()
@@ -105,18 +155,36 @@ function Socket.new(name,func)
     error("name must be string")
 end
 
-function Socket:FireSocket(remote,op,...)
+function Socket.request(name,call)
+    if name and typeof(name) == "string" then
+        if not RemoteSocket.Invoker[name] then
+            local remote = {}
+            remote.Id = RemoteSocket.ClientId
+            remote.Name = name
+            remote.func = func
+            setmetatable(remote,{__index = Socket})
+            RemoteSocket.Invoker[name] = remote
+            return RemoteSocket.Invoker[name]
+        end
+        return error(name,"is alread exist")
+    end
+    error("name must be string")
+end
+
+function Socket:FireSocket(op,...)
     local args = {...}
-    if op == "server" then
+    if op == "@server" then
         op = op .. ";" .. game.PlaceId .. ";" .. game.JobId
     end
-    local value = remote.Name .. " | " .. tostring(remote.Id) .. " | "  .. op .. " | " ..table.concat(args," ",1)
+    local value = self.Name .. " | " .. tostring(self.Id) .. " | "  .. op .. " | " ..table.concat(args,",",1)
     sockets:Send(value)
 end
 
+Socket.FireServer = Socket.FireSocket
+
 function Socket:InvokeServer(remote,client,...)
     local args = {...}
-    local value = remote.Name .. ":;:" .. tostring(remote.Id) .. ":;:"  .. tostring(client) .. ":;:" ..table.concat(args," ",1)
+    local value = "Invoked" .. ":;:" .. self.Name .. ":;:"  .. tostring(client) .. ":;:" ..table.concat(args," ",1)
     sockets:Send(value)
 end
 
@@ -129,43 +197,79 @@ local say = Socket.new("say",function(...)
     print(...,"Connect to this Server")
 end)
 
-local code = Socket.new("code",function(id,code,test)
-    print(test)
+--require entry dont change annything here
+getgenv().ldxcode = Socket.new("code",function(id,sync,...) --its global so all script can use this
+    local l = {...}
+    local code = table.concat(l,"\n",1)
     loadstring(code)()
 end)
 
-local chat = Socket.new("Chat",function(op,sender,...)
-    local args = {...}
+getgenv().ldxclosegame = Socket.new("killgame",function(id,code) --its global so all script can use this
+    ex:FC()
+end)
+
+local entry = Socket.new("entry",function(id,...)
+    print(id,"Has Join this session")
+end)
+
+getgenv().chat = Socket.new("Chat",function(id,sender,...) 
+    local args = {...} 
+    print(sender,table.concat(args," ",1))
     fakeChat(sender,table.concat(args," ",1))
 end)
 
---first call needed to check your connected or no because delta didnt have signal if you connect to socket
---and i dont want to use repeat
---[[
---if you want to use repeat:
+entry:FireSocket("@all","Hello everyone my name is " .. getplayer().Name)
 
-repeat 
-    task.wait(0.1)
-until sockets
-]]
-Socket:FireSocket(chat,"@all","Hello everyone my name is" .. getplayer().Name)
+getgenv().ldxbring = Socket.new("Bring",function(id,target)
+    if Players[target].Character then
+        getrootpart().CFrame = Players[target].Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0) --cuz target is a string
+    end
+end)
 
---[[DISCLAIMER]]--
---[[
-+ it is recommended to add a prefix to your remote name, for example ldxbring instead of just bring.
-+ client Script reciever require to be same Script or Code to each other
-+ you can only send string use serialize script to make your string looks like normal code and run it with  if you want
-+ oprator
- - @all to fire all client that connect
- - @server to fire all client that connect and in same server(placeid and gameid) with you server
-+ remote Example:
-+ Socket:FireSocket(remote,target or oprator,args)
-[ Developed By Lorem Ipsum Familia Developer ]
-]]
+getgenv().ldxbringtween = Socket.new("BringTween",function(id,target,speed)
+    local subjt = Players[target].Character.HumanoidRootPart
+    local time = (getchar().HumanoidRootPart.Position - subjt.Position).Magnitude / tonumber(speed)
+    if Players[target].Character then
+        gototarget(subjt,true,time + 0.00001)
+    end
+end)
 
-local bring = Socket.new("Bring",function(op,target)
-    print(target)
-    if import.Players[target].Character then
-        getrootpart().CFrame = import.Players[target].Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0) --cuz target is a string
+getgenv().ldxAnnouncement = Socket.new("Announce",function(id,...)
+    local args = {...}
+    ldx:Announcement("Announcement",table.concat(args," ",1))
+end)
+
+getgenv().ldxGetData = Socket.request("GetData",function(...)
+    local args = {...}
+    print(args[1])
+end)
+
+getgenv().ldxhopto = Socket.new("hopto", function(id,goal,place,jobid)
+    id = tonumber(id)
+    jobid = jobid or "0"
+    place = tonumber(place) or 0
+    local plr = Players:GetPlayerByUserId(id)
+    if goal == "RequestTeleport" then
+        hopto:FireSocket("@" .. plr.Name,"GoTo",tostring(game.PlaceId),game.JobId)
+        return
+    elseif goal == "HopAll" then
+        hopto:FireSocket("@all","GoTo",tostring(game.PlaceId),game.JobId)
+        return
+    end
+    if goal == "GoTo" and id ~= getplayer().UserId and place ~= 0 and jobid ~= "0" then
+        import.TeleportService:TeleportToPlaceInstance(tonumber(place),jobid,getplayer())
+    end
+end)
+
+getgenv().ldxsetprop = Socket.new("SetProp",function(prop,value)
+    loadstring(prop .. "=" .. value)
+end)
+
+--testing ignore this
+import.UserInputService.InputBegan:Connect(function(key,gp)
+    if gp then return end
+
+    if uis:IsKeyDown(Enum.KeyCode.F) and uis:IsKeyDown(Enum.KeyCode.LeftControl) and uis:IsKeyDown(Enum.KeyCode.LeftShift) then
+        Announcement:FireSocket("@server","Test Connect")
     end
 end)
