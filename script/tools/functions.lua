@@ -1580,7 +1580,8 @@ getgenv().getconfig = setmetatable({}, {
 })
 
 local currentATrack
-function loadanim(id,speed,timestamp)
+function loadanim(id,speed,timestamp,stopat)
+    local exat = tick()
     local humanoid = gethumanoid()
     local animator = humanoid:FindFirstChildOfClass("Animator")
     if not animator then
@@ -1608,7 +1609,20 @@ function loadanim(id,speed,timestamp)
           track.TimePosition = timestamp
         end
         track:AdjustSpeed(speed or 1)
+
+        task.spawn(function()
+          while task.wait() do
+            if stopat ~= 0 and stopat then
+              if track.TimePosition >= stopat then
+                print(track.TimePosition)
+                track:Stop()
+                break
+              end
+            end
+          end
+        end)
     end
+    return track
 end
 
 getgenv().getsmenv = function(scripts,res) -- get script env from registry 
