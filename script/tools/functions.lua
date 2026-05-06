@@ -115,15 +115,15 @@ function setoffline() --lite version of liudex:StopGame()
   import.GuiService:ClearError()
 end
 
+function limitsendkpbs(int)
+  import.NetworkClient:SetOutgoingKBPSLimit(int)
+end
+
 function isoffline()
 if not getplayer():FindFirstChild("PlayerScripts") then
   return true
 end
 return false
-end
-
-function limitsendkpbs(int)
-  import.NetworkClient:SetOutgoingKBPSLimit(int)
 end
 
 function setcamfocus(Instance)
@@ -1556,19 +1556,19 @@ function liudex:GetInfo(target)
   tabl["ShortSource"] = info.short_src or nil
   tabl["What"] = info.what or nil
   tabl["NParams"] = info.nparams or nil
-  tabl["Currentline"] = info.currentline or nil
   tabl["Nups"] = info.nups or nil
-  print(i,"Source: ",tabl["Source"],"\nName: ", tabl["Name"],"\nFunction: ", tabl["Function"],"\nLine: ", tabl["Line"],"\nCurrentLine:",tabl["Currentline"],\n"What:",tabl["What"],"\nNumParams:",tabl["NParams"])
+  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
   return tabl
 end
-
-
 
 getgenv().LDXSignal = LDXSignal 
 getgenv().ex = ex
 getgenv().liudex = liudex
 getgenv().ldx = liudex
 
+getgenv().getclientgithash = function()
+  return import.RunService.ClientGitHash
+end
 getgenv().getconfig = setmetatable({}, {
   __index = function(self,key)
     local success, cache = pcall(function()
@@ -1669,7 +1669,8 @@ getgenv().getsmenv = function(scripts,res) -- get script env from registry
         task.wait()
     until gr == true
 return ftbl
-end
+end 
+
 
 local ldxfenv = {
 		"uid","generatevarchar",
