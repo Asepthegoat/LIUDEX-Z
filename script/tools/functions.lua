@@ -122,6 +122,10 @@ end
 return false
 end
 
+function limitsendkpbs(int)
+  import.NetworkClient:SetOutgoingKBPSLimit(int)
+end
+
 function setcamfocus(Instance)
   workspace.Camera.CameraSubject = Instance
 end
@@ -283,13 +287,32 @@ function dohttpscript(sc)
    loadstring(game:HttpGet(sc))()
 end
 
-function getPath(obj)
-    local path = obj.Name
+function safefullname(obj)
+  --stolen from someone but i forgot from who and where i got this, 
+  --it used to suport executor hookmetamethod because some of them will crash if we use :GetFullName() because its a method
+    local function safe(name)
+        if name:match("^[%a_][%w_]*$") then
+            return name
+        else
+            return '["' .. name:gsub('"', '\\"') .. '"]'
+        end
+    end
+
+    local path = safe(obj.Name)
     local parent = obj.Parent
+
     while parent and parent ~= game do
-        path = parent.Name .. "." .. path
+        local current = safe(parent.Name)
+        
+        if path:sub(1,1) == "[" then
+            path = current .. path -- TANPA titik
+        else
+            path = current .. "." .. path
+        end
+        
         parent = parent.Parent
     end
+
     return path
 end
 
@@ -1364,9 +1387,6 @@ local function formatValue(val)
   elseif typeof(val) == "Rect" then
     return "Rect.new(" .. val.Min.X .. "," .. val.Min.Y .. "," .. val.Max.X .. "," .. val.Max.Y .. ")"
 
-	elseif typeof(val) == "Vector2" then
-		return "Vector2.new(" .. val.X .. "," .. val.Y .. ")"
-
 	elseif typeof(val) == "EnumItem" then
 		return tostring(val)
 	end
@@ -1380,19 +1400,14 @@ local proptable = {
   "Anchored","Massless","Locked","LocalTransparencyModifier","Reflectance",
   "Material","Color","BrickColor","CastShadow","CollisionGroupId","AssemblyLinearVelocity",
   "AssemblyAngularVelocity","CustomPhysicalProperties","RootPriority",
-
   "Shape","TopSurface","BottomSurface","LeftSurface","RightSurface","FrontSurface",
   "BackSurface",
 
   "MeshId","TextureId","Scale","Offset","VertexColor","MeshType",
-
   "Velocity","MaxForce","P","AngularVelocity","MaxTorque","CFrame",
-
   "Attachment0","Attachment1","LightEmission","LightInfluence","Texture",
   "TextureLength","TextureSpeed","Transparency",
-
   "CurveSize0","CurveSize1","Segments","Width0","Width1","FaceCamera",
-
   "Brightness","Enabled","Range","Shadows","Angle",
 
   "Text","TextColor3","TextTransparency","TextSize","TextScaled","TextWrapped","Font","RichText","LineHeight",
@@ -1401,44 +1416,28 @@ local proptable = {
   "TextXAlignment","TextYAlignment",
 
   "Image","ImageColor3","ImageTransparency","ScaleType","SliceCenter","SliceScale",
-
   "BackgroundColor3","BackgroundTransparency","BorderSizePixel",
   "Position","Visible","ZIndex","ClipsDescendants","LayoutOrder",
   "ResetOnSpawn",
-
   "CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
   "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
 } -- not all Property cuz im kinda lazy
 
 local propthatcannil = {
-  Name = true,
-  CanCollide = true,
-  CanTouch = true,
-  CanQuery = true,
-  Attachment0 = true,
-  Attachment1 = true,
-  Anchored = true,
-  Massless = true,
-  Locked = true,
-  Enabled = true,
-  Text = true,
-  TextSize = true,
-  TextScaled = true,
-  TextWrapped = true,
-  RichText = true,
-  Disabled = true,
-  Source = true,
-  Draggable = true,
-  Position = true,
-  Size = true,
-  AnchorPoint = true,
-  LinkedSource = true,
-  ResetOnSpawn = true,
-  ZIndex = true,
-  ClipsDescendants = true,
-  LayoutOrder = true,
-  BackgroundTransparency = true,
-  PlaceholderText = true
+  HoldDuration = true, Reflectance = true, ScrollingEnabled = true,
+  Name = true, Image = true, CanCollide = true,
+  CanTouch = true, CanQuery = true, Attachment0 = true,
+  Attachment1 = true, Anchored = true, Value = true,
+  LinkedSource = true, Massless = true, Locked = true,
+  Enabled = true, BorderSizePixel = true,
+  MeshId = true, Scale = true, ImageTransparency = true,
+  TextSize = true, TextScaled = true, TextWrapped = true,
+  RichText = true, Disabled = true, Source = true,
+  Draggable = true, Position = true, Size = true,
+  AnchorPoint = true, ResetOnSpawn = true,
+  ZIndex = true, ClipsDescendants = true, LayoutOrder = true,
+  BackgroundTransparency = true, PlaceholderText = true, Rotation = true,
+  Transparency = true
 }
 
 local scrptststs = {}
@@ -1455,8 +1454,8 @@ local function GetInstaceInfo(instance,name,parent)
            table.insert(tabl,name .. '.' .. prop .. " = " .. formatValue(instance[prop]))
           elseif prop == "Source" and instance[prop] and instance[prop] ~= "" then
             if instance[prop]:find("script.Parent") then
-              local filt = instance[prop]:gsub("script.Parent",instance:GetFullName() .. ".Parent")
-              table.insert(scrptststs,"loadstring(" .. formatValue(filt) .. ")()")
+              local filt = instance[prop]:gsub("script.Parent",safefullname(instance) .. ".Parent")
+              table.insert(scrptststs,"loadstring(" .. formatValue(filt) .. ")()\n")
               print(filt)
             else
               table.insert(scrptststs,formatValue(instance[prop]))
@@ -1477,7 +1476,6 @@ local function GetInstaceInfo(instance,name,parent)
       return s
 end
 
-
 local function scangetinstance(obj,tab,parentname)
 	for i, child in ipairs(obj:GetChildren()) do
     local parname = "ldxinstance['var" .. child.Name .. i .. "']"
@@ -1492,13 +1490,26 @@ end
 function liudex:SetInstanceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
   scrptststs = {}
-  local sl = GetInstaceInfo(instance,instance.Name,parent)
+  local sl = GetInstaceInfo(instance,instance.Name,parent or "getldxstorage()")
   table.insert(tabl,"--This Code Generate by ldx SetInstanceAsClipboard\n--Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture\n--join ldx community at https://discord.gg/WmsssRkgd2\nlocal ldxinstance = {}")
   table.insert(tabl,sl)
   scangetinstance(instance,tabl,instance)
   table.insert(tabl,table.concat(scrptststs,"\n",1))
   local s = table.concat(tabl,"\n\n",1)
   setclipboard(s)
+  liudex:Announcement("LIUDEX","Instance copied to your clipboard")
+end
+
+function liudex:SetInstaceAsScript(filename,instance,parent) --a bit buggy you need to reparent sometime
+  local tabl = {}
+  scrptststs = {}
+  local sl = GetInstaceInfo(instance,instance.Name,parent or "getldxstorage()")
+  table.insert(tabl,"--This Code Generate by ldx SetInstanceAsScript\n--Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture\n--join ldx community at https://discord.gg/WmsssRkgd2\nlocal ldxinstance = {}")
+  table.insert(tabl,sl)
+  scangetinstance(instance,tabl,instance)
+  table.insert(tabl,table.concat(scrptststs,"\n",1))
+  local s = table.concat(tabl,"\n\n",1)
+  writefile(filename,s)
   liudex:Announcement("LIUDEX","Instance copied to your clipboard")
 end
 
@@ -1545,8 +1556,9 @@ function liudex:GetInfo(target)
   tabl["ShortSource"] = info.short_src or nil
   tabl["What"] = info.what or nil
   tabl["NParams"] = info.nparams or nil
+  tabl["Currentline"] = info.currentline or nil
   tabl["Nups"] = info.nups or nil
-  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
+  print(i,"Source: ",tabl["Source"],"\nName: ", tabl["Name"],"\nFunction: ", tabl["Function"],"\nLine: ", tabl["Line"],"\nCurrentLine:",tabl["Currentline"],\n"What:",tabl["What"],"\nNumParams:",tabl["NParams"])
   return tabl
 end
 
@@ -1670,7 +1682,7 @@ local ldxfenv = {
 		"closeremoteevent","findPlayer",
     "disconnect_all_signal","isldxattached",
     "isscriptclosure","waituntil","checkfunction",
-    "dohttpscript","getPath","download",
+    "dohttpscript","safefullname","download",
     "gototarget","waitrandom","tablefill","GetInstaceInfo",
 	  "safecall","callwithc","clonechar","setoffline",
     "insertobjrbxmx","setclientid","gethumanoid",
