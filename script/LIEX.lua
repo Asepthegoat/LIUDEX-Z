@@ -1,17 +1,24 @@
 --[[
 
-__| |___________________________________________________________________________________________________________________________________| |__
-__   ___________________________________________________________________________________________________________________________________   __
-  | |                                                                                                                                   | |  
-  | |██╗     ██╗███████╗██╗  ██╗     ██████╗ ██████╗  ██████╗██╗  ██╗███████╗███████╗████████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗ | |  
-  | |██║     ██║██╔════╝╚██╗██╔╝    ██╔═══██╗██╔══██╗██╔════╝██║  ██║██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗| |  
-  | |██║     ██║█████╗   ╚███╔╝     ██║   ██║██████╔╝██║     ███████║█████╗  ███████╗   ██║   ██████╔╝███████║   ██║   ██║   ██║██████╔╝| |  
-  | |██║     ██║██╔══╝   ██╔██╗     ██║   ██║██╔══██╗██║     ██╔══██║██╔══╝  ╚════██║   ██║   ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗| |  
-  | |███████╗██║███████╗██╔╝ ██╗    ╚██████╔╝██║  ██║╚██████╗██║  ██║███████╗███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║| |  
-  | |╚══════╝╚═╝╚══════╝╚═╝  ╚═╝     ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝| |  
-__| |___________________________________________________________________________________________________________________________________| |__
-__   ___________________________________________________________________________________________________________________________________   __
-  | |                                                                                                                                   | |  
+__| |_________________________________________________________________________________________________________| |__
+__   _________________________________________________________________________________________________________   __
+  | |                                                                                                         | |  
+  | | ██╗     ██╗███████╗██╗  ██╗                                                                             | |  
+  | | ██║     ██║██╔════╝╚██╗██╔╝                                                                             | |  
+  | | ██║     ██║█████╗   ╚███╔╝                                                                              | |  
+  | | ██║     ██║██╔══╝   ██╔██╗                                                                              | |  
+  | | ███████╗██║███████╗██╔╝ ██╗                                                                             | |  
+  | | ╚══════╝╚═╝╚══════╝╚═╝  ╚═╝                                                                             | |  
+  | |  ██████╗ ██████╗  ██████╗██╗  ██╗███████╗███████╗████████╗██████╗  █████╗ ████████╗ ██████╗ ██████╗     | |
+  | | ██╔═══██╗██╔══██╗██╔════╝██║  ██║██╔════╝██╔════╝╚══██╔══╝██╔══██╗██╔══██╗╚══██╔══╝██╔═══██╗██╔══██╗    | |
+  | | ██║   ██║██████╔╝██║     ███████║█████╗  ███████╗   ██║   ██████╔╝███████║   ██║   ██║   ██║██████╔     | |
+  | | ██║   ██║██╔══██╗██║     ██╔══██║██╔══╝  ╚════██║   ██║   ██╔══██╗██╔══██║   ██║   ██║   ██║██╔══██╗    | |
+  | | ╚██████╔╝██║  ██║╚██████╗██║  ██║███████╗███████║   ██║   ██║  ██║██║  ██║   ██║   ╚██████╔╝██║  ██║    | |
+  | |  ╚═════╝ ╚═╝  ╚═╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝   ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝    ╚═════╝ ╚═╝  ╚═╝    | |
+__| |_________________________________________________________________________________________________________| |__
+__   _________________________________________________________________________________________________________   __
+  | |                                                                                                         | |  
+
 
 Beta 0.1
 ]]
@@ -35,7 +42,8 @@ or you can use POST method to invoke server
 "FireSocket" used only for firing all client(reciver) to run code from sender and didnt affected annything on server
 
 --[DISCLAIMER]--
-
++ all string gsub function format is not from me it stolen from other script or chat gpt make it
+    - lets improve this to together
 + it is recommended to add a prefix to your remote name, for example ldxbring instead of just bring.
 + client Script reciever require to be same Script or Code to each other
 + you can only send string use serialize script to make your string looks like normal code and run it with  if you want
@@ -173,6 +181,11 @@ end
 
 function Socket:FireSocket(op,...)
     local args = {...}
+    for i,v in pairs(args) do
+        if v == "@self" then
+            v = getplayer().Name
+        end
+    end
     if op == "@server" then
         op = op .. ";" .. game.PlaceId .. ";" .. game.JobId
     end
@@ -208,8 +221,50 @@ getgenv().ldxclosegame = Socket.new("killgame",function(id,code) --its global so
     ex:FC()
 end)
 
-local entry = Socket.new("entry",function(id,...)
+local entry = Socket.new("entry",function(id,...) --do not remove this one it used to avoid double socket connection but you can change the function inside
     print(id,"Has Join this session")
+end)
+
+local attach = false
+local attachkey 
+function deattachplr()
+    if typeof(attachkey) == "Instance" then
+        attachkey:Destroy()
+    else
+        attachkey:Disconnect()
+    end
+    attachkey = nil
+    task.wait()
+end
+
+getgenv().followtarget = Socket.new("follow",function(id,type,target,attached)
+    local hrp = getchar().HumanoidRootPart
+    local hrp2 = Players[target].Character.HumanoidRootPart
+    if attached == "true" then
+        if attach then deattachplr() end
+        if type == "Attach" then
+            attachkey = import.RunService.Heartbeat:Connect(function()
+                hrp.CFrame = hrp2.CFrame
+            end)
+            attach = true
+        elseif type == "weld" then
+            hrp.CFrame = hrp2.CFrame
+            task.wait()
+            local s = Instance.new("Weld")
+            s.Parent = getldxstorage()
+            s.Part0 = hrp
+            s.Part1 = hrp2
+            attach = true
+            attachkey = s
+        elseif type == "follow" then
+            attachkey = import.RunService.Heartbeat:Connect(function()
+                getchar().Humanoid:MoveTo(hrp2.Position)
+            end)
+            attach = true
+        end
+    else
+        deattachplr()
+    end
 end)
 
 getgenv().chat = Socket.new("chat",function(id,...) 
@@ -233,18 +288,13 @@ getgenv().ldxbringtween = Socket.new("BringTween",function(id,target,speed)
     local subjt = Players[target].Character.HumanoidRootPart
     local time = (getchar().HumanoidRootPart.Position - subjt.Position).Magnitude / tonumber(speed)
     if Players[target].Character then
-        gototarget(subjt,true,time + 0.00001)
+        gototarget(subjt,true,time + 0.0001)
     end
 end)
 
 getgenv().ldxAnnouncement = Socket.new("Announce",function(id,...)
     local args = {...}
     ldx:Announcement("Announcement",table.concat(args," ",1))
-end)
-
-getgenv().ldxGetData = Socket.request("GetData",function(...)
-    local args = {...}
-    print(args[1])
 end)
 
 getgenv().ldxhopto = Socket.new("hopto", function(id,goal,place,jobid)
@@ -264,8 +314,4 @@ getgenv().ldxhopto = Socket.new("hopto", function(id,goal,place,jobid)
     end
 end)
 
-getgenv().ldxsetprop = Socket.new("SetProp",function(prop,value)
-    loadstring(prop .. "=" .. value)
-end)
-
---testing ignore this
+return sockets
