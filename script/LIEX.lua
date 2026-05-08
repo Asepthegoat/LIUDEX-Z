@@ -44,10 +44,10 @@ or you can use POST method to invoke server
 ]]
 local TextChatService = import.TextChatService
 function fakeChat(target,msg)
+    local plr = import.Players[target]
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
     channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
-    local plr = target
-    local head =plr.Character.Head
+    local head = plr.Character
     TextChatService:DisplayBubble(head, msg)
 end
 
