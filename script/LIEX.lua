@@ -44,10 +44,10 @@ or you can use POST method to invoke server
 ]]
 local TextChatService = import.TextChatService
 function fakeChat(target,msg)
-    local plr = import.Players[target]
+    local plr = target
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
     channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
-    local head = plr.Character
+    local head = plr.Character.Head
     TextChatService:DisplayBubble(head, msg)
 end
 
@@ -173,8 +173,15 @@ function Socket:FireSocket(op,...)
             v = getplayer().Name
         end
     end
+
     if op == "@server" then
         op = op .. ";" .. game.PlaceId .. ";" .. game.JobId
+    elseif op == "@self" then
+        op = "@" .. getplayer().Name
+    elseif op:match("%$(.-)$") then
+        local partial = op:match("%$(.-)$")
+        print("partial:",partial)
+        op = findPlayer(partial).Name
     end
     local value = self.Name .. " | " .. tostring(self.Id) .. " | "  .. op .. " | " ..table.concat(args,",",1)
     sockets:Send(value)
@@ -267,7 +274,7 @@ entry:FireSocket("@all","Hello everyone my name is " .. getplayer().Name)
 
 getgenv().ldxbring = Socket.new("Bring",function(id,target)
     if Players[target].Character then
-        getrootpart().CFrame = Players[target].Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0) --cuz target is a string
+        getrootpart().CFrame = Players[target].Character.HumanoidRootPart.CFrame + Vector3.new(0,1,0) --cuz target is a string
     end
 end)
 
