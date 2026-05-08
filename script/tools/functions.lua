@@ -551,7 +551,7 @@ end
 
 function findPlayer(partialName) -- Asep skill isue
     local lowerPartial = string.lower(partialName)
-    for _, plr in ipairs(Players:GetChildren()) do
+    for _, plr in ipairs(import.Players:GetChildren()) do
         -- cek apakah substring ada di nama player
         if string.find(string.lower(plr.Name), lowerPartial, 1, true) then
             return plr
