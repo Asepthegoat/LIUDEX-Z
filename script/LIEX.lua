@@ -44,11 +44,11 @@ or you can use POST method to invoke server
 ]]
 local TextChatService = import.TextChatService
 function fakeChat(target,msg)
+    local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
+    channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
     local plr = target
     local head =plr.Character.Head
     TextChatService:DisplayBubble(head, msg)
-    local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-    channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
 end
 
 if getgenv().RemoteSocket and getgenv().RemoteSocket.Status == true then
@@ -217,7 +217,7 @@ local attachkey
 function deattachplr()
     if typeof(attachkey) == "Instance" then
         attachkey:Destroy()
-    else
+    elseif attachkey ~= nil then
         attachkey:Disconnect()
     end
     attachkey = nil
@@ -238,7 +238,7 @@ getgenv().followtarget = Socket.new("follow",function(id,type,target,attached)
             hrp.CFrame = hrp2.CFrame
             task.wait()
             local s = Instance.new("Weld")
-            s.Parent = getldxstorage()
+            s.Parent = getchar()
             s.Part0 = hrp
             s.Part1 = hrp2
             attach = true
