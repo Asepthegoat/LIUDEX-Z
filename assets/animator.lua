@@ -1,3 +1,5 @@
+--just a basic animation script 
+
 local script = Instance.new("LocalScript")
 script.Parent = getldxstorage() or gethui()
 script.Name = "Animator"
@@ -18,13 +20,11 @@ local anims = {
 	jump = animate.jump:FindFirstChildOfClass("Animation"),
 	fall = animate.fall:FindFirstChildOfClass("Animation"),
 	climb = animate.climb:FindFirstChildOfClass("Animation"),
-}
-
-if animate:FindFirstChild("swim") then
-	anims["swim"] = animate.swim:FindFirstChildOfClass("Animation")
-	anims["swimidle"] = animate.swimidle:FindFirstChildOfClass("Animation")
-end
-
+	}
+	if animate:FindFirstChild("swim") then
+		anims["swim"] = animate.swim:FindFirstChildOfClass("Animation")
+		anims["swimidle"] = animate.swimidle:FindFirstChildOfClass("Animation")
+	end
 local tracks = {}
 for name, anim in pairs(anims) do
 	tracks[name] = animator:LoadAnimation(anim)
@@ -33,26 +33,38 @@ end
 
 local current = nil
 
-local function play(name)
-	if current == name then return end
-	
-	if current and tracks[current] then
-		tracks[current]:Stop()
+local function play(name,sync,def)
+	if current ~= name then
+		if current and tracks[current] then
+			tracks[current]:Stop()
+		end
+
+		current = name
+
+		if tracks[name] then
+			tracks[name]:Play()
+		end
 	end
-	
-	current = name
-	if tracks[name] then
-		tracks[name]:Play()
+
+	if sync and tracks[name] then
+		tracks[name]:AdjustSpeed(humanoid.WalkSpeed / def)
 	end
 end
 
 humanoid.Running:Connect(function(speed)
-	if humanoid:GetState() == Enum.HumanoidStateType.Swimming then return end
+	if humanoid:GetState() == Enum.HumanoidStateType.Swimming then 
+        if speed > 1 then
+            play("swim")
+        else
+            play("swimidle")
+        end
+        return
+    end
 	
 	if speed > 8 then
-		play("run")
-	elseif speed > 2 then
-		play("walk")
+		play("run",true,16)
+	elseif speed > 1 then
+		play("walk",true,7)
 	else
 		play("idle")
 	end
