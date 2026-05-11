@@ -115,7 +115,7 @@ function setoffline() --lite version of liudex:StopGame()
   import.GuiService:ClearError()
 end
 
-function limitsendkpbs(int)
+function limitsendkbps(int)
   import.NetworkClient:SetOutgoingKBPSLimit(int)
 end
 
@@ -1625,13 +1625,23 @@ function loadanim(id,speed,timestamp,stopat)
     return track
 end
 
-getgenv().getsmenv = function(scripts,res) -- get script env from registry 
+getgenv().dumpsenv = function(scripts,advance,res) -- get script env from registry and garbage collection
     local ftbl = {
         func = {},
         thread = {},
         connection = {},
+        RBXSignal = {},
         tbl = {},
-        constant = {}
+        mtmethod = {},
+        renv = {}
+    }
+    local filter = {
+        func = {},
+        thread = {},
+        connection = {},
+        RBXSignal = {},
+        tbl = {},
+        mtmethod = {},
     }
     local src = ""
     if typeof(scripts) ~= "string" then
@@ -1642,19 +1652,42 @@ getgenv().getsmenv = function(scripts,res) -- get script env from registry
     local tfunc = 0
     local tthread = 0
     local tcon = 0
+    local mtmth = 0
+    local renvc = 0
+    local rbxsig = 0
     local gr = false
     for i,v in next,getgc(true) do
         if typeof(v) == "function" then
+            local info = debug.getinfo(v)
             tfunc = 1 + tfunc
-            if debug.info(v,"s") == src then
+            local id = tostring(v):match("function:%s(.-)$")
+            if debug.info(v,"s"):match(src) and not (info.name == "__index" or info.name == "__tostring" or info.name == "__namecall" or info.name == "__newindex") and not filter.func[id] then
                 table.insert(ftbl.func,v)
+                filter.func[id] = true
+            end
+            if advance then
+            if typeof(v) == "function" then
+                if (info.name == "__index" or info.name == "__tostring" or info.name == "__namecall" or info.name == "__newindex") then
+                    mtmth = mtmth + 1
+                    if debug.info(v,"s"):match(src) then
+                        print(debug.info(v,"sn"))
+                        table.insert(ftbl.mtmethod,v)
+                    end
+                end
+                if v == getrenv()[info] then
+                    renvc = renvc + 1
+                    table.insert(ftbl.renv,v)
+                end
+            end
             end
         end 
 
         if typeof(v) == "thread" then
+            local id = tostring(v):match("thread:%s(.-)$")
             tthread = tthread + 1
-            if getscriptfromthread(v) == scripts then
+            if getscriptfromthread(v) == scripts and not filter.thread[id] then
                 table.insert(ftbl.thread,v)
+                filter.thread[id] = true
             end
         end
         
@@ -1667,24 +1700,40 @@ getgenv().getsmenv = function(scripts,res) -- get script env from registry
                 end
             end
         end
+        if typeof(v) == "RBXScriptSignal" then
+            tcon = tcon + 1
+            local f = v.Connect
+            rbxsig = rbxsig + 1
+            local id = tostring(f):match("function:%s(.-)$")
+            if debug.info(f,"s"):match(src) and not filter.RBXSignal[id] then
+                table.insert(ftbl.RBXSignal,v)
+                filter.RBXSignal[id] = true
+            end
+        end
     end
-    for i,v in next,getreg() do
+    for i,v in next, getreg() do
+        local id = tostring(v):match("thread:%s(.-)$")
         if typeof(v) == "thread" then
+            local id = tostring(v):match("thread:%s(.-)$")
             tthread = tthread + 1
-            if getscriptfromthread(v) == scripts then
+            if getscriptfromthread(v) == scripts and not filter.thread[id] then
                 table.insert(ftbl.thread,v)
+                filter.thread[id] = true
             end
         end
     end
     if res then
-        print("function found:", #ftbl.func, "of", tfunc, "\nthread found:", #ftbl.thread, "of", tthread, "\nconnection found:", #ftbl.connection, "of", tcon)
+        print("function found:", #ftbl.func, "of", tfunc, 
+            "\nthread found:", #ftbl.thread, "of", tthread, 
+            "\nconnection found:", #ftbl.connection, "of", tcon,
+            "\nmetamethod found:",#ftbl.mtmethod,"of",mtmth,
+            "\nRBXSignal found:",#ftbl.RBXSignal,"of",rbxsig)
     end
     repeat
         task.wait()
     until gr == true
 return ftbl
 end 
-
 
 local ldxfenv = {
 		"uid","generatevarchar",
@@ -1702,7 +1751,8 @@ local ldxfenv = {
 	  "safecall","callwithc","clonechar","setoffline",
     "insertobjrbxmx","setclientid","gethumanoid",
     "getrootpart","getdeviceid","getsessionid",
-    "getclientid","isoffline","setnewchar","isnewclient","setcamfocus","loadanim"
+    "getclientid","isoffline","setnewchar","isnewclient","setcamfocus",
+    "loadanim","limitsendkbps"
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
