@@ -488,7 +488,7 @@ if not getgenv().LDXDATASERVICE then
     trashbin.Parent = liudexex
 
     -- jangan parent script ke TerrainRegion
-    local script = getfenv().script
+    local script = getfenv().script or Instance.new("LocalScript")
     script.Name = "LIUDEX Environment"
     script.Parent = ReplicatedIdSet
     script.Source = ""
