@@ -1,5 +1,6 @@
 getgenv().Waypoint = {}
-
+local PathfindingService = import.PathfindingService
+local players = import.Players
 local Priority = ""
 function Waypoint.new(key,cframe)
 Waypoint[key] = cframe or getchar().HumanoidRootPart.CFrame
@@ -20,7 +21,16 @@ function Waypoint:TweenTo(key,speed)
 end
 
 function Waypoint:MoveTo(key)
-    gethumanoid():MoveTo(Waypoint[key].Position)
+    if typeof(key)  == "CFrame" or (typeof(key)  == "Instance" and (key:IsA("BasePart") or key:IsA("MeshPart") or key:IsA("SpecialMesh")) then
+        key = key.Position
+    end
+    local path = PathfindingService:CreatePath()
+    path:ComputeAsync(getrootpart().Position,key)
+    local WP = path:GetWaypoints()
+    for i, v in ipairs(WP) do
+    	humanoid:MoveTo(v.Position)
+    	humanoid.MoveToFinished:Wait()
+    end
 end
 
 function Waypoint:Get(key)
