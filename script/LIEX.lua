@@ -10,7 +10,7 @@
 Beta 0.1
 ]]
 if getgenv().RemoteSocket then warn("Already Exist") return end
-
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() 
 getgenv().RemoteSocket = {
     MainUrl = "",
     Status = false,
@@ -21,7 +21,7 @@ getgenv().RemoteSocket = {
 
 --------------------------------------------------------------------
 local rs = import.RunService
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() --LIB DON'T REMOVE THIS
+--LIB DON'T REMOVE THIS
 --[[
 work flow no nword count without skid gui
 ":;:" its used for invoke server
