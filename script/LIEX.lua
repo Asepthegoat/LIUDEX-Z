@@ -70,7 +70,7 @@ function Socket:SetMain(url)
         RemoteSocket.ClientId = getplayer().UserId
     end
 end
-Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
+
 repeat
 task.wait(0.2)    
 until getgenv().RemoteSocket.MainUrl ~= ""
