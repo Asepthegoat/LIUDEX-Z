@@ -9,7 +9,9 @@
 
 Beta 0.1
 ]]
-if getgenv().RemoteSocket.Status then warn("Already Exist") return end
+if getgenv().RemoteSocket.Status then
+    return warn("Socket is already exist close it first by using:\nSocket:CloseSession()")
+end
 getgenv().RemoteSocket.Status = true
 --------------------------------------------------------------------
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() --LIB DON'T REMOVE THIS
@@ -52,10 +54,6 @@ local function fakeChat(target,msg)
     else
         channel:DisplaySystemMessage('<font color="rgb(80, 47, 201)">[Server]: </font>' .. msg)
     end
-end
-
-if getgenv().RemoteSocket and getgenv().RemoteSocket.Status == true then
-    return warn("Socket is already exist close it first by using:\nSocket:CloseSession()")
 end
 
 getgenv().Socket = {}
