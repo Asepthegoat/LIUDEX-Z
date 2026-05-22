@@ -9,8 +9,8 @@
 
 Beta 0.1
 ]]
-if getgenv().RemoteSocket then warn("Already Exist") return end
-
+if getgenv().RemoteSocket.Status then warn("Already Exist") return end
+getgenv().RemoteSocket.Status = true
 --------------------------------------------------------------------
 loadstring(game:HttpGet("https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/tools/functions.lua"))() --LIB DON'T REMOVE THIS
 local rs = import.RunService
@@ -71,6 +71,7 @@ function Socket:SetMain(url)
         RemoteSocket.ClientId = getplayer().UserId
     end
 end
+Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
 repeat
 task.wait(0.2)    
 until getgenv().RemoteSocket.MainUrl ~= ""
