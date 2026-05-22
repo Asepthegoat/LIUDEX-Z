@@ -39,13 +39,8 @@ or you can use POST method to invoke server
 [ Developed By Lorem Ipsum Familia Developer ]
 
 ]]
-getgenv().RemoteSocket = {
-    MainUrl = "",
-    Status = false,
-    Chat = false,
-    ClientId = getplayer().UserId,
-    RemoteCom = {} --just make this one empty dont fill it dude
-}
+
+local isclosed = false
 local TextChatService = import.TextChatService
 local function fakeChat(target,msg)
     local plr = target
@@ -76,7 +71,6 @@ function Socket:SetMain(url)
         RemoteSocket.ClientId = getplayer().UserId
     end
 end
-Socket:SetMain("wss://xochitl-superexacting-unconcentrically.ngrok-free.dev")
 repeat
 task.wait(0.2)    
 until getgenv().RemoteSocket.MainUrl ~= ""
@@ -84,7 +78,10 @@ until getgenv().RemoteSocket.MainUrl ~= ""
 local sockets = WebSocket.connect(RemoteSocket.MainUrl)
 sockets.OnClose:Connect(function()
     warn("Session Clossed")
-    sockets = WebSocket.connect()
+    if not isclosed then
+    warn("Reconnecting...")
+    sockets = WebSocket.connect(RemoteSocket.MainUrl)
+    end
 end)
 --[[
 sockets.OnMessage:Connect(function(msg)
@@ -143,6 +140,16 @@ sockets.OnMessage:Connect(function(msg)
     end
     print("recive",msg)
     if msg == "|ConnectedToSocket|" then
+        return
+    end
+    if msg == "%GetUserData%" then
+        sockets:Send(HttpService:JSONEncode({
+            DeviceId = getdeviceid(),
+            PlaceId = game.Placeid,
+            JobId = game.JobId,
+            Profile = "https://thumbnails.roblox.com/v1/users/avatar?size=420x420&isCircular=false&format=png&userIds=" .. getplayer().UserId
+
+        }))
         return
     end
     local args = HttpService:JSONDecode(msg)
@@ -249,7 +256,19 @@ function Socket:FireSocket(op,...)
     local value = {name = self.Name,id = tostring(self.Id), opr = op, args = {unpack(args)}}
     sockets:Send(HttpService:JSONEncode(value))
 end
-
+task.spawn(function()
+    while true do
+        task.wait(180)
+        local value = {name= "ping",id=tostring(RemoteSocket.ClientId),opr="@Manager",args={
+            ping = math.floor(game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValue() * 100) / 100,
+            mem = math.floor(game:GetService("Stats").PerformanceStats.Memory:GetValue() * 100) / 100,
+            gpu = math.floor(game:GetService("Stats").PerformanceStats.CPU:GetValue() * 100) / 100,
+            fps = math.floor(game:GetService("Stats").FrameRateManager.AverageFPS:GetValueString() * 100) / 100
+        }
+        }
+        sockets:Send(HttpService:JSONEncode(value))
+    end
+end)
 Socket.FireServer = Socket.FireSocket
 
 function Socket.newChannel(call)
