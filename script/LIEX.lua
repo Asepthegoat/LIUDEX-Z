@@ -9,7 +9,9 @@
 
 Beta 0.1
 ]]
-if getgenv().RemoteSocket.Status then
+
+
+if getgenv().RemoteSocket.Status == true then
     return warn("Socket is already exist close it first by using:\nSocket:CloseSession()")
 end
 getgenv().RemoteSocket.Status = true
@@ -45,9 +47,9 @@ or you can use POST method to invoke server
 local isclosed = false
 local TextChatService = import.TextChatService
 local function fakeChat(target,msg)
-    local plr = target
+    local plr = target 
     local channel = TextChatService:WaitForChild("TextChannels"):WaitForChild("RBXGeneral")
-    if plr == Players[plr.Name] then
+    if typeof(plr):lower() == "instance" and plr:IsA("Player") and plr == Players:FindFirstChild(plr.Name) then
         channel:DisplaySystemMessage('<font color="rgb(255,0,0)">' .. plr.Name .. ': </font>' .. msg)
         local ovhead = plr.Character
         TextChatService:DisplayBubble(ovhead, msg)
@@ -155,10 +157,14 @@ sockets.OnMessage:Connect(function(msg)
     local name = args['name']
     local id = args['id']
     local op = args['opr']
+    if op == "@Manager" then
+        return
+    end
     local func =  RemoteSocket.RemoteCom[name].func or RemoteSocket.RemoteCom["entry"].func
     for i,v in pairs(args.args) do
         if v:match("%$(.-)$") then
-            argument[i] = findPlayer(v:match("%$(.-)$")).Name
+            print("converted:",v:match("%$(.-)$"))
+            args.args[i] = findPlayer(v:match("%$(.-)$")).Name
         end
     end
     if op:lower() == "@manager" then
@@ -355,11 +361,17 @@ end)
 
 getgenv().chat = Socket.new("chat",function(id,...) 
     local args = {...}
-    local sender = Players:GetPlayerByUserId(tonumber(id)) or "Server"
-    fakeChat(sender,table.concat(args," ",1))
+    local sender 
+    if id == "0" or id == "@WebApp" then
+        sender = id
+        print(id,typeof(id))
+    else
+        sender = Players:GetPlayerByUserId(tonumber(id))
+    end
+    fakeChat(sender or "@WebApp",table.concat(args," ",1))
 end)
 
-entry:FireSocket("@manager",getplayer().Name,tostring(getsessionid()))
+entry:FireSocket("@Manager",getplayer().Name,tostring(getsessionid()))
 
 getgenv().ldxbring = Socket.new("Bring",function(id,target)
     if Players[target].Character then
