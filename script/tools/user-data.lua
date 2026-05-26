@@ -31,7 +31,7 @@ if newhwid then
   table.insert(data["List HWID"],gethwid())
 end
 local function getthumnail(id)
-  local urls = HttpService:JSONDecode(game:HttpGet("https://thumbnails.roblox.com/v1/users/avatar?userIds=" .. id .. "&size=150x150&format=Png&isCircular=false"))
+  local urls = HttpService:JSONDecode(game:HttpGet("https://thumbnails.roblox.com/v1/users/avatar?userIds=".. id .."&size=250x250&format=Png&isCircular=false"))
   local image = urls.data[1].imageUrl
   print(image)
   return image
