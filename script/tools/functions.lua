@@ -25,12 +25,6 @@ setmetatable(import, {
         end
     end
 })
-local f; f = hookfunction(ex:GetFunction("f2","function",true),function(...) for i,v in pairs(debug.getinfo(2)) do print(i,v) end end)
-function import.package(key)
-  if import.packages[key] then
-    return loadstring(import.packages[key])()
-  end
-end
 
 getgenv().ldxAttachedNotify = true
 local gameVar8 = import.Debris
