@@ -5,7 +5,14 @@ if getgenv().liudex and getgenv().ex  then
   return
 end
 
-getgenv().import = setmetatable({}, {
+getgenv().import = {
+  packages = {
+    ["Overrider"] = "https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/packages/Override.lua",
+    ["Waypoint"] = "https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/packages/Waypoint.lua",
+    ["Socket"] = "https://raw.githubusercontent.com/Asepthegoat/LoremIpsum/refs/heads/main/LIEX/main.lua"
+  }
+}
+setmetatable(import, {
     __index = function(self, name)
         local success, cache = pcall(function()
             return cloneref(game:GetService(name))
@@ -18,23 +25,22 @@ getgenv().import = setmetatable({}, {
         end
     end
 })
+local f; f = hookfunction(ex:GetFunction("f2","function",true),function(...) for i,v in pairs(debug.getinfo(2)) do print(i,v) end end)
+function import.package(key)
+  if import.packages[key] then
+    return loadstring(import.packages[key])()
+  end
+end
 
 getgenv().ldxAttachedNotify = true
-local gameVar1 = import.Players
-local gameVar2 = gameVar1.LocalPlayer
-local gameVar3 = import.UserInputService
-local gameVar4 = import.TweenService
-local gameVar5 = import.HttpService
-local gameVar6 = import.ReplicatedStorage
-local gameVar7 = import.StarterGui
 local gameVar8 = import.Debris
 getgenv().LDXZSet = {
-  players = gameVar1,
-  player = gameVar2,
-  UIS = gameVar3,
-  TS = gameVar4,
-  Http = gameVar5,
-  Replicated = gameVar6,
+  players = import.Players,
+  player = LDXZSet.players.LocalPlayer,
+  UIS = import.UserInputService,
+  TS = import.TweenService,
+  Http = import.HttpService,
+  Replicated = import.ReplicatedStorage,
   StarterGui = gameVar7
 }
 
@@ -50,9 +56,16 @@ function getchar()
   return getgenv().LDXZSet.player.Character
 end
 
-function getplayer()
+function getplayer(p)
+  if typeof(p):lower() == "number" then
+    return getgenv().LDXZSet.Players:GetPlayerByUserId(p)
+  elseif typeof(p):lower() == "string" then
+    return getgenv().LDXZSet.Players[p]
+  end
   return getgenv().LDXZSet.player
 end
+
+
 
 function waitrandom(mindelay,maxdelay)
   local min = mindelay or 0
@@ -488,7 +501,7 @@ if not getgenv().LDXDATASERVICE then
     trashbin.Parent = liudexex
 
     -- jangan parent script ke TerrainRegion
-    local script = getfenv().script or Instance.new("LocalScript")
+    local script = getfenv().script
     script.Name = "LIUDEX Environment"
     script.Parent = ReplicatedIdSet
     script.Source = ""
@@ -530,7 +543,7 @@ function isscriptclosure(script,func)
   if typeof(func) == "function" and typeof(script) == "Instance" then
     local scriptsrc = script:GetFullName()
     local fsrc = debug.info(func,"s")
-    if fsrc == tostring(scriptsrc) then
+    if fsrc:match(scriptsrc) then
       return true
     else
       return false
@@ -673,8 +686,9 @@ end
 
 local function getfunctionrefid(func)
     if not func then return nil end
-    local f = tostring(debug.info(func, "f"))
-    return f:match("0x[%da-fA-F]+") or f:gsub("function:%s*", "")
+    local f = debug.getinfo(func)
+    
+    return debug.info(func,"s") .. f.name .. tostring(f.line) .. f.what
 end
 
 function ex:GetAllFunction(targetfunc,detail,once,runf,...)
@@ -725,7 +739,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
 	if typeof(v) ~= "function" then continue end
     local info = debug.getinfo(v)
     
-    if debug.info(v,"n") == target and debug.info(v,"s"):find(ssrc) then
+    if debug.info(v,"n") == target and ssrc and ssrc ~= "" and debug.info(v,"s"):find(ssrc) then
       if detail then
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
       end
@@ -1212,6 +1226,16 @@ function liudex:StopGame(value)
         task.spawn(function()
           closeremote(v)
         end)
+      elseif v:IsA("LocalScript") then
+        v.Enabled = false
+      end
+    end
+    for i,v in pairs(getreg()) do
+      if typeof(v) == "thread" then
+        pcall(function()
+          coroutine.close(v)
+          task.cancel(v)
+        end)
       end
     end
 	liudex:Announcement("LIUDEX","Game Stopped")
@@ -1420,7 +1444,10 @@ local proptable = {
   "Position","Visible","ZIndex","ClipsDescendants","LayoutOrder",
   "ResetOnSpawn",
   "CanvasSize","CanvasPosition","ScrollBarThickness","Draggable",
-  "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize",
+  "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize","Padding",
+  "PaddingBottom","PaddingLeft","PaddingRight","PaddingTop","AutomaticSize",
+  "ShortOrder","VerticalFlex","HorizontalFlex","HorizontalAlignment",
+  "VerticalAlignment","ItemLineAlignment","Wraps"
 } -- not all Property cuz im kinda lazy
 
 local propthatcannil = {
