@@ -1441,7 +1441,10 @@ local proptable = {
   "ScrollingEnabled","ElasticBehavior","AutomaticCanvasSize","Padding",
   "PaddingBottom","PaddingLeft","PaddingRight","PaddingTop","AutomaticSize",
   "ShortOrder","VerticalFlex","HorizontalFlex","HorizontalAlignment",
-  "VerticalAlignment","ItemLineAlignment","Wraps"
+  "VerticalAlignment","ItemLineAlignment","Wraps","Interactable","VerticalScrollBarPosition",
+  "VerticalScrollBarInset","ScrollingDirection","TopImage","ScrollBarImageColor3",
+  "ScrollBarImageTransparency","MidImage","HorizontalScrollBarInset","ElasticBehavior",
+  "BottomImage","AutomaticCanvasSize"
 } -- not all Property cuz im kinda lazy
 
 local propthatcannil = {
@@ -1460,6 +1463,28 @@ local propthatcannil = {
   BackgroundTransparency = true, PlaceholderText = true, Rotation = true,
   Transparency = true
 }
+function ispropempty(prop,type)
+  type = typeof(prop)
+  if type == "UDim2" then
+    return prop == UDim2.new(0,0,0,0)
+  elseif type == "UDim" then
+    return prop == UDim.new(0,0)
+  elseif type == "BrickColor" then
+    return prop == BrickColor.new("White")
+  elseif type == "number"
+    return prop == 0
+  elseif type == "CFrame" then
+    return prop == CFrame.new(0,0,0)
+  elseif type == "Vector3" then
+    return prop == Vector3.new(0,0,0)
+  elseif type == "Vector2" then
+    return prop == Vector2.new(0,0)
+  elseif type == "Color3" then
+    return prop == Color3.new(1,1,1)
+  elseif type == "string" then
+    return prop == "" or prop == "rbxassetid://"
+  end
+end
 
 local scrptststs = {}
 local function GetInstaceInfo(instance,name,parent)
@@ -1467,7 +1492,7 @@ local function GetInstaceInfo(instance,name,parent)
   table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
         pcall(function()
-          local isempty = (instance[prop] == 0 or instance[prop] == false or instance[prop] == "" or instance[prop] == nil)
+          local isempty = ispropempty(instance[prop])
           if prop ~= "Parent" and instance[prop] ~= nil and prop ~= "Source" then
             if propthatcannil[prop] and isempty then
                 return
