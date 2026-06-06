@@ -482,7 +482,7 @@ if not getgenv().LDXDATASERVICE then
     CloudService.Parent = liudexex
     CloudService.Name = "Request"
 
-    local ReplicatedIdSet = Instance.new("SelectionBox")
+    local ReplicatedIdSet = Instance.new("Folder")
     ReplicatedIdSet.Name = "Repository"
     ReplicatedIdSet.Parent = liudexex
 
@@ -490,7 +490,7 @@ if not getgenv().LDXDATASERVICE then
     values.Name = "Configuration"
     values.Parent = liudexex
 
-    local trashbin = Instance.new("Hat")
+    local trashbin = Instance.new("Folder")
     trashbin.Name = "TrashBin"
     trashbin.Parent = liudexex
 
@@ -1471,7 +1471,7 @@ function ispropempty(prop,type)
     return prop == UDim.new(0,0)
   elseif type == "BrickColor" then
     return prop == BrickColor.new("White")
-  elseif type == "number"
+  elseif type == "number" then
     return prop == 0
   elseif type == "CFrame" then
     return prop == CFrame.new(0,0,0)
@@ -1479,8 +1479,6 @@ function ispropempty(prop,type)
     return prop == Vector3.new(0,0,0)
   elseif type == "Vector2" then
     return prop == Vector2.new(0,0)
-  elseif type == "Color3" then
-    return prop == Color3.new(1,1,1)
   elseif type == "string" then
     return prop == "" or prop == "rbxassetid://"
   end
