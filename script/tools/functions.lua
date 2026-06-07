@@ -26,7 +26,6 @@ setmetatable(import, {
     end
 })
 
-getgenv().ldxAttachedNotify = true
 local gameVar8 = import.Debris
 getgenv().LDXZSet = {
   players = import.Players,
@@ -583,22 +582,6 @@ function ex.new()
     return self
 end
 
--- thread func
-function ex:KillScriptThread(patr,callback)
-  for i,v in next, getreg() do
-    if typeof(v) == "thread" then
-      local script = getscriptfromthread(v)
-      if string.find(tostring(script):lower(),patr:lower(),1,true) then
-        coroutine.close(v)
-        print(v,"Closed")
-        if callback then
-          callback(v,script)
-        end
-      end
-    end
-  end
-end
-
 function ex:GetScriptThread(patr,callback)
   for i,v in next, getreg() do
     if typeof(v) == "thread" then
@@ -871,7 +854,7 @@ function liudex:Notify(title,text,icon,button1,button2,duration,callback)
             Text = text or "" or nil,
             Duration = 5,
             Callback = callback or nil,
-            Button1 = button1 or "Close",
+            Button1 = button1 or nil,
             Button2 = button2 or nil,
 })
 end
@@ -1252,15 +1235,15 @@ function liudex:RequestNgrok(uri)
     })
     return response.Body
 end
-
+local services = {
+  ["Override"] = "https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/packages/Override.lua",
+  ["Waypoint"] = "https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/packages/Waypoint.lua"
+}
 function liudex:GetService(service)
   local path = getgenv().LDXDATASERVICE
   if service == "Repository" or service == "Storage" then
     return path["Storage"]
-  elseif service == "TrashService" or service == "RecycleBin" then
-    return path["TrashService"]
-  elseif service == "ConfigurationService" or service == "Configuration" then
-    return path["ConfigurationService"]
+  elseif service[service] then return loadstring(service[service])()
   end
 end
 
@@ -1804,6 +1787,4 @@ end
 
 task.wait()
 
-if not getgenv().ldxAttachedNotify then
-    liudex:Announcement("LIUDEX","ldxfenv attached")
-end
+liudex:Notify("LIUDEX API","https://asepthegoat.github.io/","rbxassetid://126569944133822")
