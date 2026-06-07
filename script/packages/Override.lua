@@ -28,8 +28,8 @@ getinfo = hookfunction(debug.getinfo,newcclosure(function(target,filt)
     if filt then
       for i,v in pairs(filt:split("")) do
         if v:lower() == "n" then
-          newinfo[name] = target.name
-          newinfo[type] = target.className,
+          newinfo[name] = target.Name
+          newinfo[type] = target.className
         elseif v:lower() == "s" then
           newinfo[source] = safefullname(target)
         elseif v:lower() == "i" then
@@ -39,16 +39,17 @@ getinfo = hookfunction(debug.getinfo,newcclosure(function(target,filt)
         elseif v:lower() == "p" then
           newinfo[properties] = getproperties(target)
         elseif v:lower() == "h" then
-          newinfo[hiddenprop] = gethiddenproperties(target) or nil,
+          newinfo[hiddenprop] = gethiddenproperties(target) or nil
           newinfo[networkowner] = isnetworkowner(target)
         end
         return newinfo
+      end
     end
     return {
       name = target.name,
       type = target.className,
       connections = con,
-      properties = getproperties(target)
+      properties = getproperties(target),
       id = target:GetDebugId(),
       source = safefullname(target),
       hiddenprop = gethiddenproperties(target) or nil,
@@ -56,6 +57,10 @@ getinfo = hookfunction(debug.getinfo,newcclosure(function(target,filt)
     }
   elseif typeof(target):lower() == "function" then
     local info = getinfo(target)
+    local suc,res = pcall(function() return getfunctionhash(target) end)
+    local succ,ress = pcall(function() return debug.getconstants(target) end)
+    if not suc then res = "-" end
+    if not succ then ress = "-" end
     if filt then
       for i,v in pairs(filt:split("")) do
         if v:lower() == "n" then
@@ -74,14 +79,15 @@ getinfo = hookfunction(debug.getinfo,newcclosure(function(target,filt)
           newinfo.numparams = info.nparams or info.numparams or nil
           newinfo.is_vararg = info.is_vararg or nil
         elseif v:lower() == "h" then
-          newinfo.hash = getfunctionhash(target) or nil
+          newinfo.hash = res or nil
           newinfo.upvalues = debug.getupvalues(target) or nil
-          newinfo.constants = debug.getconstants(target) or nil
+          newinfo.constants = ress or nil
         elseif v:lower() == "f" then
           newinfo.func = info.func or nil
           newinfo.ishooked = isfunctionhooked(target) or nil
         end
         return newinfo
+      end
     end
     return {
       name = info.name or nil,
@@ -95,8 +101,8 @@ getinfo = hookfunction(debug.getinfo,newcclosure(function(target,filt)
       numparams = info.nparams or info.numparams or nil,
       is_vararg = info.is_vararg or nil,
       func = info.func or nil,
-      constants = debug.getconstants(target) or nil,
-      hash = getfunctionhash(target) or nil,
+      constants = ress or nil,
+      hash = res or nil,
       upvalues = debug.getupvalues(target) or nil,
     }
   end
