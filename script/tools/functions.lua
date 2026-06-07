@@ -1243,7 +1243,7 @@ function liudex:GetService(service)
   local path = getgenv().LDXDATASERVICE
   if service == "Repository" or service == "Storage" then
     return path["Storage"]
-  elseif service[service] then return loadstring(services[service])()
+  elseif services[service] then return loadstring(services[service])()
   end
 end
 
