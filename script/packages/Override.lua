@@ -4,7 +4,8 @@ write.basicsignal = {
   "DescendantRemoving","Destroying","StyledPropertiesChanged","Touched","TouchEnded","NetworkOwnerChanged"
 }
 
-local getregistry
+local player = getplayer()
+local players = player.Parent
 --[[
 exmp filt
 
@@ -258,28 +259,65 @@ function setcustomproperties(ins,prop)
 end
 
 --method
-local custommethod = {}
-local overridemethod = {
-  script = {
-    ["SetReadable"] = true,
-    ["Decompile"] = true,
-    ["Close"] = true
-  },
-  actor = {
-    ["Run"] = true
-  },
-  proximity = {
-    ["Fire"] = true
-  },
-  touchinterest = {
-    ["Fire"] = true
-  }
-}
 local function SetReadable(ins,sourcecode)
   setcustomproperties(ins,{CompileCode = "Not compiled yet",Executor = true})
   ins.Source = ""
   ins.CompileCode = sourcecode
 end
+local custommethod = {}
+local function packsendhook(pck)
+  if pck.PacketId == 0x1B then
+    local buf = packet.AsBuffer
+    buffer.writeu32(buf, 1, 0xFFFFFFFF)
+    pck:SetData(buf)
+  end
+end
+local overridemethod = {
+  script = {
+    ["SetReadable"] = function(self) SetReadable(self,self.Source) end,
+    ["Decompile"] = decompile,
+    ["Close"] = function(self) 
+      for i,v in pairs(getreg()) do 
+        if typeof(v) == "thread" then 
+          local sc = getscriptfromthread(v) 
+          if sc == self then 
+            coroutine.close(v)
+          end 
+        end 
+      end 
+    end,
+    ["Dump"] = dumpsenv,
+    ["GetEnv"] = getsenv
+  },
+  actor = {
+    ["Run"] = run_on_actor,
+    ["Test"] = print,
+  },
+  proximity = {
+    ["Fire"] = fireproximityprompt
+  },
+  touchinterest = {
+    ["Fire"] = function(self,...) firetouchinterest(getrootpart(),self.Parent,...) end
+  },
+  local_player = {
+    ["Kill"] = function(self,...) if replicatesignal then replicatesignal(player.Kill) else player.Character.Humanoid.Health = 0 end end,
+    ["Desync"] = function(self,val) 
+      if not raknet then return warn("Your executor doesn't have raknet") end 
+      if raknet.desync then return raknet.desync(val) end 
+      if raknet.add_send_hook() and raknet.remove_send_hook() then
+        if val then
+          raknet.remove_send_hook(packsendhook)
+        else
+          raknet.add_send_hook(packsendhook)
+        end
+      end
+    end
+  },
+  NetworkClient = {
+    ["SetLimitSend"] = limitsendkbps,
+    ["SetReplicationLag"] = function(self,value) settings():GetService("NetworkSettings").IncomingReplicationLag = value end
+  }
+}
 
 local mtmd;mtmd = hookmetamethod(game,"__namecall",newcclosure(function(self,...) --override some instance to
   local m = getnamecallmethod()
@@ -288,31 +326,22 @@ local mtmd;mtmd = hookmetamethod(game,"__namecall",newcclosure(function(self,...
     return custommethod[self][m](...)
 
   elseif self.className == "Actor" and checkcaller() and overridemethod.actor[m] then
-    if m == "Run" then return run_on_actor(self,...) end
+    return overridemethod.actor[m](self,...)
 
   elseif self.className == "ProximityPrompt" and checkcaller() and overridemethod.proximity[m] then
-    if m == "Fire" then return fireproximityprompt(self,...) end
+    return overridemethod.proximity[m](self,...)
     
   elseif self.className == "TouchTransmitter" and checkcaller() and overridemethod.touchinterest[m] then
-    if m == "Fire" then return firetouchinterest(getrootpart(),self.Parent,...) end
+    return overridemethod.touchinterest[m](self,...)
 
   elseif self.className == "ImageButton" or self.className == "TextButton" then
     if m == "Click" then return firesignal(self.MouseButton1Click) end
-  elseif self.className == "LocalScript" or self.className == "Script" and checkcaller() and overridemethod.script[m] then
-    if m == "Decompile" then return decompile(self) 
-    elseif m == "SetReadable" then SetReadable(self,self.Source) 
-    elseif m == "Dump" then return dumpsenv(script,true,true)
-    elseif m == "Close" or m == "End" then
-      for i,v in pairs(getreg()) do 
-        if typeof(v) == "thread" then 
-          local sc = getscriptfromthread(v) if sc == self then 
-            coroutine.close(v) 
-            break 
-          end 
-        end 
-      end 
-    end
-    return true
+
+  elseif (self.className == "LocalScript" or self.className == "Script" or self.className == "AuroraScript") and checkcaller() and overridemethod.script[m] then
+    return overridemethod.script[m](self,...)
+  
+  elseif self == player then
+    return overridemethod.local_player[m](self,...)
   end
 
 return mtmd(self,...)
@@ -331,7 +360,14 @@ local envprop = {
   src = "GitHub"
 }
 setcustomproperties(env,envprop)
+setcustomproperties(env.Parent,{className = "ServerScriptService",ClassName = "ServerScriptService"})
 
+local parallel = Instance.new("Actor",env.Parent)
+parallel.Name = "Parallel"
+local scriptenv = Instance.new("LocalScript",parallel)
+scriptenv.Name = "Hidden Attachment Test"
+setcustomproperties(parallel,{className = "Players",ClassName = "Players"})
+setcustomproperties(scriptenv,{className = "AuroraScript",ClassName = "AuroraScript"})
 setnewmethod(getldxstorage(),"Import",function(path) 
   local s = insertrbxmx(path)
   s.Parent = getldxstorage()
