@@ -2,6 +2,8 @@
 --Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture
 --join ldx community at https://discord.gg/WmsssRkgd2
 local ldxinstance = {}
+local toggletween = TweenInfo.new(0.2,Enum.EasingStyle.Cubic,Enum.EasingDirection.In)
+
 
 LIEXGUI = Instance.new("ScreenGui")
 LIEXGUI.Name = [[LIEXGUI]]
@@ -9,9 +11,20 @@ LIEXGUI.Parent = gethui()
 LIEXGUI.Enabled = true
 LIEXGUI.ResetOnSpawn = true
 local config = {
-    textcolor = Color3.fromRGB(0,0,0),
-    tabbackground = Color3.fromRGB(0,0,0),
-    tabtransparency = 0.1
+    title = "LIUDEX Z",
+    textcolor = Color3.fromRGB(255,255,255),
+    desc = "Developed By Jorell",
+    background = Color3.fromRGB(48,10,105),
+    transparency = 0.2,
+    tabbackground = Color3.fromRGB(66,23,197),
+    tabtransparency = 0.4,
+    logo = "rbxassetid://131858077876191", --or you can use getcustomasset to
+    toggle = {
+        framecolor = Color3.fromRGB(102,20,227),
+        active = Color3.fromRGB(0,255,0),
+        inactive = Color3.fromRGB(255,0,0)
+    },
+    buttonColor = Color3.fromRGB(102,20,227),
 }
 ldxinstance['varMain1'] = Instance.new("Frame")
 ldxinstance['varMain1'].Name = [[Main]]
@@ -46,7 +59,7 @@ ldxinstance['varUIStroke2'].Color = border or Color3.new(0,0,0)
 ldxinstance['varLeft Side1'] = Instance.new("ScrollingFrame")
 ldxinstance['varLeft Side1'].Name = [[Left Side]]
 ldxinstance['varLeft Side1'].Parent = ldxinstance['varMain1']
-ldxinstance['varLeft Side1'].Size = UDim2.new(0,195,1,-90)
+ldxinstance['varLeft Side1'].Size = UDim2.new(0,195,1,-110)
 ldxinstance['varLeft Side1'].Transparency = 1
 ldxinstance['varLeft Side1'].BackgroundColor3 = Color3.fromRGB(255,255,255)
 ldxinstance['varLeft Side1'].BackgroundTransparency = 1
@@ -54,14 +67,12 @@ ldxinstance['varLeft Side1'].Position = UDim2.new(0.004563084337860346,0,0.08064
 ldxinstance['varLeft Side1'].Visible = true
 ldxinstance['varLeft Side1'].ZIndex = 1
 ldxinstance['varLeft Side1'].ClipsDescendants = true
-ldxinstance['varLeft Side1'].CanvasSize = UDim2.new(0,0,2,0)
+ldxinstance['varLeft Side1'].CanvasSize = UDim2.new(0,0,0,0)
 ldxinstance['varLeft Side1'].CanvasPosition = Vector2.new(0,0)
 ldxinstance['varLeft Side1'].ScrollBarThickness = 7
 ldxinstance['varLeft Side1'].Draggable = false
 ldxinstance['varLeft Side1'].ScrollingEnabled = true
 ldxinstance['varLeft Side1'].ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
-ldxinstance['varLeft Side1'].AutomaticCanvasSize = Enum.AutomaticSize.None
-ldxinstance['varLeft Side1'].AutomaticSize = Enum.AutomaticSize.None
 ldxinstance['varLeft Side1'].Interactable = true
 ldxinstance['varLeft Side1'].VerticalScrollBarPosition = Enum.VerticalScrollBarPosition.Right
 ldxinstance['varLeft Side1'].VerticalScrollBarInset = Enum.ScrollBarInset.None
@@ -80,10 +91,22 @@ ldxinstance['varUICorner2'].Name = [[UICorner]]
 ldxinstance['varUICorner2'].Parent = ldxinstance['varMain1']
 ldxinstance['varUICorner2'].CornerRadius = UDim.new(0,8)
 
+ldxinstance['varUIListLayout3'] = Instance.new("UIListLayout")
+ldxinstance['varUIListLayout3'].Name = [[UIListLayout]]
+ldxinstance['varUIListLayout3'].Parent = ldxinstance['varLeft Side1']
+ldxinstance['varUIListLayout3'].Padding = UDim.new(0,6)
+ldxinstance['varUIListLayout3'].VerticalFlex = Enum.UIFlexAlignment.None
+ldxinstance['varUIListLayout3'].HorizontalFlex = Enum.UIFlexAlignment.None
+ldxinstance['varUIListLayout3'].SortOrder = Enum.SortOrder.LayoutOrder
+ldxinstance['varUIListLayout3'].HorizontalAlignment = Enum.HorizontalAlignment.Left
+ldxinstance['varUIListLayout3'].VerticalAlignment = Enum.VerticalAlignment.Top
+ldxinstance['varUIListLayout3'].ItemLineAlignment = Enum.ItemLineAlignment.Automatic
+ldxinstance['varUIListLayout3'].Wraps = false
+
 ldxinstance['varRight Side3'] = Instance.new("Frame")
 ldxinstance['varRight Side3'].Name = [[Right Side]]
 ldxinstance['varRight Side3'].Parent = ldxinstance['varMain1']
-ldxinstance['varRight Side3'].Size = UDim2.new(1,-210,1,-90)
+ldxinstance['varRight Side3'].Size = UDim2.new(1,-210,1,-100)
 ldxinstance['varRight Side3'].Transparency = 1
 ldxinstance['varRight Side3'].BackgroundColor3 = Color3.fromRGB(255,255,255)
 ldxinstance['varRight Side3'].BackgroundTransparency = 1
@@ -370,7 +393,7 @@ ldxinstance['varToggle3'].RichText = false
 ldxinstance['varToggle3'].LineHeight = 1
 ldxinstance['varToggle3'].TextXAlignment = Enum.TextXAlignment.Center
 ldxinstance['varToggle3'].TextYAlignment = Enum.TextYAlignment.Center
-ldxinstance['varToggle3'].BackgroundColor3 = Color3.fromRGB(0,255,0)
+ldxinstance['varToggle3'].BackgroundColor3 = Color3.fromRGB(255,0,0)
 ldxinstance['varToggle3'].Position = UDim2.new(1,-60,0,7)
 ldxinstance['varToggle3'].Visible = true
 ldxinstance['varToggle3'].ZIndex = 1
@@ -385,11 +408,11 @@ ldxinstance['varUICorner1'].Parent = ldxinstance['varToggle3']
 ldxinstance['varUICorner1'].CornerRadius = UDim.new(1,0)
 
 ldxinstance['varFrame2'] = Instance.new("Frame")
-ldxinstance['varFrame2'].Name = [[Frame]]
+ldxinstance['varFrame2'].Name = [[Dot]]
 ldxinstance['varFrame2'].Parent = ldxinstance['varToggle3']
 ldxinstance['varFrame2'].Size = UDim2.new(0,30,0,30)
 ldxinstance['varFrame2'].BackgroundColor3 = Color3.fromRGB(255,255,255)
-ldxinstance['varFrame2'].Position = UDim2.new(0,25,0,-2)
+ldxinstance['varFrame2'].Position = UDim2.new(0,-2,0,-2)
 ldxinstance['varFrame2'].Visible = true
 ldxinstance['varFrame2'].ZIndex = 1
 ldxinstance['varFrame2'].ClipsDescendants = false
@@ -666,20 +689,53 @@ linetop.Parent = ldxinstance['varTop Bar5']
 linetop.Size = UDim2.new(1,-10,0,1)
 linetop.Position =  UDim2.new(0,5,1,-10)
 linetop.BackgroundColor3 = Color3.fromRGB(0,0,0)
-
+local TweenService =import.TweenService
 task.wait()
 local gui = {}
 gui.Main = {}
+gui.Primary = nil
 gui.__index = gui
+local df = {}
+
+function gui:Open()
+    for i,v in pairs(gui.Main) do
+        v.Instance.Visible = false
+        v.Instance.Active = false
+    end
+    self.Instance.Visible = true
+    self.Instance.Active = true
+end
 
 function gui.new(name)
     local self = setmetatable({}, gui)
     table.insert(gui.Main,self)
     self.Type = "Window"
     self.Instance = ldxinstance.varPannel1:Clone()
-    self.Instance.Name = name
+    self.Instance.Name = name or "Unknown"
     self.Instance.Parent = ldxinstance['varRight Side3']
     print(self.Instance, "Window")
+    self.relation = Instance.new("TextButton")
+    self.relation.Parent = ldxinstance['varLeft Side1']
+    self.relation.Text = name or "Unknown"
+    self.relation.TextColor3 = config.textcolor or Color3.new(1,1,1)
+    self.relation.BackgroundColor3 = config.buttonColor or Color3.fromRGB(255,0,0)
+    self.relation.BackgroundTransparency = config.tabtransparency or 0.1
+    self.relation.Size = UDim2.new(1,0,0,30)
+    self.relation.TextXAlignment = Enum.TextXAlignment.Left
+    self.rpadding = Instance.new("UIPadding")
+    self.rpadding.PaddingLeft = UDim.new(0,30)
+    self.rpadding.Parent = self.relation
+    self.corn = Instance.new("UICorner")
+    self.corn.Parent = self.relation
+
+    self.relation.MouseButton1Click:Connect(function()
+        self:Open()
+    end)
+    if not gui.Primary then
+        gui.Primary = self
+    else
+        gui.Primary:Open()
+    end
     return self
 end
 
@@ -706,14 +762,17 @@ function gui:AddTab(name)
     selftab.Instance.Name = name
     print(selftab.Instance, "tabAdded")
     selftab.Instance.Title.Text = name
+    selftab.Instance.BackgroundTransparency = config.tabtransparency
     selftab.Instance.Title.TextColor3 = config.textcolor or Color3.new(0,0,0)
+    selftab.Instance.BackgroundColor3 = config.tabbackground or ldxinstance.varGroup2.BackgroundColor3 or Color3.new(0,0,0)
     selftab.Instance.Parent = self.Instance
 
     function selftab:Button(data)
         local button = ldxinstance['varButton5']:Clone()
         button.Text = data.Text
         print(button, "button added")
-        button.Parent = selftab.Instance
+        button.BackgroundColor3 = config.buttonColor or Color3.fromRGB(255,0,0)
+        button.Parent = selftab.Instance 
         button.TextColor3 = config.textcolor or Color3.new(0,0,0) 
         button.MouseButton1Click:Connect(function()
             if data.OnClick then
@@ -724,25 +783,37 @@ function gui:AddTab(name)
     end
 
     function selftab:Text(text,name)
-        local txt = Instance.new(text)
+        local txt = Instance.new("TextLabel")
         txt.Parent = selftab.Instance
         txt.Name = name or "Label"
         txt.Text = text
         return txt
     end
-    function selftab:Toggle(data)
+    function selftab:Toggle(data,actv)
         local toggle = ldxinstance['varToggle7']:Clone()
         toggle.Parent = selftab.Instance
+        toggle.BackgroundColor3 = config.toggle.framecolor or ldxinstance['varToggle7'].BackgroundColor3
         toggle.Text.Text = data.Text or "Toggle"
         toggle.Text.TextColor3 = config.textcolor or Color3.new(0,0,0)
-        local on = false
+        local on = not actv
         print("toggle Added",toggle)
-        toggle.Toggle.MouseButton1Click:Connect(function()
+        local tweenon = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,25,0,-2) })
+        local tweenoff = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,-2,0,-2) })
+        local function tg()
             on = not on
+            if on then
+              toggle.Toggle.BackgroundColor3 = config.toggle.active or Color3.fromRGB(0,255,0)
+              tweenon:Play()
+            else
+              toggle.Toggle.BackgroundColor3 = config.toggle.inactive or Color3.fromRGB(255,0,0)
+              tweenoff:Play()
+            end
             if data.Callback then
                 data.Callback(on)
             end
-        end)
+        end
+        tg()
+        toggle.Toggle.MouseButton1Click:Connect(tg)
         return toggle
     end
 
@@ -765,41 +836,4 @@ function gui:AddTab(name)
     return selftab
 end
 
-function gui:Open()
-    for i,v in pairs(gui.Main) do
-        v.Instance.Visible = false
-        v.Instance.Active = false
-    end
-    self.Instance.Visible = true
-    self.Instance.Active = true
-end
-
-local button = {
-    Text = "Click Me",
-    OnClick = function() print("Clicked") end
-}
-local input = {
-    value = nil,
-    enterPress = false,
-    OnInput = function() return end
-}
-gui.Set({
-    title = "LIUDEX Z",
-    textcolor = Color3.fromRGB(255,255,255),
-    desc = "Developed By Jorell",
-    background = Color3.fromRGB(48,10,105),
-    transparency = 0.2,
-    tabbackground = Color3.fromRGB(66,23,137),
-    tabtransparency = 0.1,
-    logo = "rbxassetid://131858077876191" --or you can use getcustomasset to
-})
-local main = gui.new("Main")
-local farm = main:AddTab("Farm")
-farm:Button(button)
-local loop = false
-farm:Toggle({Text = "Raknet",Callback = function(on) loop = on  print(on) end})
-import.RunService.Heartbeat:Connect(function()
-    if loop then
-        print("active")
-    end
-end)
+return gui
