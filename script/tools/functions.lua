@@ -25,7 +25,7 @@ setmetatable(import, {
         end
     end
 })
-
+local TweenService = import.TweenService
 local gameVar8 = import.Debris
 getgenv().LDXZSet = {
   players = import.Players,
@@ -64,6 +64,10 @@ function waitrandom(mindelay,maxdelay)
   local min = mindelay or 0
   local max = maxdelay or 1
   return task.wait(math.random(min,max))
+end
+
+function isprivateserver()
+  return import.RobloxReplicatedStorage.GetServerType:InvokeServer() == "VIPServer"
 end
 
 function waituntil(condition,time) --use like this waituntil(function() return var end)
@@ -278,7 +282,7 @@ function gototarget(to,tween,time)
 	if tween then
     local char = getchar()
 	  local hrp = char.HumanoidRootPart
-	  local tween = gameVar4
+	  local tween = TweenService
     local info = TweenInfo.new(time, Enum.EasingStyle.Linear, Enum.EasingDirection.In, 0, false, 0.1)
     local tw = tween:Create(hrp, info, {CFrame = to.CFrame * CFrame.new(0, 10, 0)})
     tw:Play()
