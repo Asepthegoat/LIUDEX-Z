@@ -11,20 +11,26 @@ LIEXGUI.Parent = gethui()
 LIEXGUI.Enabled = true
 LIEXGUI.ResetOnSpawn = true
 local config = {
-    title = "LIUDEX Z",
+    title = "Title",
     textcolor = Color3.fromRGB(255,255,255),
-    desc = "Developed By Jorell",
-    background = Color3.fromRGB(48,10,105),
+    desc = "Developed By Name",
+    background = Color3.fromRGB(0,0,0),
     transparency = 0.2,
-    tabbackground = Color3.fromRGB(66,23,197),
+    tabbackground = Color3.fromRGB(18,18,18),
     tabtransparency = 0.4,
+    border = Color3.fromRGB(0,0,0),
     logo = "rbxassetid://131858077876191", --or you can use getcustomasset to
     toggle = {
         framecolor = Color3.fromRGB(102,20,227),
         active = Color3.fromRGB(0,255,0),
         inactive = Color3.fromRGB(255,0,0)
     },
-    buttonColor = Color3.fromRGB(102,20,227),
+    option = {
+        active = Color3.fromRGB(98, 27, 221), -- rgb(53, 0, 145) pallete
+        inactive = Color3.fromRGB(123, 93, 255),
+        stroke = Color3.fromRGB(53, 0, 145)
+    },
+    buttonColor = Color3.fromRGB(0,0,0),
 }
 ldxinstance['varMain1'] = Instance.new("Frame")
 ldxinstance['varMain1'].Name = [[Main]]
@@ -278,7 +284,7 @@ ldxinstance['varUICorner1'].Parent = ldxinstance['varInput6']
 ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,8)
 
 ldxinstance['varName2'] = Instance.new("TextLabel")
-ldxinstance['varName2'].Name = [[Name]]
+ldxinstance['varName2'].Name = [[InputName]]
 ldxinstance['varName2'].Parent = ldxinstance['varInput6']
 ldxinstance['varName2'].Size = UDim2.new(1,-170,1,0)
 ldxinstance['varName2'].Transparency = 1
@@ -337,7 +343,7 @@ ldxinstance['varUICorner1'].CornerRadius = UDim.new(0,8)
 ldxinstance['varToggle7'] = Instance.new("Frame")
 ldxinstance['varToggle7'].Name = [[Toggle]]
 ldxinstance['varToggle7'].Parent = getldxstorage()
-ldxinstance['varToggle7'].Size = UDim2.new(1,0,0,40)
+ldxinstance['varToggle7'].Size = UDim2.new(1,0,0,35)
 ldxinstance['varToggle7'].BackgroundColor3 = Color3.fromRGB(251,255,0)
 ldxinstance['varToggle7'].Position = UDim2.new(-4.793838570549269e-08,0,0.8617886304855347,0)
 ldxinstance['varToggle7'].Visible = true
@@ -412,7 +418,7 @@ ldxinstance['varFrame2'].Name = [[Dot]]
 ldxinstance['varFrame2'].Parent = ldxinstance['varToggle3']
 ldxinstance['varFrame2'].Size = UDim2.new(0,30,0,30)
 ldxinstance['varFrame2'].BackgroundColor3 = Color3.fromRGB(255,255,255)
-ldxinstance['varFrame2'].Position = UDim2.new(0,-2,0,-2)
+ldxinstance['varFrame2'].Position = UDim2.new(0,-2,0,-4)
 ldxinstance['varFrame2'].Visible = true
 ldxinstance['varFrame2'].ZIndex = 1
 ldxinstance['varFrame2'].ClipsDescendants = false
@@ -746,9 +752,7 @@ function gui.Set(tbl)
     btmdesc.Text = tbl.desc or btmdesc.Text 
     ldxinstance['varMain1'].BackgroundColor3 = tbl.background or ldxinstance['varMain1'].BackgroundColor3
     ldxinstance['varMain1'].Transparency = tbl.transparency or ldxinstance['varMain1'].Transparency
-    config.textcolor = tbl.textcolor
-    config.tabbackground = tbl.tabbackground
-    config.tabtransparency = tbl.tabtransparency
+    config = tbl
     ldxinstance['varIcon2'].Image = tbl.logo
     for i,v in ipairs(LIEXGUI:GetDescendants()) do
         if v:IsA("TextLabel") or v:IsA("TextButton") or v:IsA("TextBox") then
@@ -797,8 +801,8 @@ function gui:AddTab(name)
         toggle.Text.TextColor3 = config.textcolor or Color3.new(0,0,0)
         local on = not actv
         print("toggle Added",toggle)
-        local tweenon = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,25,0,-2) })
-        local tweenoff = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,-2,0,-2) })
+        local tweenon = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,25,0,-4) })
+        local tweenoff = TweenService:Create(toggle.Toggle.Dot, toggletween, { Position = UDim2.new(0,-2,0,-4) })
         local function tg()
             on = not on
             if on then
@@ -817,23 +821,111 @@ function gui:AddTab(name)
         return toggle
     end
 
-    function selftab:Input(name,placeholder,Callback)
+    function selftab:Input(tbl)
         local input = ldxinstance['varInput6']:Clone()
         input.Parent = selftab.Instance
-        input.Column.PlaceholderText = name
+        input.BackgroundColor3 = config.input.framecolor or config.buttonColor or Color3.new(0,0,0)
+        input.Column.PlaceholderText = tbl.Placeholder
+        input.Column.BackgroundColor3 = config.input.bgplaceholder or Color3.new(0,0,0)
+        input.InputName.TextColor3 = config.textcolor or Color3.new(1,1,1)
+        input.InputName.Text = tbl.Text
+        input.Column.PlaceholderColor3 = config.textcolor
+        input.Column.TextColor3 = config.textcolor
         input.Column.FocusLost:Connect(function(ep)
-            Callback.value = input.Column.Text
-            Callback.enterPress = ep
-            if Callback.OnInput then
-                Callback.OnInput()
+            tbl.value = input.Column.Text
+            if EnterPress and ep then
+                EnterPress(ep)
             end
         end)
-        return input
+        return input, input.Column
     end
-    function selftab:Option()
+    function selftab:Option(tbl,active) -- :Option({Text = "Player", Option = {["Asep"] = true, ["agus"] = false}})
         local input = ldxinstance['varOption8']:Clone()
+        input.Parent = selftab.Instance
+        input.TextColor3 = config.textcolor
+        input.BackgroundColor3 = config.buttonColor or Color3.new(1,1,1)
+        local optionstate = false
+        local sf = input.ScrollingFrame
+        local sfstroke = Instance.new("UIStroke",sf)
+        sfstroke.Color = config.border
+        sfstroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+        Instance.new("UICorner",sf).CornerRadius = UDim.new(0,5)
+        sf.Position = UDim2.new(1,-150,0,0)
+        sf.Size = UDim2.new(0,150,0,230)
+        sf.BackgroundColor3 = config.buttonColor or Color3.new(1,1,1)
+        sf.ZIndex = 2
+        Instance.new("UIListLayout",sf).Padding = UDim.new(0,4)
+        local sfpadding = Instance.new("UIPadding",sf)
+        sfpadding.PaddingTop = UDim.new(0,4)
+        sfpadding.PaddingLeft = UDim.new(0,3)
+        sfpadding.PaddingRight = UDim.new(0,3)
+        input.MouseButton1Click:Connect(function()
+            optionstate = not optionstate
+            sf.Visible = optionstate
+        end)
+        for i,v in pairs(tbl.List) do
+            local selectOption = Instance.new("TextButton")
+            selectOption.Parent = input.ScrollingFrame
+            Instance.new("UICorner",selectOption)
+            local stroke = Instance.new("UIStroke",selectOption)
+            stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+            stroke.Color = config.option.stroke or Color3.new(0,0,0)
+            selectOption.Text = tbl.Text
+            selectOption.BackgroundColor3 = config.option.inactive or Color3.new(1,1,1)
+            selectOption.BackgroundTransparency = 0.3
+            selectOption.ZIndex = 2
+            if v then
+                selectOption.BackgroundColor3 = config.option.active or Color3.new(0.6,0.6,0.6)
+            end
+            selectOption.Transparency = 0.2
+            selectOption.Name = tostring(i)
+            selectOption.Size = UDim2.new(1,0,0,35)
+            local on = active or false
+            selectOption.MouseButton1Click:Connect(function()
+                tbl.List[i] = not tbl.List[i]
+            end)
+        end
+        return input
     end
     return selftab
 end
 
+--[[
+gui.Set({
+    title = "LIUDEX Z",
+    textcolor = Color3.fromRGB(255,255,255),
+    desc = "Developed By Jorell",
+    background = Color3.fromRGB(48,10,105),
+    transparency = 0.25,
+    tabbackground = Color3.fromRGB(66,23,137),
+    tabtransparency = 0.1,
+    border = Color3.fromRGB(52,5,105),
+    toggle = {
+        framecolor = Color3.fromRGB(110,32,245),
+        active = Color3.fromRGB(0,255,0),
+        inactive = Color3.fromRGB(255,0,0)
+    },
+    option = {
+        active = Color3.fromRGB(91, 27, 201), -- rgb(53, 0, 145) pallete
+        inactive = Color3.fromRGB(123, 93, 255),
+        stroke = Color3.fromRGB(53, 0, 145)
+    },
+    input = {
+        framecolor = Color3.fromRGB(110,32,245),
+        bgplaceholder =  Color3.fromRGB(100,17,185)
+    },
+    buttonColor = Color3.fromRGB(110,32,245),
+    logo = "rbxassetid://131858077876191" --or you can use getcustomasset to
+})
+task.wait()
+local main = gui.new("Main")
+local test = main:AddTab("Testing")
+test:Button({Text = "Clickme",OnClick = function() print("Hello") end})
+test:Text("Hello","Hello")
+test:Toggle({Text = "Render", Callback = function(val) import.RunService:Set3dRenderingEnabled(not val) end})
+test:Option({Text = "ALOK",List = {Asep = false,agus = true}})
+local g;
+local obj,val = test:Input({Text = "Webhook",Placeholder = "URL"})
+test:Button({Text = "Print",OnClick = function() print("Hi",val.Text) end})
+]]
 return gui
