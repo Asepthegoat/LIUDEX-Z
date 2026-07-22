@@ -11,7 +11,7 @@ getgenv().import = {
     ["Waypoint"] = "https://raw.githubusercontent.com/Asepthegoat/LIUDEX-Z/refs/heads/main/script/packages/Waypoint.lua",
     ["Socket"] = "https://raw.githubusercontent.com/Asepthegoat/LoremIpsum/refs/heads/main/LIEX/main.lua"
   }
-}
+} 
 setmetatable(import, {
     __index = function(self, name)
         local success, cache = pcall(function()
@@ -27,14 +27,13 @@ setmetatable(import, {
 })
 local TweenService = import.TweenService
 local gameVar8 = import.Debris
-getgenv().LDXZSet = {
+local LDXZSet = {
   players = import.Players,
   player = import.Players.LocalPlayer,
   UIS = import.UserInputService,
   TS = import.TweenService,
   Http = import.HttpService,
   Replicated = import.ReplicatedStorage,
-  StarterGui = gameVar7
 }
 
 local olderrPromptbackground = Color3.fromRGB(57, 59, 61)
@@ -46,16 +45,16 @@ local newerrOverlaybackground = Color3.fromRGB(25, 5, 55)
 local newerrButtonColor = Color3.fromRGB(150, 60, 255)
 
 function getchar()
-  return getgenv().LDXZSet.player.Character
+  return import.Players.LocalPlayer.Character
 end
 
 function getplayer(p)
   if typeof(p):lower() == "number" then
-    return getgenv().LDXZSet.Players:GetPlayerByUserId(p)
+    return LDXZSet.players:GetPlayerByUserId(p)
   elseif typeof(p):lower() == "string" then
-    return getgenv().LDXZSet.Players[p]
+    return LDXZSet.players[p]
   end
-  return getgenv().LDXZSet.player
+  return LDXZSet.player
 end
 
 
@@ -171,10 +170,10 @@ function isnewclient()
     return false
 end
 
-function insertasset(assetid,i)
+function insertasset(assetid,i,bool)
 local index = i or 1
 if bool then
-	local obj = import.InsertService:LoadLocalAsset(file)
+	local obj = import.InsertService:LoadLocalAsset(assetid)
 	return obj
 end
 local objects = game:GetObjects(assetid)
@@ -182,7 +181,7 @@ local model = objects[index]
 return model
 end
 
-function insertrbxmx(file,i)
+function insertrbxmx(file,i,bool)
 local index = i or 1
 if bool then
   local obj = import.InsertService:LoadLocalAsset(getcustomasset(file))
@@ -193,7 +192,7 @@ local model = objects[index]
 return model
 end
 
-function insertobjrbxmx(file,bool)
+function insertobjrbxmx(file,bool,i)
   local index = i or 1
   if bool then
 	local obj = import.InsertService:LoadLocalAsset(getcustomasset(file))
@@ -251,7 +250,8 @@ local oldclientid
 local clientidhooked = false
 local clientnewid = nil
 function setclientid(newid)
- newclientid = newid
+ local newclientid = newid
+ clientnewid = newclientid
  if not clientidhooked then
 	oldclientid =  nil
     oldclientid = hookmetamethod(import.RbxAnalyticsService,"__namecall",newcclosure(function(...)
@@ -384,20 +384,20 @@ end
 
 function uid(bol)
   if bol then
-    local guid = getgenv().LDXZSet.Http:GenerateGUID(false)
+    local guid = LDXZSet.Http:GenerateGUID(false)
     local uuid = guid:gsub("-","")
     return uuid
   else
-    return getgenv().LDXZSet.Http:GenerateGUID(false)
+    return LDXZSet.Http:GenerateGUID(false)
   end
 end
 
 function JSONDecode(val)
-  return getgenv().LDXZSet.Http:JSONDecode(val)
+  return LDXZSet.Http:JSONDecode(val)
 end
 
 function JSONEncode(val)
-  return getgenv().LDXZSet.Http:JSONEncode(val)
+  return LDXZSet.Http:JSONEncode(val)
 end
 
 --[[function createlicense(identify,database,key) --identify must be include your script name such as ldx or liudex
@@ -433,19 +433,6 @@ function checklicense(key)
   end
 end]]
 
-function tablefill(total,tabl,insrt,start,waits)
-  local i = start
-  if waits then
-    while i <= total do
-      table.insert(tabl,insrt)
-      task.wait()
-    end
-  else
-    while i <= total do
-      table.insert(tabl,insrt)
-    end
-  end
-end
 
 function postjson(uri,json)
 	request({
@@ -676,14 +663,13 @@ function ex:GetAllFunction(targetfunc,detail,once,runf,...)
   local tablef = {}
   local functions = {}
   if targetfunc == "" or not targetfunc then
-    table.insert(tablef,v)
     for i,v in next, getgc() do
-
 	    if typeof(v) ~= "function" or functions[getfunctionrefid(v)] then continue end
+      table.insert(tablef,v)
+      functions[getfunctionrefid(v)] = true
       local info = debug.getinfo(v)
-      if debug.info(v,"n") == "" or debug.info(v,"n") == nil then
+      if (info.name == "" or info.name == nil) and islclosure(v) then
         print(i,"Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
-        functions[getfunctionrefid(v)] = true
         task.wait()
       else
         print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
@@ -698,7 +684,7 @@ function ex:GetAllFunction(targetfunc,detail,once,runf,...)
         table.insert(tablef,v)
         functions[getfunctionrefid(v)] = true
         if detail then
-          if info.name == "" or not info.name then
+          if (info.name == "" or not info.name) and islclosure(v) then
             print("Source: ",debug.info(v,"s"),"\nHash: ", getfunctionhash(v),"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
           else
             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunction: ",info.func,"\nType",info.what,"\nLine: ",debug.info(v,"l"),"\n")
@@ -722,7 +708,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
     
     if debug.info(v,"n") == target and ssrc and ssrc ~= "" and debug.info(v,"s"):find(ssrc) then
       if detail then
-        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentline,"\n")
       end
       if runf then
         v(...)
@@ -730,7 +716,7 @@ function ex:getspecificfunction(target,ssrc,detail,runf,...)
 	return v
     elseif debug.info(v,"n") == target and (ssrc == "" or not ssrc) then
       if detail then
-        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+        print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentline,"\n")
       end
       if runf then
         v(...)
@@ -747,7 +733,7 @@ function ex:GetHashFunction(hashFunc,regorgc,detail)
         if getfunctionhash(v):match(hashFunc) then
           if detail then
             local info = debug.getinfo(v)
-             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentline,"\n")
           end
           return v
         end
@@ -759,7 +745,7 @@ function ex:GetHashFunction(hashFunc,regorgc,detail)
         if getfunctionhash(v):match(hashFunc) then
           if detail then
             local info = debug.getinfo(v)
-             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentlinem,"\n")
+             print("Source: ",debug.info(v,"s"),"\nName: ", info.name,"\nHash",getfunctionhash(v),"\nFunc: ",info.func,"\nType",info.what,"\nCurrentLine: ",info.currentline,"\n")
           end
           return v
         end
@@ -778,26 +764,23 @@ ex.GetFunction = ex.getspecificfunction
 
 function ex:GetPlayTime(format)
   local t = math.floor(game.Workspace.DistributedGameTime)
+  local tabl = {}
   if not format or format == "" then
     return t
   elseif format == "separate" then  
-    local tabl = {}
     tabl["Hour"] = t/3600
     tabl["Minutes"] = t/60
     tabl["Second"] = t/1
   elseif format == "clock" then
-    local tabl = {}
-    local h = math.floor(t / 3600)
-    local m = math.floor((t % 3600) / 60)
-    local s = t % 60
-    tabl["Hour"] = h
-    tabl["Minute"] = m
-    tabl["Second"] = s 
+    tabl["Hour"] = math.floor(t / 3600)
+    tabl["Minute"] = math.floor((t % 3600) / 60)
+    tabl["Second"] = t % 60
   end
+  return tabl
 end
 
 function ex:Respawn()
-	getgenv().LDXZSet.player.Character.Humanoid.Health = 0
+	LDXZSet.player.Character.Humanoid.Health = 0
 end
 
 function ex:ForceClose()
@@ -820,8 +803,8 @@ function ex:TriggerEvent(event,data)
 	if event == "proximity" then
 		fireproximityprompt(data)
 	elseif event == "touch" then
-		firetouchinterest(getgenv().LDXZSet.player.Character.HumanoidRootPart,data,0)
-		firetouchinterest(getgenv().LDXZSet.player.Character.HumanoidRootPart,data,1)
+		firetouchinterest(LDXZSet.player.Character.HumanoidRootPart,data,0)
+		firetouchinterest(LDXZSet.player.Character.HumanoidRootPart,data,1)
 	end
 end
 
@@ -845,7 +828,7 @@ function liudex:GetName()
 	print(self.Name)
 end
 function liudex:Respawn()
-	getgenv().LDXZSet.player.Character.Humanoid.Health = 0
+	LDXZSet.player.Character.Humanoid.Health = 0
 end
 function liudex:GetProperty()
 	return self.Property
@@ -1000,7 +983,7 @@ function prompt(num,callback,tbl)
         base.BackgroundColor3 = Color3.fromRGB(15,0,45)
         corner(base)
         layout(base,5)
-        local box = Instance.new("TextBox", parent)
+        local box = Instance.new("TextBox")
         box.Size = UDim2.new(1,0,0,30)
 
         local controls = require(getplayer().PlayerScripts:WaitForChild("PlayerModule")):GetControls()
@@ -1310,28 +1293,7 @@ function liudexEnv:Wait()
 	return coroutine.yield()
 end
 
---ldxsignal
-local LDXSignal = {}
-LDXSignal.__index = LDXSignal
-
-function LDXSignal.new(name)
-	local self = setmetatable({}, LDXSignal)
-	self.Name = name
-	self._connections = {} -- tempat simpan callback
-	return self
-end
-
-function LDXSignal:Fire(...)
-	for _, callback in ipairs(self._connections) do
-		callback(...)
-	end
-end
-
-function LDXSignal:OnRecive(callback)
-	table.insert(self._connections, callback)
-end
-
-local function formatValue(val)
+function formatValue(val)
 	if typeof(val) == "string" then
 		return "[[" .. val .. "]]"
 
@@ -1472,7 +1434,7 @@ function ispropempty(prop,type)
 end
 
 local scrptststs = {}
-local function GetInstaceInfo(instance,name,parent)
+local function GetInstanceInfo(instance,name,parent)
   local tabl = {}
   table.insert(tabl,name .. ' = Instance.new("' .. instance.ClassName .. '")')
       for u,prop in pairs(proptable) do
@@ -1510,7 +1472,7 @@ end
 local function scangetinstance(obj,tab,parentname)
 	for i, child in ipairs(obj:GetChildren()) do
     local parname = "ldxinstance['var" .. child.Name .. i .. "']"
-		local var = GetInstaceInfo(child,parname,parentname)
+		local var = GetInstanceInfo(child,parname,parentname)
 		if var ~= nil then
 			table.insert(tab,var)
 		end
@@ -1521,7 +1483,7 @@ end
 function liudex:SetInstanceAsClipboard(instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
   scrptststs = {}
-  local sl = GetInstaceInfo(instance,instance.Name,parent or "getldxstorage()")
+  local sl = GetInstanceInfo(instance,instance.Name,parent or "getldxstorage()")
   table.insert(tabl,"--This Code Generate by ldx SetInstanceAsClipboard\n--Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture\n--join ldx community at https://discord.gg/WmsssRkgd2\nlocal ldxinstance = {}")
   table.insert(tabl,sl)
   scangetinstance(instance,tabl,instance)
@@ -1531,10 +1493,10 @@ function liudex:SetInstanceAsClipboard(instance,parent) --a bit buggy you need t
   liudex:Announcement("LIUDEX","Instance copied to your clipboard")
 end
 
-function liudex:SetInstaceAsScript(filename,instance,parent) --a bit buggy you need to reparent sometime
+function liudex:SetInstanceAsScript(filename,instance,parent) --a bit buggy you need to reparent sometime
   local tabl = {}
   scrptststs = {}
-  local sl = GetInstaceInfo(instance,instance.Name,parent or "getldxstorage()")
+  local sl = GetInstanceInfo(instance,instance.Name,parent or "getldxstorage()")
   table.insert(tabl,"--This Code Generate by ldx SetInstanceAsScript\n--Thanks for using ldx SetInstanceAsClipboard we will improving this feature even more in the furture\n--join ldx community at https://discord.gg/WmsssRkgd2\nlocal ldxinstance = {}")
   table.insert(tabl,sl)
   scangetinstance(instance,tabl,instance)
@@ -1576,19 +1538,19 @@ function ex:SpoofIndex(target,keyval,value)
     return old(self,key)
   end))
 end
-
-function liudex:GetInfo(target)
-  local tabl = {}
-  local info = debug.getinfo(target)
-  tabl["Name"] = debug.info(target,"n") or nil
-  tabl["Source"] = debug.info(target,"s") or nil
-  tabl["Line"] = debug.info(target,"l") or nil
-  tabl["Function"] = debug.info(target,"f") or nil
-  tabl["ShortSource"] = info.short_src or nil
-  tabl["What"] = info.what or nil
-  tabl["NParams"] = info.nparams or nil
-  tabl["Nups"] = info.nups or nil
-  print(i,"Source: ",debug.info(v,"s"),"\nName: ", debug.info(v,"n"),"\nFunction: ", debug.info(v,"f"),"\nLine: ", debug.info(v,"l"))
+local ldxinfo = {
+  imported = {},
+  bypassed = {
+    "Adonis","gcinfo"
+  },
+  version = "V 1.8.21"
+}
+function liudex:GetInfo(target)  
+  for i,v in pairs(ldxinfo.imported) do
+    if v then
+      table.insert(tabl.imported,i)
+    end
+  end
   return tabl
 end
 
@@ -1600,15 +1562,6 @@ getgenv().ldx = liudex
 getgenv().getclientgithash = function()
   return import.RunService.ClientGitHash
 end
-getgenv().getconfig = setmetatable({}, {
-  __index = function(self,key)
-    local success, cache = pcall(function()
-      local configs = liudex:GetService("Configuration")
-      local value = configs[key]
-      return value:GetAttribute("value")
-  end)
-  end
-})
 
 local currentATrack
 function loadanim(id,speed,timestamp,stopat)
@@ -1686,7 +1639,6 @@ getgenv().dumpsenv = function(scripts,advance,res) -- get script env from regist
     local mtmth = 0
     local renvc = 0
     local rbxsig = 0
-    local gr = false
     for i,v in next,getgc(true) do
         if typeof(v) == "function" then
             local info = debug.getinfo(v)
@@ -1760,11 +1712,25 @@ getgenv().dumpsenv = function(scripts,advance,res) -- get script env from regist
             "\nmetamethod found:",#ftbl.mtmethod,"of",mtmth,
             "\nRBXSignal found:",#ftbl.RBXSignal,"of",rbxsig)
     end
-    repeat
-        task.wait()
-    until gr == true
 return ftbl
 end 
+
+getgenv().hooksignal = function(event,func)
+  local con = {}
+  for i,v in ipairs(getconnections(event)) do
+    v:Disable()
+    table.insert(con,v)
+  end
+  event:Connect(function(...)
+    for i,v in ipairs(con) do
+      v:Enable()
+      v:Fire(func(v,...))
+      v:Disable()
+    end
+  end)
+end
+
+getgenv().isvipserver = isprivateserver
 
 local ldxfenv = {
 		"uid","generatevarchar",
@@ -1778,17 +1744,20 @@ local ldxfenv = {
     "disconnect_all_signal","isldxattached",
     "isscriptclosure","waituntil","checkfunction",
     "dohttpscript","safefullname","download",
-    "gototarget","waitrandom","tablefill","GetInstaceInfo",
+    "gototarget","waitrandom","GetInstanceInfo",
 	  "safecall","callwithc","clonechar","setoffline",
     "insertobjrbxmx","setclientid","gethumanoid",
     "getrootpart","getdeviceid","getsessionid",
     "getclientid","isoffline","setnewchar","isnewclient","setcamfocus",
-    "loadanim","limitsendkbps"
+    "loadanim","limitsendkbps","isprivateserver","formatValue"
 	} --regist to genv
 for g,j in ipairs(ldxfenv) do
     getgenv()[j] = getfenv()[j]
+    getfenv()[j] = nil
 end
 
 task.wait()
-
+task.defer(function()
+task.wait(0.1)
 liudex:Notify("LIUDEX API","https://asepthegoat.github.io/","rbxassetid://126569944133822")
+end)
